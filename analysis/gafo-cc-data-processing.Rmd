@@ -1,0 +1,331 @@
+---
+title: "Gafo-cc data processing"
+output: html_document
+---
+
+```{r load_packages, message=FALSE, warning=FALSE, include=FALSE}
+library(tidyverse)
+library(prettyR) # for describe()
+library(jsonlite) # for reading in json files
+library(stringr)
+library(eeptools)
+library(lubridate) # for date handling
+library(readxl)
+
+options(scipen = 999)
+theme_set(theme_classic())
+```
+
+# Namibia
+
+```{r read_data}
+# get all .json files
+files <- list.files("../../raw_data/gafo-cc/namibia/", pattern = "*.json",recursive = T)
+
+# convert json files to tibbles
+raw_data_namibia <- tibble()
+for (f in files) {
+  jf <- paste("../../raw_data/gafo-cc/namibia/", f, sep = "")
+  jd <- jsonlite::fromJSON(paste(readLines(jf, warn = "FALSE"), collapse = ""))
+  
+  # needed because hedge trials have numbers, box trials have characters
+  jd$targetPosition <- factor(as.character(jd$targetPosition))
+  
+  raw_data_namibia <- bind_rows(raw_data_namibia, jd)
+}
+# remove variables that we don't need anymore
+rm(f, files, jf, jd)
+```
+
+```{r}
+tidy_data_namibia <- raw_data_namibia %>%
+  
+  # convert all character vectors into factors
+  mutate_if(is.character, as.factor) %>% 
+  
+  mutate(
+    
+    # attention! the SVG coord system starts with 0, 0 in upper left corner
+    # we transform the values so that 0, 0 is lower left corner (for plots etc)
+    clickScaledY = 1080 - clickScaledY,
+    targetY = 1080 - targetY, 
+    targetCenterY = 1080 - targetCenterY, 
+    eyeCenterRightY = 1080 - eyeCenterRightY,
+    eyeCenterLeftY = 1080 - eyeCenterLeftY,
+    pupilFinalRightY = 1080 - pupilFinalRightY,
+    pupilFinalLeftY = 1080 - pupilFinalLeftY, 
+    targetCentralityX = abs(960 - targetCenterX),
+    
+    # similarly here: in svg coords, negative click distance means up. 
+    # here we invert it, so that negative values mean down
+    clickDistFromTargetCenterY = clickDistFromTargetCenterY * -1, 
+    clickDistFromTargetBBoxY = clickDistFromTargetBBoxY * -1, 
+    
+    # positive values for inward clicks (i.e.,towards the center), negative for outward clicks
+    centralityBias = ifelse(targetCenterX <= 1920/2,
+                            clickDistFromTargetCenterX, 
+                            clickDistFromTargetCenterX*-1), 
+    
+    inwardClick = ifelse(centralityBias > 0, TRUE, FALSE), 
+    
+    # did the participant click on the right box?
+    # also for hedge version, here we imagine a box surrounding the target center 
+    # this way, we can compare hedge and box version ;) 
+    boxWidth = 218, 
+    boxBorderLeft = targetCenterX - boxWidth/2, 
+    boxBorderRight = targetCenterX + boxWidth/2,
+    correctBox = ifelse(boxBorderLeft <= clickScaledX & clickScaledX <= boxBorderRight, TRUE, FALSE), 
+    
+    datacollection = as.factor("in-person - supervised"), 
+    sample = as.factor("na"),
+    studytype = as.factor("vali"), 
+  ) 
+```
+
+```{r demographics}
+raw_demographics_namibia <- bind_rows(
+  read_xlsx("../../raw_data/gafo-cc/namibia/Data FarmSix 2022.xlsx", sheet = 1)%>%mutate(ID = paste0("H",str_pad(ID, 7, pad = "0"))),
+  read_xlsx("../../raw_data/gafo-cc/namibia/Data Khwe 2022.xlsx", sheet = 1)%>%mutate(ID = paste0("K",str_pad(ID, 7, pad = "0")))%>%rename(sex = `...7`)
+  )
+
+tidy_demographics_namibia <- raw_demographics_namibia %>% 
+  mutate(
+    ageInYears = as.numeric(difftime(TestDate,BirthDate, units = "days")/365.25),
+  ) %>%
+  rename(subjID = ID) %>% 
+  select(-c(`First Name`, Name, BirthDate, TestDate, Comment))%>% 
+  rename_all(tolower)%>%
+  filter(!is.na(ageinyears))
+```
+
+```{r}
+data_namibia <- tidy_demographics_namibia%>%
+  left_join(tidy_data_namibia%>%rename_all(tolower),by = c("subjid"))
+```
+
+# Leipzig
+
+```{r}
+system("rsync -zaP ccp-odcJ:/srv/ccp-odc/gafo-leipzig/data/ ~/Work/Local/Quantex/Gafo/raw_data/gafo-cc/leipzig/")
+```
+
+
+```{r read_data}
+# get all .json files
+files <- list.files("../../raw_data/gafo-cc/leipzig/", pattern = "*.json",recursive = T)
+
+# convert json files to tibbles
+raw_data_leipzig <- tibble()
+for (f in files) {
+  jf <- paste("../../raw_data/gafo-cc/leipzig/", f, sep = "")
+  jd <- jsonlite::fromJSON(paste(readLines(jf, warn = "FALSE"), collapse = ""))
+  
+  # needed because hedge trials have numbers, box trials have characters
+  jd$targetPosition <- factor(as.character(jd$targetPosition))
+  
+  raw_data_leipzig <- bind_rows(raw_data_leipzig, jd)
+}
+# remove variables that we don't need anymore
+rm(f, files, jf, jd)
+```
+
+```{r}
+tidy_data_leipzig <- raw_data_leipzig %>%
+  
+  # convert all character vectors into factors
+  mutate_if(is.character, as.factor) %>% 
+  
+  mutate(
+    
+    # attention! the SVG coord system starts with 0, 0 in upper left corner
+    # we transform the values so that 0, 0 is lower left corner (for plots etc)
+    clickScaledY = 1080 - clickScaledY,
+    targetY = 1080 - targetY, 
+    targetCenterY = 1080 - targetCenterY, 
+    eyeCenterRightY = 1080 - eyeCenterRightY,
+    eyeCenterLeftY = 1080 - eyeCenterLeftY,
+    pupilFinalRightY = 1080 - pupilFinalRightY,
+    pupilFinalLeftY = 1080 - pupilFinalLeftY, 
+    targetCentralityX = abs(960 - targetCenterX),
+    
+    # similarly here: in svg coords, negative click distance means up. 
+    # here we invert it, so that negative values mean down
+    clickDistFromTargetCenterY = clickDistFromTargetCenterY * -1, 
+    clickDistFromTargetBBoxY = clickDistFromTargetBBoxY * -1, 
+    
+    # positive values for inward clicks (i.e.,towards the center), negative for outward clicks
+    centralityBias = ifelse(targetCenterX <= 1920/2,
+                            clickDistFromTargetCenterX, 
+                            clickDistFromTargetCenterX*-1), 
+    
+    inwardClick = ifelse(centralityBias > 0, TRUE, FALSE), 
+    
+    # did the participant click on the right box?
+    # also for hedge version, here we imagine a box surrounding the target center 
+    # this way, we can compare hedge and box version ;) 
+    boxWidth = 218, 
+    boxBorderLeft = targetCenterX - boxWidth/2, 
+    boxBorderRight = targetCenterX + boxWidth/2,
+    correctBox = ifelse(boxBorderLeft <= clickScaledX & clickScaledX <= boxBorderRight, TRUE, FALSE), 
+    
+    datacollection = as.factor("in-person - supervised"), 
+    sample = as.factor("na"),
+    studytype = as.factor("vali"), 
+  ) %>%
+  mutate(subjID = as.character(subjID),
+         subjID = ifelse(subjID == "VcyYgGQx", "VcyYgFQx", subjID),
+         subjID = ifelse(subjID == "R9V7qHrx", "R9v7qHrx", subjID),
+         subjID = ifelse(subjID == "QZJvSwfQ","QZJvSwftQ",  subjID),
+         subjID = ifelse(subjID == "TSPeVFYf", "tSPeVFYf", subjID),
+         subjID =as.factor(subjID))
+
+
+#unique(tidy_data_leipzig$subjID)
+```
+
+
+```{r demographics}
+raw_demographics_leipzig <- bind_rows(
+  read_xlsx("../../../../../Cloud/QuantEx/Gafo-cc/docs/Gafo-cc-leipzig-participants.xlsx", sheet = 1)
+  )
+
+tidy_demographics_leipzig <- raw_demographics_leipzig %>% 
+  mutate(
+    test_date = as.Date(test_date, format = "%d/%m/%Y"),
+    birth_date = as.Date(birth_date, origin = "1899-12-30"),
+    ageinyears = as.numeric(difftime(test_date,birth_date, units = "days")/365.25),
+  ) %>%
+  select(-c(first_name, last_name, id, test_date, birth_date))%>%
+  rename(subjid = code)%>%
+  filter(!is.na(ageinyears),
+         status == "keep")
+```
+
+```{r}
+tidy_demographics_leipzig%>%
+  filter(!subjid %in% tidy_data_leipzig$subjID)
+```
+
+
+```{r}
+data_leipzig <- tidy_demographics_leipzig%>%
+  left_join(tidy_data_leipzig%>%rename_all(tolower),by = c("subjid"))%>%
+  distinct(subjid, trialnr, .keep_all = TRUE)
+
+```
+
+```{r}
+data_leipzig%>%
+  group_by(subjid)%>%
+  summarise(n())
+  
+```
+
+# Nigeria
+
+```{r read_data}
+# get all .json files
+files <- list.files("../../../../../Cloud/QuantEx/Gafo-cc/data/nigeria/", pattern = "*.json",recursive = T)
+
+# convert json files to tibbles
+raw_data_nigeria <- tibble()
+for (f in files) {
+  jf <- paste("../../../../../Cloud/QuantEx/Gafo-cc/data/nigeria/", f, sep = "")
+  jd <- jsonlite::fromJSON(paste(readLines(jf, warn = "FALSE"), collapse = ""))
+  
+  # needed because hedge trials have numbers, box trials have characters
+  jd$targetPosition <- factor(as.character(jd$targetPosition))
+  
+  raw_data_nigeria <- bind_rows(raw_data_nigeria, jd)
+}
+# remove variables that we don't need anymore
+rm(f, files, jf, jd)
+```
+
+```{r}
+tidy_data_nigeria <- raw_data_nigeria %>%
+  
+  # convert all character vectors into factors
+  mutate_if(is.character, as.factor) %>% 
+  
+  mutate(
+    
+    # attention! the SVG coord system starts with 0, 0 in upper left corner
+    # we transform the values so that 0, 0 is lower left corner (for plots etc)
+    clickScaledY = 1080 - clickScaledY,
+    targetY = 1080 - targetY, 
+    targetCenterY = 1080 - targetCenterY, 
+    eyeCenterRightY = 1080 - eyeCenterRightY,
+    eyeCenterLeftY = 1080 - eyeCenterLeftY,
+    pupilFinalRightY = 1080 - pupilFinalRightY,
+    pupilFinalLeftY = 1080 - pupilFinalLeftY, 
+    targetCentralityX = abs(960 - targetCenterX),
+    
+    # similarly here: in svg coords, negative click distance means up. 
+    # here we invert it, so that negative values mean down
+    clickDistFromTargetCenterY = clickDistFromTargetCenterY * -1, 
+    clickDistFromTargetBBoxY = clickDistFromTargetBBoxY * -1, 
+    
+    # positive values for inward clicks (i.e.,towards the center), negative for outward clicks
+    centralityBias = ifelse(targetCenterX <= 1920/2,
+                            clickDistFromTargetCenterX, 
+                            clickDistFromTargetCenterX*-1), 
+    
+    inwardClick = ifelse(centralityBias > 0, TRUE, FALSE), 
+    
+    # did the participant click on the right box?
+    # also for hedge version, here we imagine a box surrounding the target center 
+    # this way, we can compare hedge and box version ;) 
+    boxWidth = 218, 
+    boxBorderLeft = targetCenterX - boxWidth/2, 
+    boxBorderRight = targetCenterX + boxWidth/2,
+    correctBox = ifelse(boxBorderLeft <= clickScaledX & clickScaledX <= boxBorderRight, TRUE, FALSE), 
+    
+    datacollection = as.factor("in-person - supervised"), 
+    sample = as.factor("na"),
+    studytype = as.factor("vali"), 
+  ) 
+```
+
+```{r demographics}
+raw_demographics_nigeria <- bind_rows(
+  read_xlsx("../../../../../Cloud/QuantEx/Gafo-cc/data/nigeria/gafo-cc-nigeria-participants.xlsx", sheet = 1)
+  )
+
+tidy_demographics_nigeria <- raw_demographics_nigeria %>% 
+  mutate(
+    test_date = as.Date(test_date, format = "%d.%m.%Y"),
+    birth_date = as.Date(birth_date, format = "%d.%m.%Y"),
+    ageinyears = as.numeric(difftime(test_date,birth_date, units = "days")/365.25),
+  )  %>%
+  select(-c(first_name, last_name, test_date, birth_date, `...14`, `...15`, comment))%>%
+  rename(subjid = id)%>%
+  filter(!is.na(ageinyears))
+```
+
+```{r}
+data_nigeria <- tidy_demographics_nigeria%>%
+  left_join(tidy_data_nigeria%>%rename_all(tolower),by = c("subjid"))
+```
+
+# Merge
+```{r}
+
+data <- bind_rows(
+  data_namibia,
+  data_leipzig,
+  data_nigeria
+)%>%
+  #mutate(community = paste0("c",as.character(as.numeric(as.factor(community)))))%>%
+  filter(trialtype == "test")
+
+
+data%>%
+  group_by(community)%>%
+  summarise(n= n_distinct(subjid))
+
+```
+```{r}
+write_csv(data,"../data/gafo-cc-clean-data.csv")
+```
+

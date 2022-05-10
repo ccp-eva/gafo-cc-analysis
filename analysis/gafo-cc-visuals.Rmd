@@ -1,0 +1,64 @@
+---
+title: "Gafo-cc visuals"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(ggpubr)
+library(ggthemes)
+library(tidyboot)
+```
+
+
+```{r}
+data <- read_csv("../data/gafo-cc-clean-data.csv")
+```
+
+
+```{r}
+data%>%
+  group_by(community,subjid, ageinyears)%>%
+  summarise(impr = mean(abs(clickdistfromtargetcenterx)))%>%
+  ggplot(aes(x = ageinyears, y = impr, col = community))+
+  geom_point(pch = 1)+
+  geom_smooth(method = "lm")+
+  scale_color_colorblind()+
+  ylim(0,1000)+
+  labs(x = "Age (in years)", y ="Imprecision")+
+  scale_x_continuous(breaks = 2:8)+
+  theme_minimal()
+  
+```
+
+
+```{r}
+data%>%
+  group_by(targetcentralityx)%>%
+  #summarise(impr = mean(clickdistfromtargetcenterx))%>%
+  mutate(chance_upper = (targetcentralityx + 960)/2,
+         chance_lower = -((targetcentralityx + 960)/2))%>%
+  ggplot(aes(x = targetcentralityx, y = clickdistfromtargetcenterx))+
+  geom_hline(yintercept = 0, lty = 3, alpha = 0.75)+
+  #geom_line(aes(x = targetcentralityx, y = chance_upper), lty = 3, alpha = .75, col = "firebrick")+
+  #geom_line(aes(x = targetcentralityx, y = chance_lower), lty = 3, alpha = .75, col = "firebrick")+
+  geom_point(pch = 1, alpha = 0.75)+
+  #ylim(-1500,1500)+
+  theme_minimal()
+  
+```
+
+```{r}
+ptp <- data%>%
+  mutate(targetposition = factor(targetposition, levels = c(1:10)))%>%
+  group_by(community, targetposition)%>%
+  tidyboot_mean(col= abs(clickdistfromtargetcenterx))
+
+
+ggplot(ptp, aes(x = targetposition, y = mean, col = community))+
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .2))+
+  labs(x = "Binned target position", y = "Mean imprecision")+
+  #ylim(0,1000)+
+  theme_minimal()
+```
+

@@ -1,0 +1,100 @@
+---
+title: "Gafo-cc-analysis"
+output: html_document
+date: '2022-03-26'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(brms)
+```
+
+
+```{r}
+mdata <- read_csv("../data/gafo-cc-clean-data.csv")%>%
+  mutate(ageinyears = scale(ageinyears),
+         targetcentralityx = scale(targetcentralityx),
+         trialnr = scale(trialnr),
+         children = scale(children),
+         youngerchildren = scale(youngerchildren),
+         touchscreen = factor(touchscreen.x),
+        screen = factor(screen))
+```
+
+```{r}
+bm_base <- brm(abs(clickdistfromtargetcenterx) ~ ageinyears  + targetcentralityx + (trialnr|subjid), 
+                              data   = mdata, 
+                              family = Gamma(link = "log"),
+                              warmup = 1000, 
+                              iter   = 4000, 
+                              chains = 4, 
+                              cores  = 4)%>%
+  add_criterion(., c("waic","loo"))
+
+bm_null <- brm(abs(clickdistfromtargetcenterx) ~ 1 + (trialnr|subjid), 
+                              data   = mdata, 
+                              family = Gamma(link = "log"),
+                              warmup = 1000, 
+                              iter   = 4000, 
+                              chains = 4, 
+                              cores  = 4)%>%
+  add_criterion(., c("waic","loo"))
+
+
+loo_compare(bm_base, bm_null)%>%as_tibble(rownames = "model")
+
+```
+
+```{r}
+plot(bm_age)
+
+pp_check(bm_age)+xlim(0,2000)
+
+bm_age
+```
+
+
+```{r}
+bm_screen <- brm(abs(clickdistfromtargetcenterx) ~ ageinyears  + targetcentralityx + screen + (trialnr|subjid), 
+                              data   = mdata, 
+                              family = Gamma(link = "log"),
+                              warmup = 1000, 
+                              iter   = 4000, 
+                              chains = 4, 
+                              cores  = 4)%>%
+  add_criterion(., c("waic","loo"))
+
+bm_touch <- brm(abs(clickdistfromtargetcenterx) ~ ageinyears  + targetcentralityx + touchscreen + (trialnr|subjid), 
+                              data   = mdata, 
+                              family = Gamma(link = "log"),
+                              warmup = 1000, 
+                              iter   = 4000, 
+                              chains = 4, 
+                              cores  = 4)%>%
+  add_criterion(., c("waic","loo"))
+```
+
+
+```{r}
+bm_child <- brm(abs(clickdistfromtargetcenterx) ~ ageinyears  + targetcentralityx + children + (trialnr|subjid), 
+                              data   = mdata, 
+                              family = Gamma(link = "log"),
+                              warmup = 1000, 
+                              iter   = 4000, 
+                              chains = 4, 
+                              cores  = 4)%>%
+  add_criterion(., c("waic","loo"))
+
+bm_young <- brm(abs(clickdistfromtargetcenterx) ~ ageinyears  + targetcentralityx + youngerchildren + (trialnr|subjid), 
+                              data   = mdata, 
+                              family = Gamma(link = "log"),
+                              warmup = 1000, 
+                              iter   = 4000, 
+                              chains = 4, 
+                              cores  = 4)%>%
+  add_criterion(., c("waic","loo"))
+```
+
+
