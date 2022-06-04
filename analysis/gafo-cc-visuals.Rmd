@@ -15,6 +15,13 @@ library(tidyboot)
 data <- read_csv("../data/gafo-cc-clean-data.csv")
 ```
 
+```{r}
+data%>%
+  group_by(community)%>%
+  summarise(n= n_distinct(subjid))
+```
+
+
 
 ```{r}
 data%>%
@@ -22,7 +29,7 @@ data%>%
   summarise(impr = mean(abs(clickdistfromtargetcenterx)))%>%
   ggplot(aes(x = ageinyears, y = impr, col = community))+
   geom_point(pch = 1)+
-  geom_smooth(method = "lm")+
+  geom_smooth(method = "glm")+
   scale_color_colorblind()+
   ylim(0,1000)+
   labs(x = "Age (in years)", y ="Imprecision")+
@@ -56,8 +63,9 @@ ptp <- data%>%
 
 
 ggplot(ptp, aes(x = targetposition, y = mean, col = community))+
-  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .2))+
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
   labs(x = "Binned target position", y = "Mean imprecision")+
+  scale_color_colorblind()+
   #ylim(0,1000)+
   theme_minimal()
 ```

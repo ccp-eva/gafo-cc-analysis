@@ -9,6 +9,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
 library(brms)
+library(tidybayes)
 ```
 
 
@@ -18,13 +19,16 @@ mdata <- read_csv("../data/gafo-cc-clean-data.csv")%>%
          targetcentralityx = scale(targetcentralityx),
          trialnr = scale(trialnr),
          children = scale(children),
+         household = scale(household),
          youngerchildren = scale(youngerchildren),
-         touchscreen = factor(touchscreen.x),
+         touchscreen = factor(touchscreen),
         screen = factor(screen))
+
+unique(mdata$community)
 ```
 
 ```{r}
-bm_base <- brm(abs(clickdistfromtargetcenterx) ~ ageinyears  + targetcentralityx + (trialnr|subjid), 
+bm_base <- brm(abs(clickdistfromtargetcenterx) ~ ageinyears  + targetcentralityx + (trialnr|subjid) + (1|community), 
                               data   = mdata, 
                               family = Gamma(link = "log"),
                               warmup = 1000, 
@@ -33,7 +37,7 @@ bm_base <- brm(abs(clickdistfromtargetcenterx) ~ ageinyears  + targetcentralityx
                               cores  = 4)%>%
   add_criterion(., c("waic","loo"))
 
-bm_null <- brm(abs(clickdistfromtargetcenterx) ~ 1 + (trialnr|subjid), 
+bm_null <- brm(abs(clickdistfromtargetcenterx) ~ 1 + (trialnr|subjid)+ (1|community), 
                               data   = mdata, 
                               family = Gamma(link = "log"),
                               warmup = 1000, 
@@ -48,16 +52,41 @@ loo_compare(bm_base, bm_null)%>%as_tibble(rownames = "model")
 ```
 
 ```{r}
-plot(bm_age)
+plot(bm_base)
 
-pp_check(bm_age)+xlim(0,2000)
+pp_check(bm_base)
 
 bm_age
 ```
 
+```{r}
+ps <- bm_base%>%posterior_samples()%>%
+  select(starts_with("r_community"))%>%
+  pivot_longer(cols = everything(), names_to = "param", values_to = "value")%>%
+  filter(grepl("Intercept", param))
+
+ggplot(ps,aes(y = param, x = value)) +
+ stat_halfeye(alpha = .7, .width = c(.95, .80)) +
+    labs(x = "Posterior estimate", y ="")+
+  guides(fill = "none")+
+  #geom_vline(xintercept = 0, linetype = "dashed") +
+  xlim(-0.2, 0.5)+
+  theme_minimal()
+```
+
+
 
 ```{r}
-bm_screen <- brm(abs(clickdistfromtargetcenterx) ~ ageinyears  + targetcentralityx + screen + (trialnr|subjid), 
+bm_screen <- brm(abs(clickdistfromtargetcenterx) ~ ageinyears  + targetcentralityx  + (1|subjid) + (screen + children + household|community), 
+                              data   = mdata%>%filter(community != "chimfunshi_kumwenda"), 
+                              family = Gamma(link = "log"),
+                              warmup = 1000, 
+                              iter   = 4000, 
+                              chains = 4, 
+                              cores  = 4)%>%
+  add_criterion(., c("waic","loo"))
+
+bm_touch <- brm(abs(clickdistfromtargetcenterx) ~ ageinyears  + targetcentralityx + (1|subjid) + (1|community), 
                               data   = mdata, 
                               family = Gamma(link = "log"),
                               warmup = 1000, 
@@ -66,14 +95,21 @@ bm_screen <- brm(abs(clickdistfromtargetcenterx) ~ ageinyears  + targetcentralit
                               cores  = 4)%>%
   add_criterion(., c("waic","loo"))
 
-bm_touch <- brm(abs(clickdistfromtargetcenterx) ~ ageinyears  + targetcentralityx + touchscreen + (trialnr|subjid), 
-                              data   = mdata, 
-                              family = Gamma(link = "log"),
-                              warmup = 1000, 
-                              iter   = 4000, 
-                              chains = 4, 
-                              cores  = 4)%>%
-  add_criterion(., c("waic","loo"))
+
+```
+```{r}
+ps <- bm_screen%>%posterior_samples()%>%
+  select(starts_with("r_community"))%>%
+  pivot_longer(cols = everything(), names_to = "param", values_to = "value")%>%
+  filter(grepl("Intercept", param))
+
+ggplot(ps,aes(y = param, x = value)) +
+ stat_halfeye(alpha = .7, .width = c(.95, .80)) +
+    labs(x = "Posterior estimate", y ="")+
+  guides(fill = "none")+
+  #geom_vline(xintercept = 0, linetype = "dashed") +
+  xlim(-0.2, 0.5)+
+  theme_minimal()
 ```
 
 
