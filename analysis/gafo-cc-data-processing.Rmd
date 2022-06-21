@@ -387,6 +387,12 @@ tidy_data_zambia <- raw_data_zambia %>%
   select(subjID, population, trialType, trialNr, targetPosition, targetCentralityX, clickDistFromTargetCenterX)
 ```
 
+```{r}
+tidy_data_zambia%>%
+  summarise(n = n_distinct(subjID))
+```
+
+
 ```{r demographics}
 raw_demographics_zambia <- bind_rows(
   read_ods("../../../../../Cloud/QuantEx/Gafo-cc/data/zambia/gafo-cc-sambia-participants.ods", sheet = 1)
@@ -414,7 +420,7 @@ data_zambia <- tidy_demographics_zambia%>%
 ```{r}
 
 data <- bind_rows(
-  data_namibia,
+  data_namibia%>%rename(younger_children = youngerchildren),
   data_leipzig,
   data_nigeria,
   data_zambia
@@ -427,6 +433,8 @@ data%>%
   group_by(community)%>%
   summarise(n= n_distinct(subjid))
 
+
+data_nigeria$younger_children
 ```
 
 ```{r}

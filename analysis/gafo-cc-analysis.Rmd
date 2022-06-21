@@ -20,15 +20,113 @@ mdata <- read_csv("../data/gafo-cc-clean-data.csv")%>%
          trialnr = scale(trialnr),
          children = scale(children),
          household = scale(household),
-         youngerchildren = scale(youngerchildren),
+         younger_children = scale(younger_children),
          touchscreen = factor(touchscreen),
-        screen = factor(screen))
+        screen = factor(screen))%>%
+  filter(community == "leipzig" |community == "akure")
 
-unique(mdata$community)
+
+mdata%>%
+  ggplot(aes(x = abs(clickdistfromtargetcenterx)))+
+  geom_density()
+
+c(
+  lower = exp(4 - 2 * 1.75),
+  higher = exp(4 + 2 * 1.75)
+)
+
 ```
 
 ```{r}
-bm_base <- brm(abs(clickdistfromtargetcenterx) ~ ageinyears  + targetcentralityx + (trialnr|subjid) + (1|community), 
+bm_gam <- brm(abs(clickdistfromtargetcenterx) ~ 1, 
+                              data   = mdata, 
+                              family = Gamma(link = "log"),
+                              warmup = 1000, 
+                              iter   = 4000, 
+                              chains = 4, 
+                              cores  = 4)%>%
+  add_criterion(., c("waic","loo"))
+
+bm_log <- brm(abs(clickdistfromtargetcenterx) ~ 1, 
+                              data   = mdata, 
+                              family = lognormal(),
+                              warmup = 1000, 
+                              iter   = 4000, 
+                              chains = 4, 
+                              cores  = 4)%>%
+  add_criterion(., c("waic","loo"))
+
+bm_slog <- brm(abs(clickdistfromtargetcenterx) ~ 1, 
+                              data   = mdata, 
+                              family = shifted_lognormal(),
+                              warmup = 1000, 
+                              iter   = 4000, 
+                              chains = 4, 
+                              cores  = 4)%>%
+  add_criterion(., c("waic","loo"))
+
+bm_exg<- brm(abs(clickdistfromtargetcenterx) ~ 1, 
+                              data   = mdata, 
+                              family = exgaussian(),
+                              warmup = 1000, 
+                              iter   = 4000, 
+                              chains = 4, 
+                              cores  = 4)%>%
+  add_criterion(., c("waic","loo"))
+
+bm_wei<- brm(abs(clickdistfromtargetcenterx) ~ 1, 
+                              data   = mdata, 
+                              family = weibull(),
+                              warmup = 1000, 
+                              iter   = 4000, 
+                              chains = 4, 
+                              cores  = 4)%>%
+  add_criterion(., c("waic","loo"))
+
+
+loo_compare(bm_gam, bm_log,bm_slog, bm_exg,bm_wei)%>%as_tibble(rownames = "model")
+
+pp_check(bm_gam)+xlim(0,3000)
+pp_check(bm_log)+xlim(0,3000)
+pp_check(bm_slog)+xlim(0,3000)
+pp_check(bm_exg)+xlim(0,3000)
+pp_check(bm_wei)+xlim(0,3000)
+```
+
+```{r}
+bm_base_gam <- brm(abs(clickdistfromtargetcenterx) ~ targetcentralityx + (trialnr|subjid) + (0+ageinyears|community), 
+                              data   = mdata, 
+                              family = Gamma(link = "log"),
+                              warmup = 2000, 
+                              iter   = 5000,
+                   control = list(adapt_delta = 0.95),
+                              chains = 4, 
+                              cores  = 4)%>%
+  add_criterion(., c("waic","loo"))
+
+bm_base_wei <- brm(abs(clickdistfromtargetcenterx) ~ targetcentralityx + (trialnr|subjid) + (0+ageinyears|community), 
+                              data   = mdata, 
+                              family = weibull(),
+                              warmup = 2000, 
+                              iter   = 5000, 
+                   control = list(adapt_delta = 0.95),
+                              chains = 4, 
+                              cores  = 4)%>%
+  add_criterion(., c("waic","loo"))
+
+loo_compare(bm_base_gam,bm_base_wei)%>%as_tibble(rownames = "model")
+
+pp_check(bm_base_gam)+xlim(0,3000)
+pp_check(bm_base_wei)+xlim(0,3000)
+
+
+
+```
+
+
+
+```{r}
+bm_base <- brm(abs(clickdistfromtargetcenterx) ~ ageinyears  + targetcentralityx + (trialnr|subjid) + (ageinyears|community), 
                               data   = mdata, 
                               family = Gamma(link = "log"),
                               warmup = 1000, 
@@ -78,7 +176,7 @@ ggplot(ps,aes(y = param, x = value)) +
 
 ```{r}
 bm_screen <- brm(abs(clickdistfromtargetcenterx) ~ ageinyears  + targetcentralityx  + (1|subjid) + (screen + children + household|community), 
-                              data   = mdata%>%filter(community != "chimfunshi_kumwenda"), 
+                              data   = mdata, 
                               family = Gamma(link = "log"),
                               warmup = 1000, 
                               iter   = 4000, 

@@ -19,6 +19,9 @@ data <- read_csv("../data/gafo-cc-clean-data.csv")
 data%>%
   group_by(community)%>%
   summarise(n= n_distinct(subjid))
+
+data%>%
+  summarise(n= n_distinct(subjid))
 ```
 
 
@@ -40,19 +43,49 @@ data%>%
 
 
 ```{r}
+random <- tibble()
+
+for (j in 1:100) {
+
+for (i in 1:960) {
+ 
+  chance = abs(i + sample(-960:960,1))
+  
+  random <- bind_rows(
+    random,
+    tibble(location = i, 
+           iter = j,
+           lower = chance, 
+           upper = -chance)
+  )
+}
+  
+}
+
+chance <- random%>%
+  group_by(location)%>%
+  summarise(lower = mean(lower),
+            upper = mean(upper))
+  
+
 data%>%
   group_by(targetcentralityx)%>%
-  #summarise(impr = mean(clickdistfromtargetcenterx))%>%
   mutate(chance_upper = (targetcentralityx + 960)/2,
-         chance_lower = -((targetcentralityx + 960)/2))%>%
-  ggplot(aes(x = targetcentralityx, y = clickdistfromtargetcenterx))+
+         chance_lower = -((targetcentralityx + 960)/2),
+         center_lower = -targetcentralityx,
+         center_upper = targetcentralityx)%>%
+  ggplot(aes(x = targetcentralityx, y = clickdistfromtargetcenterx, col = community))+
   geom_hline(yintercept = 0, lty = 3, alpha = 0.75)+
-  #geom_line(aes(x = targetcentralityx, y = chance_upper), lty = 3, alpha = .75, col = "firebrick")+
-  #geom_line(aes(x = targetcentralityx, y = chance_lower), lty = 3, alpha = .75, col = "firebrick")+
-  geom_point(pch = 1, alpha = 0.75)+
+  geom_line(aes(x = targetcentralityx, y = center_upper), lty = 1, alpha = .75, col = "firebrick")+
+  geom_line(aes(x = targetcentralityx, y = center_lower), lty = 1, alpha = .75, col = "firebrick")+
+  geom_line(aes(x = targetcentralityx, y = chance_upper), lty = 3, alpha = .75, col = "firebrick")+
+  geom_line(aes(x = targetcentralityx, y = chance_lower), lty = 3, alpha = .75, col = "firebrick")+
+  geom_point(pch = 1, alpha = 0.5)+
+  scale_color_colorblind()+
   #ylim(-1500,1500)+
   theme_minimal()
   
+range(data$targetcentralityx)
 ```
 
 ```{r}
@@ -70,3 +103,48 @@ ggplot(ptp, aes(x = targetposition, y = mean, col = community))+
   theme_minimal()
 ```
 
+```{r}
+pscreen1 <- data%>%
+  mutate(screen = factor(screen),
+         touchscreen = factor(touchscreen))%>%
+  pivot_longer(cols = c(screen, touchscreen), names_to = "predictor", values_to = "value")%>%
+  group_by(community, subjid, predictor, value)%>%
+  summarise(mean= mean(abs(clickdistfromtargetcenterx)))
+
+pscreen2 <- data%>%
+  mutate(screen = factor(screen),
+         touchscreen = factor(touchscreen))%>%
+  pivot_longer(cols = c(screen, touchscreen), names_to = "predictor", values_to = "value")%>%
+  group_by(community, predictor, value)%>%
+  tidyboot_mean(col= abs(clickdistfromtargetcenterx))
+
+
+ggplot(pscreen%>%filter(!is.na(value)), aes(x = value, y = mean, col = community))+
+  geom_point(data = pscreen1%>%filter(!is.na(value)), aes(x = value, y = mean, col = community), pch = 1, alpha = .5, position = position_dodge(width = .5))+
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), alpha = 0.75, position = position_dodge(width = .5))+
+  facet_grid(~predictor, scales = "free_x")+
+  scale_x_discrete(labels = c("no", "yes"))+
+  scale_color_colorblind()+
+  #ylim(0,1000)+
+  theme_few()
+```
+
+```{r}
+pred <- data%>%
+  group_by(community, subjid, household, children, younger_children)%>%
+  summarise(mean= mean(abs(clickdistfromtargetcenterx)))%>%
+  pivot_longer(cols = c(household, children, younger_children), names_to = "predictor", values_to = "value")%>%
+  group_by(community,predictor)%>%
+  mutate(value = scale(value))
+  
+
+
+ggplot(pred, aes(x = value, y = mean, col = community))+
+  geom_point(pch = 1)+
+  geom_smooth(method = "glm")+
+  facet_grid(~predictor, scales = "free_x")+
+  stat_cor()+
+  scale_color_colorblind()+
+  ylim(0,1000)+
+  theme_minimal()
+```
