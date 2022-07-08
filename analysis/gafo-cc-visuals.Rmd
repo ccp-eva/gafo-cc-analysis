@@ -33,41 +33,20 @@ data%>%
   ggplot(aes(x = ageinyears, y = impr, col = community))+
   geom_point(pch = 1)+
   geom_smooth(method = "glm")+
-  scale_color_colorblind()+
+  scale_color_colorblind(name = "", labels = c("Nigeria", "Namibia", "Sambia", "Namibia", "Germany"))+
   ylim(0,1000)+
   labs(x = "Age (in years)", y ="Imprecision")+
   scale_x_continuous(breaks = 2:8)+
-  theme_minimal()
+  theme_minimal()+
+  theme(legend.position = "bottom")
   
+```
+```{r}
+ggsave("../visuals/dev_site.png", width = 5, height = 6, bg = "white")
 ```
 
 
 ```{r}
-random <- tibble()
-
-for (j in 1:100) {
-
-for (i in 1:960) {
- 
-  chance = abs(i + sample(-960:960,1))
-  
-  random <- bind_rows(
-    random,
-    tibble(location = i, 
-           iter = j,
-           lower = chance, 
-           upper = -chance)
-  )
-}
-  
-}
-
-chance <- random%>%
-  group_by(location)%>%
-  summarise(lower = mean(lower),
-            upper = mean(upper))
-  
-
 data%>%
   group_by(targetcentralityx)%>%
   mutate(chance_upper = (targetcentralityx + 960)/2,
@@ -84,8 +63,7 @@ data%>%
   scale_color_colorblind()+
   #ylim(-1500,1500)+
   theme_minimal()
-  
-range(data$targetcentralityx)
+
 ```
 
 ```{r}

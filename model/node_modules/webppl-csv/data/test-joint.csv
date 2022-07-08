@@ -1,0 +1,5 @@
+a,b,prob
+false,false,0.04999999999999999
+false,true,0.45
+true,false,0.04999999999999999
+true,true,0.45
