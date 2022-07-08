@@ -1,0 +1,255 @@
+// example call: time webppl gafo-cc-model.wppl --require webppl-json --require webppl-sample-writer 1
+
+var chain = last(process.argv)
+
+// helper functions
+
+var foreach = function(fn, lst) {
+    var foreach_ = function(i) {
+        if (i < lst.length) {
+            fn(lst[i]);
+            foreach_(i + 1);
+        }
+    };
+    foreach_(0);
+};
+
+var samplePosGaussian = function(mu, sigma) {
+    var x = sample(Gaussian({ mu: mu, sigma: sigma }))
+    return x < 0 ? samplePosGaussian(mu, sigma) : x
+};
+
+var logistic = function(x) { 1 / (1 + Math.exp(-x)) }
+
+var multiply = function(x, y) { return x * y; };
+
+var levels = function(df, label) {
+    return _.uniq(_.map(df, label));
+}
+
+var deg2rad = function(x) {
+    (x * Math.pi) / (180)
+}
+
+
+// data
+
+var data = json.read('model_data/gafo-cc-model-data.json');
+
+//var trialtypes = levels(data, "trialtype")
+
+var communities = levels(data, "community")
+
+//display(communities)
+
+var maxcoord = 1920
+
+var granularity = 20
+
+var grancoord = maxcoord / granularity
+
+var cords = _.range(0, grancoord)
+
+
+var samplecoord = map(function(x) {
+    return x * granularity;
+}, cords)
+
+var centerbias = json.read('model_data/centerBias_hedge.json');
+
+var coordinates = _.range(0, 1920)
+
+var model = function() {
+
+    foreach(function(community) {
+
+        var infint = gaussianDrift({ mu: 0, sigma: 1, width: 0.1 })
+        var infslope = gaussianDrift({ mu: -1, sigma: 1, width: 0.1 })
+        var sdinfsigma = uniformDrift({ a: 0, b: 1, width: 0.1 })
+
+        var guessint = gaussianDrift({ mu: 0, sigma: 1.5, width: 0.1 })
+        var guessslope = gaussianDrift({ mu: -1, sigma: 1.5, width: 0.1 })
+        var guesssigma = uniformDrift({ a: 0, b: 1, width: 0.1 })
+
+        var biasint = gaussianDrift({ mu: 0, sigma: 1.5, width: 0.1 })
+        var biasslope = gaussianDrift({ mu: 0, sigma: 1.5, width: 0.1 })
+
+        var comdata = _.filter(data, { community: community })
+
+        //display(comdata)
+
+        var subjects = levels(comdata, "subjid")
+
+        //display(subjects)
+
+        foreach(function(subjid) {
+
+            //var guess = uniformDrift({a: 0, b:1, width: 0.1})
+
+            var iddata = _.filter(comdata, { subjid: subjid })
+
+            var age = iddata[0].agecentered
+
+            //display("id: " + subjid + " - " + "age:" + age)
+
+            // var sdinfage = infint + infslope * age
+            // var sdinfsamp = gaussiandrift({ mu: sdinfage, sigma: sdinfsigma, width: 0.1 })
+            // var sdinfid = logistic(sdinfsamp)
+
+            // var guessage = guessint + guessslope * age
+            // var guessid = gaussiandrift({ mu: guessage, sigma: guesssigma, width: 0.1 })
+            // var guess = logistic(guessid)
+
+            // var biasage = biasint + biasslope * age
+            // var biasid = gaussiandrift({ mu: biasage, sigma: biassigma, width: 0.1 })
+            // var bias = logistic(biasid)
+
+            var sdinfage = infint + infslope * age
+            var sdinfsamp = gaussianDrift({ mu: sdinfage, sigma: sdinfsigma, width: 0.1 })
+            var sdinfid = logistic(sdinfsamp)
+
+            var ageguess = gaussianDrift({ mu: age, sigma: guesssigma, width: 0.1 })
+            var guessage = guessint + guessslope * ageguess
+            var guess = logistic(guessage)
+
+            var biasage = biasint + biasslope * age
+            var bias = logistic(biasage)
+
+            //display(iddata)
+
+            foreach(function(row) {
+
+
+                //var click = row.clickscaledx
+                var click = Math.round(row.clickscaledx)
+                    //display(click)
+                var targetposition = row.targetposition
+                var targetcenterx = row.targetcenterx
+                var targetcentery = row.targetcentery
+                var eyecenterlx = row.eyecenterleftx
+                var eyecenterly = row.eyecenterlefty
+                var eyecenterrx = row.eyecenterrightx
+                var eyecenterry = row.eyecenterrighty
+                var pupillx = row.pupilfinalleftx
+                var pupilly = row.pupilfinallefty
+                var pupilrx = row.pupilfinalrightx
+                var pupilry = row.pupilfinalrighty
+
+                var talphal = eyecenterlx > pupillx ?
+                    Math.atan(Math.abs(eyecenterlx - pupillx) / (eyecenterly - pupilly)) :
+                    (-Math.atan(Math.abs(eyecenterlx - pupillx) / (eyecenterly - pupilly)))
+
+                var talphar = eyecenterrx > pupilrx ?
+                    Math.atan(Math.abs(eyecenterrx - pupilrx) / (eyecenterry - pupilry)) :
+                    (-Math.atan(Math.abs(eyecenterrx - pupilrx) / (eyecenterry - pupilry)))
+
+                //var  noisyalphal = gaussian(talphal, sdper)
+
+                //var  noisyalphar = gaussian(talphar, sdper)
+
+
+                //display([talphal,talphar])
+
+                var ldist = map(function(coord) {
+
+                    var betal = eyecenterlx > coord ?
+                        Math.atan(Math.abs(eyecenterlx - coord) / (eyecenterly - targetcentery)) :
+                        (-Math.atan(Math.abs(eyecenterlx - coord) / (eyecenterly - targetcentery)))
+
+                    //var betaldist = Gaussian({mu:noisyalphal,sigma:sdinf}).score(betal)
+                    var betaldist = Gaussian({ mu: talphal, sigma: sdinfid }).score(betal)
+
+                    return betaldist
+
+                }, samplecoord)
+
+                var rdist = map(function(coord) {
+
+                    var betar = eyecenterrx > coord ?
+                        Math.atan(Math.abs(eyecenterrx - coord) / (eyecenterry - targetcentery)) :
+                        (-Math.atan(Math.abs(eyecenterrx - coord) / (eyecenterry - targetcentery)))
+
+                    //var betardist = Gaussian({mu:noisyalphar,sigma:sdinf}).score(betar)
+                    var betardist = Gaussian({ mu: talphar, sigma: sdinfid }).score(betar)
+
+                    return betardist
+
+                }, samplecoord)
+
+
+                var lnormdist = map(function(x) {
+                    var lnormdist = Math.exp(x - util.logsumexp(ldist))
+                    return lnormdist
+                }, ldist)
+
+
+                var rnormdist = map(function(x) {
+                    var rnormdist = Math.exp(x - util.logsumexp(rdist))
+                    return rnormdist
+                }, rdist)
+
+                var xdist = map2(multiply, lnormdist, rnormdist)
+
+                var xcoorddist = map(function(x) {
+                    return repeat(granularity, function() { return x; })
+                }, xdist)
+
+                var gazepred = Categorical({ ps: xcoorddist.flat(), vs: coordinates })
+
+                var pred = flip(guess) ? flip(bias) ? Categorical({ ps: centerbias, vs: coordinates }) : Uniform({ a: 0, b: 1920 }) : gazepred
+
+                observe(pred, click)
+
+                //var predsample = sample(pred)
+
+                //query.add(["inference","prediction",targetposition,targetcenterx], sample(pred))
+                //display(guess)
+
+                //},testdata)
+            }, iddata)
+
+            //query.add(["sd","perceptual"], sdper)
+            query.add([chain, "inference", "sd", "id", subjid, community], sdinfid)
+            query.add([chain, "guessing ", "guess", "id", subjid, community], guess)
+                //query.add([chain, "bias ", "bias", "id", subjid], bias)
+                //query.add(["sd","motor",], sdmot)
+
+        }, subjects)
+
+
+
+
+        query.add([chain, "inference", "sigma", "global", "na", community], sdinfsigma)
+        query.add([chain, "inference", "intercept", "global", "na", community], infint)
+        query.add([chain, "inference", "slope", "global", "na", community], infslope)
+
+        query.add([chain, "guessing", "sigma", "global", "na", community], guesssigma)
+        query.add([chain, "guessing", "intercept", "global", "na", community], guessint)
+        query.add([chain, "guessing", "slope", "global", "na", community], guessslope)
+
+        //query.add([chain, "bias", "sigma", "global", "na"], biassigma)
+        query.add([chain, "bias", "intercept", "global", "na", community], biasint)
+        query.add([chain, "bias", "slope", "global", "na", community], biasslope)
+
+
+
+    }, communities)
+
+    return query
+
+}
+
+var header = "iteration,chain,parameter,type,scope,id, community,value,score"
+
+var output_file = 'output/gafo-cc_gran_' + granularity + '_chain' + chain + '.csv'
+var callback = webpplSampleWriter.streamQueryCSV(output_file, header);
+
+var output = Infer({
+    model,
+    samples: 50000,
+    burn: 250000,
+    lag: 9,
+    method: 'MCMC',
+    verbose: T,
+    callbacks: [callback]
+});

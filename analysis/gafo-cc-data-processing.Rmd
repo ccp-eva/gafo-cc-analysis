@@ -80,8 +80,7 @@ tidy_data_namibia <- raw_data_namibia %>%
     datacollection = as.factor("in-person - supervised"), 
     sample = as.factor("na"),
     studytype = as.factor("vali"), 
-  ) %>%
-  select(subjID, population, trialType, trialNr, targetPosition, targetCentralityX, clickDistFromTargetCenterX)
+  ) #%>% select(subjID, population, trialType, trialNr, targetPosition, targetCentralityX, clickDistFromTargetCenterX)
 ```
 
 ```{r demographics}
@@ -179,8 +178,7 @@ tidy_data_leipzig <- raw_data_leipzig %>%
          subjID = ifelse(subjID == "R9V7qHrx", "R9v7qHrx", subjID),
          subjID = ifelse(subjID == "QZJvSwfQ","QZJvSwftQ",  subjID),
          subjID = ifelse(subjID == "TSPeVFYf", "tSPeVFYf", subjID),
-         subjID =as.factor(subjID))%>%
-  select(subjID, population, trialType, trialNr, targetPosition, targetCentralityX, clickDistFromTargetCenterX)
+         subjID =as.factor(subjID))#%>%select(subjID, population, trialType, trialNr, targetPosition, targetCentralityX, clickDistFromTargetCenterX)
 
 
 #unique(tidy_data_leipzig$subjID)
@@ -289,8 +287,7 @@ tidy_data_nigeria <- raw_data_nigeria %>%
     studytype = as.factor("vali"),
     subjID = as.character(subjID),
     subjID = ifelse(subjID == "nlger002", "niger002", subjID)
-  ) %>%
-  select(subjID, population, trialType, trialNr, targetPosition, targetCentralityX, clickDistFromTargetCenterX)
+  ) #%>% select(subjID, population, trialType, trialNr, targetPosition, targetCentralityX, clickDistFromTargetCenterX)
 ```
 
 ```{r demographics}
@@ -383,8 +380,7 @@ tidy_data_zambia <- raw_data_zambia %>%
     datacollection = as.factor("in-person - supervised"), 
     sample = as.factor("na"),
     studytype = as.factor("vali")
-  ) %>%
-  select(subjID, population, trialType, trialNr, targetPosition, targetCentralityX, clickDistFromTargetCenterX)
+  ) #%>%select(subjID, population, trialType, trialNr, targetPosition, targetCentralityX, clickDistFromTargetCenterX)
 ```
 
 ```{r}
@@ -433,11 +429,28 @@ data%>%
   group_by(community)%>%
   summarise(n= n_distinct(subjid))
 
-
-data_nigeria$younger_children
 ```
 
 ```{r}
 write_csv(data,"../data/gafo-cc-clean-data.csv")
+```
+
+# Data for model 
+
+```{r}
+mdata <- data%>%
+  filter(community == "leipzig" | community == "akure",
+         voiceover == F)%>%
+  mutate(agecentered = ageinyears - min(ageinyears))%>%
+  select(-c(screen,touchscreen.x, household, children, younger_children, sex,ageinyears, wrongareaclick, earlyclick, durationanimationballoontotal, durationanimationcomplete, responsetime, clientscreenwidth, clientscreenheight, clientscreenscaling, clickoriginalx, clickoriginaly, hitbbtargetx, hitbbtargety, clickdistfromtargetbboxx, clickedarea, studyversion, boxesnr,population, inhouse, touchscreen.y , os, mobile, browser, browserversion, safari, iossafari,target, voiceover, epoch, timestamp, inwardclick, boxwidth,boxborderleft, boxborderright , correctbox, datacollection, sample, studytype, comment, status))
+
+write(toJSON(mdata), file = "../model/model_data/gafo-cc-model-data.json")
+
+mdata%>%
+  filter(is.na(agecentered))
+
+mdata%>%
+  filter(trialnr == 5)%>%
+  select(subjid,agecentered)
 ```
 
