@@ -45,11 +45,11 @@ model <- rbindlist(
   list(
      fread("../model/output/gafo-cc-hier_gran_20_chain1.csv"),
      fread("../model/output/gafo-cc-hier_gran_20_chain2.csv")
-    ), use.names=TRUE)#%>%saveRDS("../models/output/model_kids_box.rds")
+    ), use.names=TRUE)
 
 
 
-# saveRDS(model, "../model/output/gafo-cc-model.rds")
+saveRDS(model, "../model/output/gafo-cc-model_hier.rds")
 # 
 # model <- readRDS("../model/output/gafo-cc-model.rds")
 ```
