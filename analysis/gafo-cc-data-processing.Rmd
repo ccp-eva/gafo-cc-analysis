@@ -81,12 +81,13 @@ tidy_data_namibia <- raw_data_namibia %>%
     sample = as.factor("na"),
     studytype = as.factor("vali"), 
   ) #%>% select(subjID, population, trialType, trialNr, targetPosition, targetCentralityX, clickDistFromTargetCenterX)
+
 ```
 
 ```{r demographics}
 raw_demographics_namibia <- bind_rows(
-  read_xlsx("../../raw_data/gafo-cc/namibia/Data FarmSix 2022.xlsx", sheet = 1)%>%mutate(ID = paste0("H",str_pad(ID, 7, pad = "0"))),
-  read_xlsx("../../raw_data/gafo-cc/namibia/Data Khwe 2022.xlsx", sheet = 1)%>%mutate(ID = paste0("K",str_pad(ID, 7, pad = "0")))%>%rename(sex = `...7`)
+  read_xlsx("../../raw_data/gafo-cc/namibia/GaFo Data Haikom 2022.xlsx", sheet = 1)%>%mutate(ID = paste0("H",str_pad(ID, 7, pad = "0")))%>%mutate(site = Community, Community = "hai||om"),
+  read_xlsx("../../raw_data/gafo-cc/namibia/Data Khwe 2022.xlsx", sheet = 1)%>%mutate(ID = paste0("K",str_pad(ID, 7, pad = "0")))%>%rename(Sex = `...7`)%>%mutate(site = Community, Community = "khwe")
   )
 
 tidy_demographics_namibia <- raw_demographics_namibia %>% 
@@ -97,6 +98,7 @@ tidy_demographics_namibia <- raw_demographics_namibia %>%
   select(-c(`First Name`, Name, BirthDate, TestDate, Comment))%>% 
   rename_all(tolower)%>%
   filter(!is.na(ageinyears))
+
 ```
 
 ```{r}
@@ -409,7 +411,7 @@ tidy_demographics_zambia <- raw_demographics_zambia %>%
 ```{r}
 data_zambia <- tidy_demographics_zambia%>%
   left_join(tidy_data_zambia%>%rename_all(tolower),by = c("subjid"))%>%
-  mutate(community = "chimfunshi_kumwenda")
+  mutate(community = "chimfunshi")
 ```
 
 # Merge
