@@ -34,6 +34,7 @@ hdi_lower<- function(s){
 
 ```{r}
 data <- read_csv("../data/gafo-cc-clean-data.csv")
+
 ```
 
 ## Click distribution based on performance
@@ -44,7 +45,13 @@ data <- read_csv("../data/gafo-cc-clean-data.csv")
 model <- rbindlist(
   list(
      fread("../model/output/gafo-cc_gran_20_chain1.csv"),
-     fread("../model/output/gafo-cc_gran_20_chain2.csv")
+     fread("../model/output/gafo-cc_gran_20_chain2.csv"),
+     fread("../model/output/gafo-cc_gran_20_chain3.csv"),
+     fread("../model/output/gafo-cc_gran_20_chain4.csv"),
+     fread("../model/output/gafo-cc_gran_20_chain5.csv"),
+     fread("../model/output/gafo-cc_gran_20_chain6.csv"),
+     fread("../model/output/gafo-cc_gran_20_chain7.csv"),
+     fread("../model/output/gafo-cc_gran_20_chain8.csv")
     ), use.names=TRUE)#%>%saveRDS("../models/output/model_kids_box.rds")
 
 
@@ -64,7 +71,7 @@ model%>%
          parameter == "guessing")%>%
 ggplot(aes(x= value, fill = factor(chain)))+
   geom_density(alpha = .5)+
-  facet_grid(community~type, scales = "free_y")+
+  facet_wrap(community~type, scales = "free_y", nrow = 2)+
   theme_few()+
   scale_fill_viridis_d()
 ```
@@ -104,7 +111,7 @@ guess_map <- model%>%
   group_by(community, type)%>%
   summarise(mode = estimate_mode(value))%>%
   pivot_wider(names_from = "type", values_from = "mode")%>%
-  expand_grid(age = seq(0,3, by = 0.1))%>%
+  expand_grid(age = seq(0,5.5, by = 0.1))%>%
   mutate(guess = plogis(intercept + slope * age))
 
 
@@ -112,8 +119,8 @@ guess_samp <- model%>%
   filter(scope == "global",
          parameter == "guessing")%>%
   pivot_wider(names_from = "type", values_from = "value")%>%
-  #sample_n(1000)%>%
-  expand_grid(age = seq(0,3, by = 0.1))%>%
+  sample_n(1000)%>%
+  expand_grid(age = seq(0,5.5, by = 0.1))%>%
   mutate(guess = plogis(intercept + slope * age))
 
 # guess_samp <- model%>%
@@ -128,14 +135,14 @@ guess_samp <- model%>%
 #             lci = hdi_lower(sd_inf))
 
 ggplot()+
-  geom_line(data = guess_samp, aes(x = age+3, y = guess, group = paste(chain,iteration)), alpha = .01)+
+  geom_line(data = guess_samp, aes(x = age+2.5, y = guess, group = paste(chain,iteration)), alpha = .01)+
   #geom_line(data = inf_samp, aes(x = age+3, y = uci), lty = 2)+
   #geom_line(data = inf_samp, aes(x = age+3, y = lci), lty = 2)+
-  geom_line(data = guess_map, aes(x = age+3, y = guess), col = "firebrick")+
+  geom_line(data = guess_map, aes(x = age+2.5, y = guess), col = "firebrick")+
   facet_grid(~community)+
-  xlim(3,6)+
+  #xlim(2.5,8)+
   xlab("Age")+
-  ylim(0,1)+
+  #ylim(0,1)+
   theme_minimal()
 ```
 
@@ -147,7 +154,7 @@ bias_map <- model%>%
   group_by(community,type)%>%
   summarise(mode = estimate_mode(value))%>%
   pivot_wider(names_from = "type", values_from = "mode")%>%
-  expand_grid(age = seq(0,3, by = 0.1))%>%
+  expand_grid(age = seq(0,5.5, by = 0.1))%>%
   mutate(bias = plogis(intercept + slope * age))
 
 
@@ -155,8 +162,8 @@ bias_samp <- model%>%
   filter(scope == "global",
          parameter == "bias")%>%
   pivot_wider(names_from = "type", values_from = "value")%>%
-  #sample_n(1000)%>%
-  expand_grid(age = seq(0,3, by = 0.1))%>%
+  sample_n(1000)%>%
+  expand_grid(age = seq(0,5.5, by = 0.1))%>%
   mutate(bias = plogis(intercept + slope * age))
 
 # bias_samp <- model%>%
@@ -171,14 +178,14 @@ bias_samp <- model%>%
 #             lci = hdi_lower(sd_inf))
 
 ggplot()+
-  geom_line(data = bias_samp, aes(x = age+3, y = bias, group = paste(chain,iteration)), alpha = .01)+
+  geom_line(data = bias_samp, aes(x = age+2.5, y = bias, group = paste(chain,iteration)), alpha = .01)+
   #geom_line(data = inf_samp, aes(x = age+3, y = uci), lty = 2)+
   #geom_line(data = inf_samp, aes(x = age+3, y = lci), lty = 2)+
-  geom_line(data = bias_map, aes(x = age+3, y = bias), col = "firebrick")+
-  xlim(3,6)+
+  geom_line(data = bias_map, aes(x = age+2.5, y = bias), col = "firebrick")+
+  #xlim(3,6)+
   facet_grid(~community)+
   xlab("Age")+
-  ylim(0,1)+
+  #ylim(0,1)+
   theme_minimal()
 ```
 
@@ -192,7 +199,7 @@ inf_map <- model%>%
   group_by(community,type)%>%
   summarise(mode = estimate_mode(value))%>%
   pivot_wider(names_from = "type", values_from = "mode")%>%
-  expand_grid(age = seq(0,3, by = 0.1))%>%
+  expand_grid(age = seq(0,5.5, by = 0.1))%>%
   mutate(sd_inf = plogis(intercept + slope * age))
 
 
@@ -201,8 +208,8 @@ inf_samp <- model%>%
          parameter == "inference")%>%
   pivot_wider(names_from = "type", values_from = "value")%>%
   group_by(chain)%>%
-  #sample_n(1000)%>%
-  expand_grid(age = seq(0,3, by = 0.1))%>%
+  sample_n(1000)%>%
+  expand_grid(age = seq(0,5.5, by = 0.1))%>%
   mutate(sd_inf = plogis(intercept + slope * age))
 
 # inf_samp <- model%>%
@@ -217,14 +224,14 @@ inf_samp <- model%>%
 #             lci = hdi_lower(sd_inf))
 
 ggplot()+
-  geom_line(data = inf_samp, aes(x = age+3, y = sd_inf, group = paste(chain,iteration)), alpha = .01, size = 0.1)+
+  geom_line(data = inf_samp, aes(x = age+2.5, y = sd_inf, group = paste(chain,iteration)), alpha = .01, size = 0.1)+
    # geom_line(data = inf_samp, aes(x = age+3, y = uci), lty = 2)+
    # geom_line(data = inf_samp, aes(x = age+3, y = lci), lty = 2)+
-  geom_line(data = inf_map, aes(x = age+3, y = sd_inf), col = "firebrick")+
-  xlim(3,6)+
+  geom_line(data = inf_map, aes(x = age+2.5, y = sd_inf), col = "firebrick")+
+  #xlim(3,6)+
   facet_grid(~community)+
   labs(x = "Age", y = "Gaze inference precision (across individuals)")+
-  ylim(0,1)+
+  #ylim(0,1)+
   theme_minimal()
 ```
 
@@ -236,7 +243,9 @@ ggsave("../graphs/sd_dev.png", width = 8, height = 4, scale = 1, bg = "white")
 ```{r}
 alt <- model%>%
   filter(scope == "global", 
-         parameter != "inference")%>%
+         parameter != "inference",
+         chain != 7,
+         chain != 2)%>%
   group_by(community,parameter,type)%>%
   summarise(mode = estimate_mode(value))%>%
   filter(type != "sigma")%>%
@@ -273,7 +282,7 @@ model%>%
   ggplot(aes(x = value, fill = factor(chain)))+
   geom_density(alpha = .25)+
   facet_wrap(~id, scales = "free")+
-  theme_minimal()+
+  theme_void()+
   scale_fill_colorblind()
 ```
 
