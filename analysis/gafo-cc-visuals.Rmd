@@ -33,7 +33,7 @@ data%>%
   ggplot(aes(x = ageinyears, y = impr, col = community))+
   geom_point(pch = 1)+
   geom_smooth(method = "glm")+
-  scale_color_colorblind(name = "", labels = c("Nigeria", "Namibia", "Sambia", "Namibia", "Germany"))+
+  scale_color_colorblind(name = "")+
   ylim(0,1000)+
   labs(x = "Age (in years)", y ="Imprecision")+
   scale_x_continuous(breaks = 2:8)+
