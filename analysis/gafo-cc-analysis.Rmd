@@ -30,11 +30,6 @@ mdata%>%
   ggplot(aes(x = abs(clickdistfromtargetcenterx)))+
   geom_density()
 
-c(
-  lower = exp(4 - 2 * 1.75),
-  higher = exp(4 + 2 * 1.75)
-)
-
 ```
 
 ```{r}
@@ -98,20 +93,20 @@ bm_base_gam <- brm(abs(clickdistfromtargetcenterx) ~ targetcentralityx + (trialn
                               data   = mdata, 
                               family = Gamma(link = "log"),
                               warmup = 2000, 
-                              iter   = 5000,
-                   control = list(adapt_delta = 0.95),
-                              chains = 4, 
-                              cores  = 4)%>%
+                              iter   = 4000,
+                   control = list(adapt_delta = 0.99),
+                              chains = 8, 
+                              cores  = 8)%>%
   add_criterion(., c("waic","loo"))
 
 bm_base_wei <- brm(abs(clickdistfromtargetcenterx) ~ targetcentralityx + (trialnr|subjid) + (0+ageinyears|community), 
                               data   = mdata, 
                               family = weibull(),
                               warmup = 2000, 
-                              iter   = 5000, 
+                              iter   = 4000, 
                    control = list(adapt_delta = 0.95),
-                              chains = 4, 
-                              cores  = 4)%>%
+                              chains = 8, 
+                              cores  = 8)%>%
   add_criterion(., c("waic","loo"))
 
 loo_compare(bm_base_gam,bm_base_wei)%>%as_tibble(rownames = "model")
@@ -119,10 +114,25 @@ loo_compare(bm_base_gam,bm_base_wei)%>%as_tibble(rownames = "model")
 pp_check(bm_base_gam)+xlim(0,3000)
 pp_check(bm_base_wei)+xlim(0,3000)
 
-
+plot(bm_base_wei)
 
 ```
 
+```{r}
+ps <- bm_base_wei%>%posterior_samples()%>%
+  select(starts_with("r_community"))%>%
+  pivot_longer(cols = everything(), names_to = "param", values_to = "value")%>%
+  filter(grepl("1", param))
+
+ggplot(ps,aes(y = param, x = value)) +
+ stat_halfeye(alpha = .7, .width = c(.95, .80)) +
+    labs(x = "Posterior estimate", y ="")+
+  guides(fill = "none")+
+  #geom_vline(xintercept = 0, linetype = "dashed") +
+  #xlim(-0.2, 0.5)+
+  theme_minimal()
+
+```
 
 
 ```{r}
