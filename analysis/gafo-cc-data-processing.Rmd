@@ -12,6 +12,7 @@ library(eeptools)
 library(lubridate) # for date handling
 library(readxl)
 library(readODS)
+library(truncnorm)
 
 options(scipen = 999)
 theme_set(theme_classic())
@@ -228,12 +229,12 @@ data_leipzig%>%
 
 ```{r read_data}
 # get all .json files
-files <- list.files("../../../../../Cloud/QuantEx/Gafo-cc/data/nigeria/JSONs/", pattern = "*.json",recursive = T)
+files <- list.files("../../../../../../Cloud/QuantEx/Gafo-cc/data/nigeria/JSONs/", pattern = "*.json",recursive = T)
 
 # convert json files to tibbles
 raw_data_nigeria <- tibble()
 for (f in files) {
-  jf <- paste("../../../../../Cloud/QuantEx/Gafo-cc/data/nigeria/JSONs/", f, sep = "")
+  jf <- paste("../../../../../../Cloud/QuantEx/Gafo-cc/data/nigeria/JSONs/", f, sep = "")
   jd <- jsonlite::fromJSON(paste(readLines(jf, warn = "FALSE"), collapse = ""))
   
   # needed because hedge trials have numbers, box trials have characters
@@ -294,8 +295,10 @@ tidy_data_nigeria <- raw_data_nigeria %>%
 
 ```{r demographics}
 raw_demographics_nigeria <- bind_rows(
-  read_xlsx("../../../../../Cloud/QuantEx/Gafo-cc/data/nigeria/gafo-cc-nigeria-participants.xlsx", sheet = 1)
+  read_xlsx("../../../../../../Cloud/QuantEx/Gafo-cc/data/nigeria/gafo-cc-nigeria-participants.xlsx", sheet = 1)
   )
+
+read_xlsx("../../../../../../Cloud/QuantEx/Gafo-cc/data/nigeria/gafo-cc-nigeria-participants.xlsx", sheet = 1)
 
 tidy_demographics_nigeria <- raw_demographics_nigeria %>% 
   filter(community!= "leipzig")%>%
@@ -454,5 +457,21 @@ mdata%>%
 mdata%>%
   filter(trialnr == 5)%>%
   select(subjid,agecentered)
+```
+
+```{r}
+mdata_small <- mdata%>%
+  filter(subjid %in% c("VcyYgFQx", "k1mQYc2K", "niger007","niger057"))
+  
+
+write(toJSON(mdata_small), file = "../model/model_data/gafo-cc-model-data-small.json")
+```
+
+```{r}
+prior <- dtruncnorm(seq(from = 0, to = 2900, by = 20), a = 1, b = 2920, mean = 1450, sd = 100)
+
+length(prior)
+
+write(toJSON(prior, digits = 4, use_signif = TRUE), file = "../model/model_data/centerBias_extended.json")
 ```
 
