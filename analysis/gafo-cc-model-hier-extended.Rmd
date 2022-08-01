@@ -44,13 +44,13 @@ data <- read_csv("../data/gafo-cc-clean-data.csv")
 model <- rbindlist(
   list(
      fread("../model/output/gafo-cc-hier_extended_gran_20_chain1.csv"),
-     fread("../model/output/gafo-cc-hier_extended_gran_20_chain2.csv"),
-     fread("../model/output/gafo-cc-hier_extended_gran_20_chain3.csv")
+     fread("../model/output/gafo-cc-hier_extended_gran_20_chain3.csv"),
+     fread("../model/output/gafo-cc-hier_extended_gran_20_chain6.csv")
     ), use.names=TRUE)
 
 
 
-saveRDS(model, "../model/output/gafo-cc-model_hier.rds")
+#saveRDS(model, "../model/output/gafo-cc-model_hier.rds")
 # 
 # model <- readRDS("../model/output/gafo-cc-model.rds")
 ```

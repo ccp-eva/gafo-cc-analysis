@@ -68,7 +68,9 @@ model <- rbindlist(
 ```{r}
 model%>%
   filter(scope == "global", 
-         parameter == "guessing")%>%
+         parameter == "guessing",
+         chain != 5,
+         chain != 6)%>%
 ggplot(aes(x= value, fill = factor(chain)))+
   geom_density(alpha = .5)+
   facet_wrap(community~type, scales = "free_y", nrow = 2)+
@@ -81,7 +83,8 @@ ggplot(aes(x= value, fill = factor(chain)))+
 ```{r}
 model%>%
   filter(
-         parameter == "bias")%>%
+         parameter == "bias",
+         chain != 5)%>%
 ggplot(aes(x= value, fill = factor(chain)))+
   geom_density(alpha = .5)+
   facet_grid(community~type)+
@@ -94,10 +97,12 @@ ggplot(aes(x= value, fill = factor(chain)))+
 ```{r}
 model%>%
   filter(scope == "global", 
-         parameter == "inference")%>%
+         parameter == "inference",
+         chain != 5,
+         chain != 4)%>%
 ggplot(aes(x= value, fill = factor(chain)))+
   geom_density(alpha = .5)+
-  facet_wrap(~type, scales = "free_y")+
+  facet_wrap(community~type, scales = "free_y")+
   theme_minimal()+
   scale_fill_viridis_d()
 ```
@@ -243,9 +248,7 @@ ggsave("../graphs/sd_dev.png", width = 8, height = 4, scale = 1, bg = "white")
 ```{r}
 alt <- model%>%
   filter(scope == "global", 
-         parameter != "inference",
-         chain != 7,
-         chain != 2)%>%
+         parameter != "inference")%>%
   group_by(community,parameter,type)%>%
   summarise(mode = estimate_mode(value))%>%
   filter(type != "sigma")%>%

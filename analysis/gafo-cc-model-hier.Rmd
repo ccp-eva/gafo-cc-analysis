@@ -45,11 +45,13 @@ model <- rbindlist(
   list(
      fread("../model/output/gafo-cc-hier_gran_20_chain1.csv"),
      fread("../model/output/gafo-cc-hier_gran_20_chain2.csv"),
-     fread("../model/output/gafo-cc-hier_gran_20_chain3.csv")
+     fread("../model/output/gafo-cc-hier_gran_20_chain3.csv"),
+     fread("../model/output/gafo-cc-hier_gran_20_chain4.csv"),
+     fread("../model/output/gafo-cc-hier_gran_20_chain5.csv")
     ), use.names=TRUE)#%>%saveRDS("../models/output/model_kids_box.rds")
 
 
-saveRDS(model, "../model/output/gafo-cc-model_hier.rds")
+#saveRDS(model, "../model/output/gafo-cc-model_hier.rds")
 # 
 # model <- readRDS("../model/output/gafo-cc-model.rds")
 ```
@@ -61,7 +63,8 @@ saveRDS(model, "../model/output/gafo-cc-model_hier.rds")
 ```{r}
 model%>%
   filter(scope == "global", 
-         parameter == "guessing")%>%
+         parameter == "guessing",
+         chain != 1)%>%
 ggplot(aes(x= value, fill = factor(chain)))+
   geom_density(alpha = .5)+
   facet_grid(community~type, scales = "free_y")+
@@ -87,7 +90,8 @@ ggplot(aes(x= value, fill = factor(chain)))+
 ```{r}
 model%>%
   filter(scope == "global", 
-         parameter == "inference")%>%
+         parameter == "inference",
+         chain != 1)%>%
 ggplot(aes(x= value, fill = factor(chain)))+
   geom_density(alpha = .5)+
   facet_wrap(~type, scales = "free_y")+
@@ -102,7 +106,8 @@ ggplot(aes(x= value, fill = factor(chain)))+
 ```{r}
 model%>%
   filter(scope == "community", 
-         parameter == "guessing")%>%
+         parameter == "guessing",
+         chain != 1)%>%
 ggplot(aes(x= value, fill = factor(chain)))+
   geom_density(alpha = .5)+
   facet_grid(community~type, scales = "free_y")+
@@ -115,7 +120,8 @@ ggplot(aes(x= value, fill = factor(chain)))+
 ```{r}
 model%>%
   filter(scope == "community", 
-         parameter == "bias")%>%
+         parameter == "bias",
+         chain != 1)%>%
 ggplot(aes(x= value, fill = factor(chain)))+
   geom_density(alpha = .5)+
   facet_grid(community~type)+
@@ -144,7 +150,7 @@ ggplot(aes(x= value, fill = factor(chain)))+
 
 ```{r}
 guess_map <- model%>%
-  filter(scope == "global", 
+  filter(scope == "community", 
          parameter == "guessing")%>%
   group_by(community, type)%>%
   summarise(mode = estimate_mode(value))%>%
@@ -154,10 +160,11 @@ guess_map <- model%>%
 
 
 guess_samp <- model%>%
-  filter(scope == "global",
+  filter(scope == "community",
          parameter == "guessing")%>%
   pivot_wider(names_from = "type", values_from = "value")%>%
-  #sample_n(1000)%>%
+  sample_n(1000)%>%
+  group_by(community)%>%
   expand_grid(age = seq(0,5.5, by = 0.1))%>%
   mutate(guess = plogis(intercept + slope * age))
 
@@ -187,7 +194,7 @@ ggplot()+
 #### Bias
 ```{r}
 bias_map <- model%>%
-  filter(scope == "global", 
+  filter(scope == "community", 
          parameter == "bias")%>%
   group_by(community,type)%>%
   summarise(mode = estimate_mode(value))%>%
@@ -197,10 +204,10 @@ bias_map <- model%>%
 
 
 bias_samp <- model%>%
-  filter(scope == "global",
+  filter(scope == "community",
          parameter == "bias")%>%
   pivot_wider(names_from = "type", values_from = "value")%>%
-  #sample_n(1000)%>%
+  sample_n(1000)%>%
   expand_grid(age = seq(0,5.5, by = 0.1))%>%
   mutate(bias = plogis(intercept + slope * age))
 
@@ -232,7 +239,7 @@ ggplot()+
 
 ```{r}
 inf_map <- model%>%
-  filter(scope == "global", 
+  filter(scope == "community", 
          parameter == "inference")%>%
   group_by(community,type)%>%
   summarise(mode = estimate_mode(value))%>%
@@ -242,11 +249,11 @@ inf_map <- model%>%
 
 
 inf_samp <- model%>%
-  filter(scope == "global",
+  filter(scope == "community",
          parameter == "inference")%>%
   pivot_wider(names_from = "type", values_from = "value")%>%
   group_by(chain)%>%
-  #sample_n(1000)%>%
+  sample_n(1000)%>%
   expand_grid(age = seq(0,5.5, by = 0.1))%>%
   mutate(sd_inf = plogis(intercept + slope * age))
 

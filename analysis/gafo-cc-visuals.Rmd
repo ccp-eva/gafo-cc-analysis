@@ -67,7 +67,7 @@ data%>%
 ```
 
 ```{r}
-ptp <- data%>%
+pt<- <- <- data%>%
   mutate(targetposition = factor(targetposition, levels = c(1:10)))%>%
   group_by(community, targetposition)%>%
   tidyboot_mean(col= abs(clickdistfromtargetcenterx))
@@ -126,3 +126,10 @@ ggplot(pred, aes(x = value, y = mean, col = community))+
   ylim(0,1000)+
   theme_minimal()
 ```
+
+
+```{r}
+
+
+```
+
