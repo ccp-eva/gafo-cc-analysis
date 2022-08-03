@@ -34,11 +34,14 @@ var deg2rad = function(x) {
 
 // data
 
+//var data = json.read('model_data/gafo-cc-model-data-sim01-small.json');
 var data = json.read('model_data/gafo-cc-model-data.json');
 
 //var trialtypes = levels(data, "trialtype")
 
 var communities = levels(data, "community")
+
+//var subjects = levels(comdata, "subjid")
 
 //display(communities)
 
@@ -50,25 +53,24 @@ var grancoord = maxcoord / granularity
 
 var cords = _.range(0, grancoord)
 
-
 var samplecoord = map(function(x) {
     return x * granularity;
 }, cords)
 
 var centerbias = json.read('model_data/centerBias_extended.json');
 
-var coordinates = _.range(0, 2920)
+//var coordinates = _.range(0, 2920)
 
 var scale = 500
 
 var model = function() {
 
-    var globalinfint = gaussianDrift({ mu: 0, sigma: 1, width: 0.1 })
+    var globalinfint = gaussianDrift({ mu: -2, sigma: 1, width: 0.1 })
     var globalinfslope = gaussianDrift({ mu: 0, sigma: 0.5, width: 0.1 })
     var globalinfsigmaint = uniformDrift({ a: 0, b: 1, width: 0.1 })
     var globalinfsigmaslope = uniformDrift({ a: 0, b: 1, width: 0.1 })
 
-    var globalguessint = gaussianDrift({ mu: 0, sigma: 1, width: 0.1 })
+    var globalguessint = gaussianDrift({ mu: -2, sigma: 1, width: 0.1 })
     var globalguessslope = gaussianDrift({ mu: 0, sigma: 0.5, width: 0.1 })
     var globalguesssigmaint = uniformDrift({ a: 0, b: 1, width: 0.1 })
     var globalguesssigmaslope = uniformDrift({ a: 0, b: 1, width: 0.1 })
@@ -83,20 +85,20 @@ var model = function() {
 
         var cominfint = gaussianDrift({ mu: globalinfint, sigma: globalinfsigmaint, width: 0.1 })
         var cominfslope = gaussianDrift({ mu: globalinfslope, sigma: globalinfsigmaslope, width: 0.1 })
-        var cominfsigma = uniformDrift({ a: 0, b: 1, width: 0.1 })
+        var cominfsigma = uniformDrift({ a: 0, b: 2, width: 0.1 })
         
         var comguessint = gaussianDrift({ mu: globalguessint, sigma: globalguesssigmaint, width: 0.1 })
         var comguessslope = gaussianDrift({ mu: globalguessslope, sigma: globalguesssigmaslope, width: 0.1 })
-        var comguesssigma = uniformDrift({ a: 0, b: 1, width: 0.1 })
+        var comguesssigma = uniformDrift({ a: 0, b: 2, width: 0.1 })
 
         var combiasint = gaussianDrift({ mu: globalbiasint, sigma: globalbiassigmaint, width: 0.1 })
         var combiasslope = gaussianDrift({ mu: globalbiasslope, sigma: globalbiassigmaslope, width: 0.1 })
 
-        var comdata = _.filter(data, { community: community })
+        //var comdata = _.filter(data, { community: community })
 
         //display(comdata)
 
-        var subjects = levels(comdata, "subjid")
+        var subjects = levels(_.filter(data, {community: community }), "subjid")
 
         //display(subjects)
 
@@ -104,13 +106,15 @@ var model = function() {
 
             //var guess = uniformDrift({a: 0, b:1, width: 0.1})
 
-            var iddata = _.filter(comdata, { subjid: subjid })
+            var iddata = _.filter(data, { subjid: subjid , community: community })
 
             var age = iddata[0].agecentered
 
             var sdinfage = cominfint + cominfslope * age
             var sdinfsamp = gaussianDrift({ mu: sdinfage, sigma: cominfsigma, width: 0.1 })
             var sdinfid = logistic(sdinfsamp)
+            //var sdinfid = logistic(gaussianDrift({ mu: 0, sigma: 1, width: 0.1 }))
+            //var sdinfid = 0.1
 
             var guessage = comguessint + comguessslope * age
             var guesssamp = gaussianDrift({ mu: guessage, sigma: comguesssigma, width: 0.1 })
@@ -126,9 +130,10 @@ var model = function() {
 
                 //var click = row.clickscaledx
                 var click = Math.round((row.clickscaledx+scale)/granularity)*granularity
+                //var model_click = Math.round((row.model_click)/granularity)*granularity
                 //display(click)
-                var targetposition = row.targetposition
-                var targetcenterx = row.targetcenterx
+                //var targetposition = row.targetposition
+                //var targetcenterx = row.targetcenterx
                 var targetcentery = row.targetcentery
                 var eyecenterlx = row.eyecenterleftx+scale
                 var eyecenterly = row.eyecenterlefty
@@ -194,21 +199,28 @@ var model = function() {
 
                 var xdist = map2(multiply, lnormdist, rnormdist)
 
-                //display(xdist.length)
+                //query.add([subjid,sdinfid,targetcenterx+scale], xdist)
+
+                //display(samplecoord)
 
                                 // var xcoorddist = map(function(x) {
                 //     return repeat(granularity, function() { return x; })
                 // }, xdist)
 
-                var gazepred = Categorical({ ps: xdist.flat(), vs: samplecoord })
+                var gazepred = Categorical({ ps: xdist, vs: samplecoord })
 
-                //display(gazepred)
+                
 
-                var pred = flip(guess) ? flip(bias) ? Categorical({ ps: centerbias, vs: samplecoord }) : Uniform({ a: 500, b: 2420 }) : gazepred
+               //display(gazepred)
 
+                //var pred = flip(guess) ? flip(bias) ? Categorical({ ps: centerbias, vs: samplecoord }) : Uniform({ a: 500, b: 2420 }) : gazepred
+
+                
                 //display(pred)
 
-                observe(pred, click)
+                observe(gazepred, click)
+
+                //observe(gazepred, model_click)
 
                 //var predsample = sample(pred)
 
@@ -262,13 +274,15 @@ var model = function() {
 
 var header = "iteration,chain,parameter,type,scope,id, community,value,score"
 
+//var header = "iteration,subject,sd, target,value"
+
 var output_file = 'output/gafo-cc-hier_extended_gran_' + granularity + '_chain' + chain + '.csv'
 var callback = webpplSampleWriter.streamQueryCSV(output_file, header);
 
 var output = Infer({
     model,
-    samples: 50000,
-    burn: 100000,
+    samples: 20000,//50000,
+    burn: 20000, //100000,
     lag: 0,
     method: 'MCMC',
     verbose: T,
