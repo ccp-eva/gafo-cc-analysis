@@ -1,0 +1,195 @@
+---
+title: "Model evaluation"
+output: html_document
+date: "2022-08-01"
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(coda)
+library(jsonlite)
+library(ggthemes)
+library(ggpubr)
+library(data.table)
+library(truncnorm)
+library(matrixStats)
+library(tidyboot)
+
+estimate_mode <- function(s) {
+  d <- density(s)
+  return(d$x[which.max(d$y)])
+}
+
+hdi_upper<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","upper"])
+}
+
+hdi_lower<- function(s){
+  m <- HPDinterval(mcmc(s))
+  return(m["var1","lower"])
+}
+```
+
+```{r}
+mdata_small
+```
+
+
+```{r}
+get_click_ex <- function(sdTol, eyeCenterLY, eyeCenterLX, eyeCenterRY, eyeCenterRX, targetCenterY,targetCenterX,pupilLX,pupilRX){
+
+  if(eyeCenterLX > pupilLX) {
+    tAlphaL = atan(abs(eyeCenterLX-targetCenterX)/(eyeCenterLY-targetCenterY))
+  } else {
+    tAlphaL = -atan(abs(eyeCenterLX-targetCenterX)/(eyeCenterLY-targetCenterY))
+  }
+  
+  #noisyAlphaL = rnorm(1,tAlphaL, sdPer)
+  
+  if(eyeCenterRX > pupilRX) {
+    tAlphaR = atan(abs(eyeCenterRX-targetCenterX)/(eyeCenterRY-targetCenterY))
+  } else {
+    tAlphaR = -atan(abs(eyeCenterRX-targetCenterX)/(eyeCenterRY-targetCenterY))
+  }
+  
+  #noisyAlphaR = rnorm(1,tAlphaR, sdPer)
+
+  bRDist = c()
+  
+  bLDist = c()
+  
+  for (x in 1:2920){
+    
+  if(eyeCenterLX > x) {
+    betaL = atan(abs(eyeCenterLX-x)/(eyeCenterLY-targetCenterY))
+  } else {
+    betaL = -atan(abs(eyeCenterLX-x)/(eyeCenterLY-targetCenterY))
+  }
+    betaLDist = dnorm(betaL,tAlphaL,sdTol, log = T)
+    
+  if(eyeCenterRX > x) {
+    betaR = atan(abs(eyeCenterRX-x)/(eyeCenterRY-targetCenterY))
+  } else {
+    betaR = -atan(abs(eyeCenterRX-x)/(eyeCenterRY-targetCenterY))
+  }
+    betaRDist = dnorm(betaR,tAlphaR,sdTol, log = T)
+    
+    #betaDist = betaLDist + betaRDist
+    
+    #bDist[x] <- exp(betaDist)
+    bRDist[x] <- betaRDist
+    
+    bLDist[x] <- betaLDist
+    
+  }
+  
+  xRDist = exp(bRDist-logSumExp(bRDist))
+  
+  xLDist = exp(bLDist-logSumExp(bLDist))
+  
+  xDist = xRDist * xLDist
+  
+  dist = xDist / sum(xDist)
+  
+  click = sample(500:2420, prob = dist[500:2420], size = 1)-1
+  
+  return(click)
+  
+}
+
+```
+
+## Compute distribution for possible locations and SDs
+
+```{r}
+sim_data_small <- mdata_small%>%
+  #slice(1)%>%
+  rowwise()%>%
+  mutate(model_click = get_click_ex(
+          sdTol = 0.4,
+          eyeCenterLY = eyecenterlefty,
+          eyeCenterLX = eyecenterleftx+500, 
+          eyeCenterRY = eyecenterrighty,
+          eyeCenterRX = eyecenterrightx+500,
+          targetCenterX = targetx+500,
+          targetCenterY = targety+500,
+          pupilLX = pupilfinalleftx+500,
+          pupilRX = pupilfinalrightx+500))
+
+
+write(toJSON(sim_data_small), file = "../model/model_data/gafo-cc-model-data-sim01-small.json")
+```
+
+```{r}
+model <- rbindlist(
+  list(
+     fread("../model/output/gafo-cc-hier_extended_gran_20_chain1.csv"),
+     fread("../model/output/gafo-cc-hier_extended_gran_20_chain2.csv"),
+     fread("../model/output/gafo-cc-hier_extended_gran_20_chain3.csv")#,
+     #fread("../model/output/gafo-cc-hier_extended_gran_20_chain4.csv")
+), use.names=TRUE)
+
+```
+
+
+```{r}
+model%>%
+  filter(scope == "id", 
+         parameter == "inference")%>%
+  group_by(id)%>%
+  summarise(mode = estimate_mode(value),
+            mean = mean(value))
+```
+
+
+```{r}
+model%>%
+  filter(scope == "id", 
+         parameter == "inference")%>%
+  ggplot(aes(x = value, fill = factor(chain)))+
+  geom_vline(xintercept = 0.4, lty = 2)+
+  geom_density(alpha = .25)+
+  facet_wrap(community~id, scales = "free")+
+  theme_minimal()+
+  xlim(0,1)+
+  scale_fill_colorblind()
+```
+```{r}
+model%>%
+  filter(scope == "id", 
+         parameter == "guessing")%>%
+  ggplot(aes(x = value, fill = factor(chain)))+
+  #geom_vline(xintercept = 0.4, lty = 2)+
+  geom_density(alpha = .25)+
+  facet_wrap(community~id, scales = "free")+
+  theme_minimal()+
+  xlim(0,1)+
+  scale_fill_colorblind()
+```
+
+```{r}
+model%>%
+  filter(scope == "global", 
+         parameter == "inference")%>%
+  ggplot(aes(x = value, fill = factor(chain)))+
+  #geom_vline(xintercept = 0.1, lty = 2)+
+  geom_density(alpha = .25)+
+  facet_grid(~type, scales = "free")+
+  theme_minimal()+
+  #xlim(0,1)+
+  scale_fill_colorblind()
+```
+
+```{r}
+model%>%
+  filter(scope == "community", 
+         parameter == "guessing")%>%
+  ggplot(aes(x = value, fill = factor(chain)))+
+  #geom_vline(xintercept = 0.1, lty = 2)+
+  geom_density(alpha = .25)+
+  facet_grid(~type, scales = "free")+
+  theme_minimal()+
+  #xlim(0,1)+
+  scale_fill_colorblind()
+```

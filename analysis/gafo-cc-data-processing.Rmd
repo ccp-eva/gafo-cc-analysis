@@ -110,7 +110,7 @@ data_namibia <- tidy_demographics_namibia%>%
 # Leipzig
 
 ```{r}
-system("rsync -zaP ccp-odcJ:/srv/ccp-odc/gafo-leipzig/data/ ~/Work/Local/Quantex/Gafo/raw_data/gafo-cc/leipzig/")
+system("rsync -zaP ccp-odcJ:/srv/ccp-odc/gafo-leipzig/data/ ~/Work/Local/QuantEx/Gafo/raw_data/gafo-cc/leipzig/")
 ```
 
 
@@ -443,20 +443,25 @@ write_csv(data,"../data/gafo-cc-clean-data.csv")
 # Data for model 
 
 ```{r}
+
+data <- read_csv("../data/gafo-cc-clean-data.csv")
+
 mdata <- data%>%
   filter(community == "leipzig" | community == "akure",
          voiceover == F)%>%
   mutate(agecentered = ageinyears - min(ageinyears))%>%
-  select(-c(screen,touchscreen.x, household, children, younger_children, sex,ageinyears, wrongareaclick, earlyclick, durationanimationballoontotal, durationanimationcomplete, responsetime, clientscreenwidth, clientscreenheight, clientscreenscaling, clickoriginalx, clickoriginaly, hitbbtargetx, hitbbtargety, clickdistfromtargetbboxx, clickedarea, studyversion, boxesnr,population, inhouse, touchscreen.y , os, mobile, browser, browserversion, safari, iossafari,target, voiceover, epoch, timestamp, inwardclick, boxwidth,boxborderleft, boxborderright , correctbox, datacollection, sample, studytype, comment, status))
+  select(-c(screen,touchscreen.x, household, children, younger_children, sex,ageinyears, wrongareaclick, earlyclick, durationanimationballoontotal, durationanimationcomplete, responsetime, clientscreenwidth, clientscreenheight, clientscreenscaling, clickoriginalx, clickoriginaly, hitbbtargetx, hitbbtargety, clickdistfromtargetbboxx, clickedarea, studyversion, boxesnr,population, inhouse, touchscreen.y , os, mobile, browser, browserversion, safari, iossafari,target, voiceover, epoch, timestamp, inwardclick, boxwidth,boxborderleft, boxborderright , correctbox, datacollection, sample, studytype, comment, status, site))
 
 write(toJSON(mdata), file = "../model/model_data/gafo-cc-model-data.json")
 
-mdata%>%
-  filter(is.na(agecentered))
+display(communities)%>%
+  filter(is.na(community))
 
 mdata%>%
   filter(trialnr == 5)%>%
   select(subjid,agecentered)
+
+range(mdata$clickscaledx+500)
 ```
 
 ```{r}
