@@ -34,8 +34,8 @@ var deg2rad = function(x) {
 
 // data
 
-//var data = json.read('model_data/gafo-cc-model-data-sim01-small.json');
-var data = json.read('model_data/gafo-cc-model-data.json');
+var data = json.read('model_data/gafo-cc-model-data-sim01-small.json');
+//var data = json.read('model_data/gafo-cc-model-data.json');
 
 //var trialtypes = levels(data, "trialtype")
 
@@ -276,13 +276,13 @@ var header = "iteration,chain,parameter,type,scope,id, community,value,score"
 
 //var header = "iteration,subject,sd, target,value"
 
-var output_file = 'output/gafo-cc-hier_extended_gran_' + granularity + '_chain' + chain + '.csv'
+var output_file = 'output/gafo-cc-hier_extended_small_gran_' + granularity + '_chain' + chain + '.csv'
 var callback = webpplSampleWriter.streamQueryCSV(output_file, header);
 
 var output = Infer({
     model,
-    samples: 25000,//50000,
-    burn: 50000, //100000,
+    samples: 2000,//50000,
+    burn: 2000, //100000,
     lag: 1,
     method: 'MCMC',
     verbose: T,
