@@ -87,9 +87,10 @@ tidy_data_namibia <- raw_data_namibia %>%
 
 ```{r demographics}
 raw_demographics_namibia <- bind_rows(
-  read_xlsx("../../raw_data/gafo-cc/namibia/GaFo Data Haikom 2022.xlsx", sheet = 1)%>%mutate(ID = paste0("H",str_pad(ID, 7, pad = "0")))%>%mutate(site = Community, Community = "hai||om"),
-  read_xlsx("../../raw_data/gafo-cc/namibia/Data Khwe 2022.xlsx", sheet = 1)%>%mutate(ID = paste0("K",str_pad(ID, 7, pad = "0")))%>%rename(Sex = `...7`)%>%mutate(site = Community, Community = "khwe")
-  )
+  read_xlsx("../../raw_data/gafo-cc/namibia/Data Haikom 2022.xlsx", sheet = 1, col_types = c("numeric", "text", "text", "text", "date", "date", "text", "numeric", "numeric", "numeric", "numeric", "numeric", "text"))%>%mutate(ID = paste0("H",str_pad(ID, 7, pad = "0")))%>%mutate(site = Community, Community = "hai||om"),
+  read_xlsx("../../raw_data/gafo-cc/namibia/Data Khwe 2022.xlsx", sheet = 1, col_types = c("numeric", "text", "text", "text", "date", "date", "text", "numeric", "numeric", "numeric", "numeric", "numeric", "text"))%>%mutate(ID = paste0("K",str_pad(ID, 7, pad = "0")))%>%rename(Sex = `...7`)%>%mutate(site = Community, Community = "khwe")
+  )%>%
+  filter(!grepl("rop",Comment))
 
 tidy_demographics_namibia <- raw_demographics_namibia %>% 
   mutate(
@@ -99,12 +100,12 @@ tidy_demographics_namibia <- raw_demographics_namibia %>%
   select(-c(`First Name`, Name, BirthDate, TestDate, Comment))%>% 
   rename_all(tolower)%>%
   filter(!is.na(ageinyears))
-
 ```
 
 ```{r}
 data_namibia <- tidy_demographics_namibia%>%
   left_join(tidy_data_namibia%>%rename_all(tolower),by = c("subjid"))
+
 ```
 
 # Leipzig
