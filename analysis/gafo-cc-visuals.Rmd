@@ -31,8 +31,8 @@ data%>%
   group_by(community,subjid, ageinyears)%>%
   summarise(impr = mean(abs(clickdistfromtargetcenterx)))%>%
   ggplot(aes(x = ageinyears, y = impr, col = community))+
-  geom_point(pch = 1)+
-  geom_smooth(method = "glm")+
+  geom_point(alpha = .25)+
+  geom_smooth(method = "lm")+
   scale_color_colorblind(name = "")+
   ylim(0,1000)+
   labs(x = "Age (in years)", y ="Imprecision")+
@@ -67,7 +67,7 @@ data%>%
 ```
 
 ```{r}
-pt<- <- <- data%>%
+ptp<- data%>%
   mutate(targetposition = factor(targetposition, levels = c(1:10)))%>%
   group_by(community, targetposition)%>%
   tidyboot_mean(col= abs(clickdistfromtargetcenterx))
