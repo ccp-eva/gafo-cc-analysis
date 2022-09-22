@@ -59,7 +59,7 @@ bm_id <- brm(click ~ ageinyears  + targetcentralityx + (targetcentralityx+trialn
                               chains = 4, 
                               cores  = 4,
              control = list(adapt_delta = 0.95),
-                              backend = "cmdstanr")%>%
+             backend = "cmdstanr")%>%
   add_criterion(., c("waic","loo"))
 
 bm_int <- brm(click ~ ageinyears  * targetcentralityx + (trialnr|subjid) + (ageinyears * targetcentralityx |community), 
@@ -106,7 +106,18 @@ bm_ntc <- brm(click ~ ageinyears  + (trialnr|subjid) + (ageinyears|community),
                               backend = "cmdstanr")%>%
   add_criterion(., c("waic","loo"))
 
-bm_null <- brm(click ~ 1 + (trialnr|subjid)+ (1|community), 
+bm_co <- brm(click ~ 1 + (trialnr|subjid)+ (1|community), 
+                              data   = mdata, 
+                              family = Gamma(link = "log"),
+                              warmup = 2000, 
+                              iter   = 6000, 
+                              chains = 4, 
+                              cores  = 4,
+               control = list(adapt_delta = 0.95),
+                              backend = "cmdstanr")%>%
+  add_criterion(., c("waic","loo"))
+
+bm_null <- brm(click ~ 1 + (trialnr|subjid), 
                               data   = mdata, 
                               family = Gamma(link = "log"),
                               warmup = 2000, 
@@ -118,22 +129,32 @@ bm_null <- brm(click ~ 1 + (trialnr|subjid)+ (1|community),
   add_criterion(., c("waic","loo"))
 
 
-loo_compare(bm_int_id, bm_int,bm_base, bm_nage, bm_ntc, bm_null,bm_id, criterion = "waic")%>%as_tibble(rownames = "model")
-
-
-ranef(bm_int)
-
+loo_compare(bm_null,
+            bm_co,
+            #bm_ntc,
+            #bm_nage,
+            #bm_base,
+            #bm_int,
+            bm_id,
+            #bm_int_id, 
+            criterion = "waic")%>%as_tibble(rownames = "model")%>%left_join(
+model_weights(bm_null,
+            bm_co,
+            #bm_ntc,
+            #bm_nage,
+            #bm_base,
+            #bm_int,
+            bm_id,
+            #bm_int_id, 
+            weights = "waic")%>%as_tibble(rownames = "model")%>%rename(waic_weight = value))
 
 ```
 
 ```{r}
-plot(bm_base)
+plot(bm_id)
 
-pp_check(bm_base)
+pp_check(bm_id)
 
-bm_age
-
-plot(bm2)
 ```
 
 
@@ -141,36 +162,53 @@ plot(bm2)
 ndata <- mdata%>%
   distinct(community)%>%
   expand_grid(ageinyears = unique(mdata$ageinyears))%>%
-  expand_grid(targetcentralityx = c(min(mdata$targetcentralityx),0,max(mdata$targetcentralityx)))
+  expand_grid(targetcentralityx = c(min(mdata$targetcentralityx),max(mdata$targetcentralityx)))
 
 
 post <- fitted(bm_id, newdata = ndata, re_formula =~(ageinyears|community))%>%
   as_tibble() %>%
   bind_cols(ndata)%>%
-  mutate(ageinyears = ageinyears + mean(data$ageinyears))
+  mutate(ageinyears = ageinyears + mean(data$ageinyears),
+         targetcentralityx = factor(targetcentralityx, labels = c("middle","edge")))
 
 
 ggplot()+
   geom_smooth(data = post, aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
-  theme_minimal()+
+  theme_bw()+
   scale_color_ptol(name = "Community")+
   scale_fill_ptol(name = "Community")+
-  facet_grid(targetcentralityx~.)+
+  facet_grid(~targetcentralityx)+
   labs(x = "Age", y="Imprecision")
+
+
+range(mdata$targetcentralityx)
 ```
 
 
 ```{r}
-ps <- bm_base%>%posterior_samples()%>%
-  select(starts_with("r_community"))%>%
-  pivot_longer(cols = everything(), names_to = "param", values_to = "value")
+ps <- bm_id%>%posterior_samples()%>%
+  select("b_Intercept", "b_ageinyears",starts_with("r_community"))%>%
+  pivot_longer(cols = c(3:10), names_to = "site", values_to = "value")%>%
+  mutate(type = ifelse(grepl("Intercept", site), "intercept", "age"),
+         site= str_remove(site,"r_community"),
+         site= str_remove(site,"Intercept"),
+         site= str_remove(site,"ageinyears"),
+         site= str_remove(site,"\\["),
+         site= str_remove(site,"\\]"),
+         site= str_remove(site,"\\,"))%>%
+  pivot_longer(cols = c(b_Intercept, b_ageinyears), names_to = "fix_param", values_to = "fix_value")%>%
+  mutate(fix_param= tolower(str_remove(fix_param,"b_")),
+         fix_param = ifelse(fix_param == "ageinyears", "age", fix_param))%>%
+  filter(type == fix_param)%>%
+  mutate(est = value + fix_value)
 
-ggplot(ps,aes(y = param, x = value)) +
+ggplot(ps,aes(y = site, x = est)) +
  stat_halfeye(alpha = .7, .width = c(.95, .80)) +
     labs(x = "Posterior estimate", y ="")+
   guides(fill = "none")+
+  facet_grid(~type, scales = "free_x")+
   #geom_vline(xintercept = 0, linetype = "dashed") +
-  theme_minimal()
+  theme_bw()
 ```
 
 
