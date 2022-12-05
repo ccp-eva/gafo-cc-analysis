@@ -12,7 +12,15 @@ library(tidyboot)
 
 
 ```{r}
-data <- read_csv("../data/gafo-cc-clean-data.csv")
+data <- read_csv("../data/gafo-cc-clean-data.csv")%>%
+  mutate(community = recode(community,
+                            akure = "akure (nigeria)",
+                            leipzig = "leipzig (germany)",
+                            `hai||om` = "hai||om (namibia)",
+                            khwe = "khwe (namibia)",
+                            windhoek = "windhoek (namibia)",
+                            stanford = "stanford (usa)",
+                            chimfunshi = "chimfunshi (sambia)"))
 ```
 
 ```{r}
@@ -28,21 +36,22 @@ data%>%
 
 ```{r}
 data%>%
+  filter(community != "chimfunshi (sambia)")%>%
   group_by(community,subjid, ageinyears)%>%
   summarise(impr = mean(abs(clickdistfromtargetcenterx)))%>%
   ggplot(aes(x = ageinyears, y = impr, col = community))+
   geom_point(alpha = .25)+
-  geom_smooth(method = "lm")+
-  scale_color_colorblind(name = "")+
+  geom_smooth(method = "glm")+
+  scale_color_colorblind(name = "Community")+
   ylim(0,1000)+
-  labs(x = "Age (in years)", y ="Imprecision")+
+  labs(x = "Age (in years)", y ="Imprecision (average click distance from target)")+
   scale_x_continuous(breaks = 2:8)+
   theme_minimal()+
-  theme(legend.position = "bottom")
+  theme(legend.position = "right")
   
 ```
 ```{r}
-ggsave("../visuals/dev_site.png", width = 5, height = 6, bg = "white")
+ggsave("../visuals/dev_site.png", width = 8, height = 6, bg = "white")
 ```
 
 
@@ -67,7 +76,12 @@ data%>%
 ```
 
 ```{r}
+ggsave("../visuals/dev_site.png", width = 8, height = 6, bg = "white")
+```
+
+```{r}
 ptp<- data%>%
+  filter(community != "chimfunshi (sambia)")%>%
   mutate(targetposition = factor(targetposition, levels = c(1:10)))%>%
   group_by(community, targetposition)%>%
   tidyboot_mean(col= abs(clickdistfromtargetcenterx))
@@ -75,61 +89,81 @@ ptp<- data%>%
 
 ggplot(ptp, aes(x = targetposition, y = mean, col = community))+
   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
-  labs(x = "Binned target position", y = "Mean imprecision")+
-  scale_color_colorblind()+
-  #ylim(0,1000)+
+  labs(x = "Target position (binned)", y = "Imprecision (average click distance from target)")+
+  scale_color_colorblind(name = "Community")+
+  ylim(0,1000)+
   theme_minimal()
 ```
 
 ```{r}
+ggsave("../visuals/target_position_site.png", width = 8, height = 6, bg = "white")
+```
+
+```{r}
 pscreen1 <- data%>%
+  group_by(community)%>%
+  mutate(clickdistfromtargetcenterx = scale(abs(clickdistfromtargetcenterx)))%>%
   mutate(screen = factor(screen),
          touchscreen = factor(touchscreen))%>%
   pivot_longer(cols = c(screen, touchscreen), names_to = "predictor", values_to = "value")%>%
-  group_by(community, subjid, predictor, value)%>%
-  summarise(mean= mean(abs(clickdistfromtargetcenterx)))
+  group_by(subjid, predictor, value)%>%
+  summarise(mean= mean(clickdistfromtargetcenterx))
 
 pscreen2 <- data%>%
+  group_by(community)%>%
+  mutate(clickdistfromtargetcenterx = scale(abs(clickdistfromtargetcenterx)))%>%
   mutate(screen = factor(screen),
          touchscreen = factor(touchscreen))%>%
   pivot_longer(cols = c(screen, touchscreen), names_to = "predictor", values_to = "value")%>%
-  group_by(community, predictor, value)%>%
-  tidyboot_mean(col= abs(clickdistfromtargetcenterx))
+  group_by(predictor, value)%>%
+  tidyboot_mean(col= clickdistfromtargetcenterx)
 
 
-ggplot(pscreen%>%filter(!is.na(value)), aes(x = value, y = mean, col = community))+
-  geom_point(data = pscreen1%>%filter(!is.na(value)), aes(x = value, y = mean, col = community), pch = 1, alpha = .5, position = position_dodge(width = .5))+
-  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), alpha = 0.75, position = position_dodge(width = .5))+
+ggplot(pscreen2%>%filter(!is.na(value)), aes(x = value, y = mean))+
+  geom_jitter(data = pscreen1%>%filter(!is.na(value)), aes(x = value, y = mean), pch = 1, alpha = .25, height = 0)+
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), alpha = 0.75, position = position_dodge(width = .5), col = "firebrick")+
   facet_grid(~predictor, scales = "free_x")+
   scale_x_discrete(labels = c("no", "yes"))+
+  labs(y = "Imprecision (scaled within community)", x = "Predictor value")+
   scale_color_colorblind()+
+  
   #ylim(0,1000)+
-  theme_few()
+  theme_bw()
+```
+
+```{r}
+ggsave("../visuals/pred_screen.png", width = 8, height = 6, bg = "white")
 ```
 
 ```{r}
 pred <- data%>%
-  group_by(community, subjid, household, children, younger_children)%>%
-  summarise(mean= mean(abs(clickdistfromtargetcenterx)))%>%
+  group_by(community)%>%
+  mutate(clickdistfromtargetcenterx = scale(abs(clickdistfromtargetcenterx)), 
+         household = scale(household), 
+         children = scale(children),
+         younger_children = scale(younger_children))%>%
+  group_by(subjid, household, children, younger_children)%>%
+  summarise(mean= mean(clickdistfromtargetcenterx))%>%
   pivot_longer(cols = c(household, children, younger_children), names_to = "predictor", values_to = "value")%>%
-  group_by(community,predictor)%>%
+  group_by(predictor)%>%
   mutate(value = scale(value))
   
 
 
-ggplot(pred, aes(x = value, y = mean, col = community))+
+ggplot(pred, aes(x = value, y = mean))+
   geom_point(pch = 1)+
   geom_smooth(method = "glm")+
   facet_grid(~predictor, scales = "free_x")+
   stat_cor()+
   scale_color_colorblind()+
-  ylim(0,1000)+
-  theme_minimal()
+  labs(y = "Imprecision (scaled within community)", x = "Predictor value (scaled within community)")+
+  #ylim(0,1000)+
+  theme_bw()
 ```
 
 
 ```{r}
-
-
+ggsave("../visuals/pred_household.png", width = 12, height = 6, bg = "white")
 ```
+
 

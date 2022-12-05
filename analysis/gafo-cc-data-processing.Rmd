@@ -81,30 +81,42 @@ tidy_data_namibia <- raw_data_namibia %>%
     datacollection = as.factor("in-person - supervised"), 
     sample = as.factor("na"),
     studytype = as.factor("vali"), 
-  ) #%>% select(subjID, population, trialType, trialNr, targetPosition, targetCentralityX, clickDistFromTargetCenterX)
+  ) %>%
+  mutate(subjID = toupper(subjID))%>%select(-touchScreen)#%>% select(subjID, population, trialType, trialNr, targetPosition, targetCentralityX, clickDistFromTargetCenterX)
 
 ```
 
 ```{r demographics}
 raw_demographics_namibia <- bind_rows(
   read_xlsx("../../raw_data/gafo-cc/namibia/Data Haikom 2022.xlsx", sheet = 1, col_types = c("numeric", "text", "text", "text", "date", "date", "text", "numeric", "numeric", "numeric", "numeric", "numeric", "text"))%>%mutate(ID = paste0("H",str_pad(ID, 7, pad = "0")))%>%mutate(site = Community, Community = "hai||om"),
-  read_xlsx("../../raw_data/gafo-cc/namibia/Data Khwe 2022.xlsx", sheet = 1, col_types = c("numeric", "text", "text", "text", "date", "date", "text", "numeric", "numeric", "numeric", "numeric", "numeric", "text"))%>%mutate(ID = paste0("K",str_pad(ID, 7, pad = "0")))%>%rename(Sex = `...7`)%>%mutate(site = Community, Community = "khwe")
+  read_xlsx("../../raw_data/gafo-cc/namibia/Data Khwe 2022.xlsx", sheet = 1, col_types = c("numeric", "text", "text", "text", "date", "date", "text", "numeric", "numeric", "numeric", "numeric", "numeric", "text"))%>%mutate(ID = paste0("K",str_pad(ID, 7, pad = "0")))%>%rename(Sex = `...7`)%>%mutate(site = Community, Community = "khwe"),
+    read_xlsx("../../raw_data/gafo-cc/namibia/Data Windhoek 2022 completed.xlsx", sheet = 1)%>%
+    select(ID, Community,`First Name`,Name,	BirthDate,	TestDate,	Sex,	Screen,	Touchscreen,	Household,	Children,	YoungerChildren)%>%mutate(ID = paste0("W",str_pad(ID, 7, pad = "0")))%>%mutate(site = Community, Community = "windhoek")
   )%>%
   filter(!grepl("rop",Comment))
 
+testdates <- tidy_data_namibia%>%
+  select(subjID, timestamp)%>%
+  mutate(test_date = as.Date(substr(timestamp, 0,10)))%>%
+  select(subjID, test_date)%>%
+  distinct(subjID, .keep_all = T)%>%
+  mutate(subjID = toupper(subjID))
+
 tidy_demographics_namibia <- raw_demographics_namibia %>% 
+  rename(subjID = ID)%>%
+  left_join(testdates)%>%
   mutate(
-    ageInYears = as.numeric(difftime(TestDate,BirthDate, units = "days")/365.25),
+    ageInYears = as.numeric(difftime(test_date,BirthDate, units = "days")/365.25),
   ) %>%
-  rename(subjID = ID) %>% 
-  select(-c(`First Name`, Name, BirthDate, TestDate, Comment))%>% 
+  select(-c(`First Name`, Name, BirthDate, TestDate,test_date, Comment))%>% 
   rename_all(tolower)%>%
   filter(!is.na(ageinyears))
 ```
 
 ```{r}
 data_namibia <- tidy_demographics_namibia%>%
-  left_join(tidy_data_namibia%>%rename_all(tolower),by = c("subjid"))
+  left_join(tidy_data_namibia%>%rename_all(tolower),by = c("subjid"))%>%
+  distinct(subjid, trialnr, .keep_all = T)
 
 ```
 
@@ -182,7 +194,7 @@ tidy_data_leipzig <- raw_data_leipzig %>%
          subjID = ifelse(subjID == "R9V7qHrx", "R9v7qHrx", subjID),
          subjID = ifelse(subjID == "QZJvSwfQ","QZJvSwftQ",  subjID),
          subjID = ifelse(subjID == "TSPeVFYf", "tSPeVFYf", subjID),
-         subjID =as.factor(subjID))#%>%select(subjID, population, trialType, trialNr, targetPosition, targetCentralityX, clickDistFromTargetCenterX)
+         subjID =as.factor(subjID))%>%select(-touchScreen)#%>%select(subjID, population, trialType, trialNr, targetPosition, targetCentralityX, clickDistFromTargetCenterX)
 
 
 #unique(tidy_data_leipzig$subjID)
@@ -291,15 +303,13 @@ tidy_data_nigeria <- raw_data_nigeria %>%
     studytype = as.factor("vali"),
     subjID = as.character(subjID),
     subjID = ifelse(subjID == "nlger002", "niger002", subjID)
-  ) #%>% select(subjID, population, trialType, trialNr, targetPosition, targetCentralityX, clickDistFromTargetCenterX)
+  ) %>%select(-touchScreen)#%>% select(subjID, population, trialType, trialNr, targetPosition, targetCentralityX, clickDistFromTargetCenterX)
 ```
 
 ```{r demographics}
 raw_demographics_nigeria <- bind_rows(
   read_xlsx("../../../../../../Cloud/QuantEx/Gafo-cc/data/nigeria/gafo-cc-nigeria-participants.xlsx", sheet = 1)
   )
-
-read_xlsx("../../../../../../Cloud/QuantEx/Gafo-cc/data/nigeria/gafo-cc-nigeria-participants.xlsx", sheet = 1)
 
 tidy_demographics_nigeria <- raw_demographics_nigeria %>% 
   filter(community!= "leipzig")%>%
@@ -386,7 +396,7 @@ tidy_data_zambia <- raw_data_zambia %>%
     datacollection = as.factor("in-person - supervised"), 
     sample = as.factor("na"),
     studytype = as.factor("vali")
-  ) #%>%select(subjID, population, trialType, trialNr, targetPosition, targetCentralityX, clickDistFromTargetCenterX)
+  ) %>%select(-touchScreen)#%>%select(subjID, population, trialType, trialNr, targetPosition, targetCentralityX, clickDistFromTargetCenterX)
 ```
 
 ```{r}
@@ -418,6 +428,22 @@ data_zambia <- tidy_demographics_zambia%>%
   mutate(community = "chimfunshi")
 ```
 
+# Stanford
+
+```{r}
+data_stanford <- read.csv("../../raw_data/gafo-cc/stanford/tidy_data_extra.csv")%>%
+  mutate(subjID = paste0("S",subjID),
+         community = "stanford",
+         screen = ifelse(screen == "yes", 1, 0),
+         touchscreen = ifelse(screen == "touchscreen", 1, 0),
+         browserVersion = factor(browserVersion),
+         targetPosition = factor(targetPosition))%>%
+  select(-touchScreen)%>%
+  rename(ageinyears = age)%>%
+  rename_all(tolower)
+```
+
+
 # Merge
 ```{r}
 
@@ -425,7 +451,8 @@ data <- bind_rows(
   data_namibia%>%rename(younger_children = youngerchildren),
   data_leipzig,
   data_nigeria,
-  data_zambia
+  data_zambia,
+  data_stanford
 )%>%
   #mutate(community = paste0("c",as.character(as.numeric(as.factor(community)))))%>%
   filter(trialtype == "test")
@@ -440,6 +467,17 @@ data%>%
 ```{r}
 write_csv(data,"../data/gafo-cc-clean-data.csv")
 ```
+
+```{r}
+data%>%
+  select(-touchscreen)%>%
+  filter(community == "windhoek")%>%
+  rename(touchscreen = touchscreen.x)%>%
+  group_by(subjid, community, sex, screen, touchscreen, household,children,younger_children, ageinyears)%>%
+    summarise(precision = mean(abs(clickdistfromtargetcenterx)))%>%
+  write_csv(.,"../data/gafo-cc-windhoek.csv")
+```
+
 
 # Data for model 
 
