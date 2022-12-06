@@ -462,7 +462,8 @@ scdata <- mdata%>%
   mutate(
          household = scale(household), 
         
-         mean_click = scale(mean_click))%>%
+         #mean_click = scale(mean_click)
+         )%>%
   na.omit()
 ```
 

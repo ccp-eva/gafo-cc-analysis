@@ -203,7 +203,8 @@ tidy_data_leipzig <- raw_data_leipzig %>%
 
 ```{r demographics}
 raw_demographics_leipzig <- bind_rows(
-  read_xlsx("../../../../../Cloud/QuantEx/Gafo-cc/docs/Gafo-cc-leipzig-participants.xlsx", sheet = 1)
+  #read_xlsx("../../../../../Cloud/QuantEx/Gafo-cc/docs/", sheet = 1)
+  read_xlsx("../../raw_data/gafo-cc/leipzig/Gafo-cc-leipzig-participants.xlsx", sheet = 1)
   )
 
 tidy_demographics_leipzig <- raw_demographics_leipzig %>% 
@@ -465,6 +466,15 @@ data%>%
 ```
 
 ```{r}
+data%>%
+  filter(community == "leipzig")%>%
+  mutate(age_group = substr(ageinyears, 1,1))%>%
+  group_by(screen, age_group)%>%
+  summarise(n = n_distinct(subjid))
+```
+
+
+```{r}
 write_csv(data,"../data/gafo-cc-clean-data.csv")
 ```
 
@@ -486,12 +496,14 @@ data%>%
 data <- read_csv("../data/gafo-cc-clean-data.csv")
 
 mdata <- data%>%
-  filter(community == "leipzig" | community == "akure",
+  filter(community != "chimfunshi",
          voiceover == F)%>%
   mutate(agecentered = ageinyears - min(ageinyears))%>%
-  select(-c(screen,touchscreen.x, household, children, younger_children, sex,ageinyears, wrongareaclick, earlyclick, durationanimationballoontotal, durationanimationcomplete, responsetime, clientscreenwidth, clientscreenheight, clientscreenscaling, clickoriginalx, clickoriginaly, hitbbtargetx, hitbbtargety, clickdistfromtargetbboxx, clickedarea, studyversion, boxesnr,population, inhouse, touchscreen.y , os, mobile, browser, browserversion, safari, iossafari,target, voiceover, epoch, timestamp, inwardclick, boxwidth,boxborderleft, boxborderright , correctbox, datacollection, sample, studytype, comment, status, site))
+  select(-c(sex,ageinyears, wrongareaclick, earlyclick, durationanimationballoontotal, durationanimationcomplete, responsetime, clientscreenwidth, clientscreenheight, clientscreenscaling, clickoriginalx, clickoriginaly, hitbbtargetx, hitbbtargety, clickdistfromtargetbboxx, clickedarea, studyversion, boxesnr,population, inhouse, os, mobile, browser, browserversion, safari, iossafari,target, voiceover, epoch, timestamp, inwardclick, boxwidth,boxborderleft, boxborderright , correctbox, datacollection, sample, studytype, comment, status, site, `phone number in DB`,`location` ))
 
 write(toJSON(mdata), file = "../model/model_data/gafo-cc-model-data.json")
+
+write_csv(mdata, file = "../model/model_data/gafo-cc-model-data.csv")
 
 display(communities)%>%
   filter(is.na(community))
