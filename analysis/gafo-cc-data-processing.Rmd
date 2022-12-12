@@ -436,7 +436,7 @@ data_stanford <- read.csv("../../raw_data/gafo-cc/stanford/tidy_data_extra.csv")
   mutate(subjID = paste0("S",subjID),
          community = "stanford",
          screen = ifelse(screen == "yes", 1, 0),
-         touchscreen = ifelse(screen == "touchscreen", 1, 0),
+         touchscreen = ifelse(touchscreen == "yes", 1, 0),
          browserVersion = factor(browserVersion),
          targetPosition = factor(targetPosition))%>%
   select(-touchScreen)%>%
@@ -475,7 +475,7 @@ data%>%
 
 
 ```{r}
-write_csv(data,"../data/gafo-cc-clean-data.csv")
+write_csv(data,"../data/gafo-cc-clean-data-incl-fam.csv")
 ```
 
 ```{r}
