@@ -120,6 +120,24 @@ data_namibia <- tidy_demographics_namibia%>%
 
 ```
 
+```{r}
+data_namibia%>%
+  filter(community == "windhoek")%>%
+  mutate(age_group = substr(ageinyears, 1,1))%>%
+  group_by(age_group)%>%
+  summarise(n = n_distinct(subjid))
+
+data_namibia%>%
+  filter(community == "windhoek")%>%
+  group_by(ageinyears)%>%
+  summarise(n= n_distinct(subjid))%>%
+  ggplot(aes(x = ageinyears, y = ""))+
+  geom_count(alpha = .5)+
+  xlim(2.5, 8)+
+  theme_bw()
+```
+
+
 # Leipzig
 
 ```{r}
@@ -129,7 +147,7 @@ system("rsync -zaP ccp-odcJ:/srv/ccp-odc/gafo-leipzig/data/ ~/Work/Local/QuantEx
 
 ```{r read_data}
 # get all .json files
-files <- list.files("../../raw_data/gafo-cc/leipzig/", pattern = "*.json",recursive = T)
+files <- list.files("../../raw_data/gafo-cc/leipzig/", pattern = "*.json",recursive = T)%>% str_subset(pattern = "gafo--", negate = T)
 
 # convert json files to tibbles
 raw_data_leipzig <- tibble()
@@ -203,8 +221,8 @@ tidy_data_leipzig <- raw_data_leipzig %>%
 
 ```{r demographics}
 raw_demographics_leipzig <- bind_rows(
-  #read_xlsx("../../../../../Cloud/QuantEx/Gafo-cc/docs/", sheet = 1)
-  read_xlsx("../../raw_data/gafo-cc/leipzig/Gafo-cc-leipzig-participants.xlsx", sheet = 1)
+  read_xlsx("../../../../../../Cloud/QuantEx/Gafo-cc/docs/Gafo-cc-leipzig-participants.xlsx", sheet = 1)
+  #read_xlsx("../../raw_data/gafo-cc/leipzig/Gafo-cc-leipzig-participants.xlsx", sheet = 1)
   )
 
 tidy_demographics_leipzig <- raw_demographics_leipzig %>% 
@@ -215,8 +233,7 @@ tidy_demographics_leipzig <- raw_demographics_leipzig %>%
   ) %>%
   select(-c(first_name, last_name, id, test_date, birth_date))%>%
   rename(subjid = code)%>%
-  filter(!is.na(ageinyears),
-         status == "keep")
+  filter(status == "keep")
 ```
 
 ```{r}
@@ -236,7 +253,26 @@ data_leipzig <- tidy_demographics_leipzig%>%
 data_leipzig%>%
   group_by(subjid)%>%
   summarise(n())
+
+data_leipzig%>%
+  #group_by(subjid)%>%
+  summarise(n = n_distinct(subjid))
   
+
+data_leipzig%>%
+  mutate(age_group = substr(ageinyears, 1, 1))%>%
+  select(subjid, sex, age_group, screen, touchscreen, household, children, younger_children)%>%
+  na.omit()%>%
+  group_by(age_group, sex)%>%
+  summarise(n = n_distinct(subjid))
+
+
+data_leipzig%>%
+  mutate(age_group = substr(ageinyears, 1, 1))%>%
+  select(subjid, sex, age_group, screen, touchscreen, household, children, younger_children)%>%
+  na.omit()%>%
+  group_by(age_group)%>%
+  summarise(n = n_distinct(subjid))
 ```
 
 # Nigeria
@@ -331,19 +367,20 @@ tidy_demographics_nigeria <- raw_demographics_nigeria %>%
 data_nigeria <- tidy_demographics_nigeria%>%
   left_join(tidy_data_nigeria%>%rename_all(tolower),by = c("subjid"))%>%
   mutate(location = community,
-         community = "akure")
+         community = "akure")%>%
+  distinct(subjid, trialnr, .keep_all = TRUE)
 ```
 
 # Zambia
 
 ```{r read_data}
 # get all .json files
-files <- list.files("../../../../../Cloud/QuantEx/Gafo-cc/data/zambia/", pattern = "*.json",recursive = T)
+files <- list.files("../../raw_data/gafo-cc/zambia/", pattern = "*.json",recursive = T)
 
 # convert json files to tibbles
 raw_data_zambia <- tibble()
 for (f in files) {
-  jf <- paste("../../../../../Cloud/QuantEx/Gafo-cc/data/zambia/", f, sep = "")
+  jf <- paste("../../raw_data/gafo-cc/zambia/", f, sep = "")
   jd <- jsonlite::fromJSON(paste(readLines(jf, warn = "FALSE"), collapse = ""))
   
   # needed because hedge trials have numbers, box trials have characters
@@ -396,7 +433,8 @@ tidy_data_zambia <- raw_data_zambia %>%
     
     datacollection = as.factor("in-person - supervised"), 
     sample = as.factor("na"),
-    studytype = as.factor("vali")
+    studytype = as.factor("vali"),
+    subjID = paste0("z", subjID),
   ) %>%select(-touchScreen)#%>%select(subjID, population, trialType, trialNr, targetPosition, targetCentralityX, clickDistFromTargetCenterX)
 ```
 
@@ -408,17 +446,21 @@ tidy_data_zambia%>%
 
 ```{r demographics}
 raw_demographics_zambia <- bind_rows(
-  read_ods("../../../../../Cloud/QuantEx/Gafo-cc/data/zambia/gafo-cc-sambia-participants.ods", sheet = 1)
+  read_xlsx("../../raw_data/gafo-cc/zambia/Gafo_cc_Zambia_April23_Final.xlsx", sheet = 1)
   )
 
 tidy_demographics_zambia <- raw_demographics_zambia %>% 
   filter(community!= "leipzig")%>%
   mutate(
-    test_date = as.Date(test_date, format = "%d/%m/%Y"),
-    birth_date = as.Date(birth_date, format = "%d/%m/%Y"),
+    #test_date = as.Date(test_date, format = "%d/%m/%Y"),
+    #birth_date = as.Date(birth_date, format = "%d/%m/%Y"),
     ageinyears = as.numeric(difftime(test_date,birth_date, units = "days")/365.25),
+    id = paste0("z", id),
+    screen = ifelse(screen == "yes", 1, 0),
+    touchscreen = ifelse(touchscreen == "yes", 1, 0)
   )  %>%
-  select(-c(first_name, last_name, test_date, birth_date, comment))%>%
+  filter(status == "keep")%>%
+  select(-c(test_date, birth_date, comment, Age, consent_signed, Nr, status))%>%
   rename(subjid = id)%>%
   filter(!is.na(ageinyears))
 ```
@@ -426,7 +468,8 @@ tidy_demographics_zambia <- raw_demographics_zambia %>%
 ```{r}
 data_zambia <- tidy_demographics_zambia%>%
   left_join(tidy_data_zambia%>%rename_all(tolower),by = c("subjid"))%>%
-  mutate(community = "chimfunshi")
+  mutate(community = "chimfunshi")%>%
+  distinct(subjid, trialnr, .keep_all = TRUE)
 ```
 
 # Stanford
@@ -441,42 +484,405 @@ data_stanford <- read.csv("../../raw_data/gafo-cc/stanford/tidy_data_extra.csv")
          targetPosition = factor(targetPosition))%>%
   select(-touchScreen)%>%
   rename(ageinyears = age)%>%
-  rename_all(tolower)
+  rename_all(tolower)%>%
+  distinct(subjid, trialnr, .keep_all = T)
 ```
 
+```{r}
+data_stanford%>%
+  mutate(age_group = substr(ageinyears, 1,1))%>%
+  group_by(age_group)%>%
+  summarise(n = n_distinct(subjid))
+
+```
+
+
+
+
+
+
+# Plymouth
+
+```{r}
+system("rsync -zaP ccp-odcJ:/srv/ccp-odc/gafo-uk/data/ ~/Work/Local/QuantEx/Gafo/raw_data/gafo-cc/plymouth/")
+```
+
+```{r read_data}
+# get all .json files
+files <- list.files("../../raw_data/gafo-cc/plymouth/", pattern = "*.json",recursive = T)%>% str_subset(pattern = "gafo--", negate = T)
+
+# convert json files to tibbles
+raw_data_plymouth <- tibble()
+for (f in files) {
+  jf <- paste("../../raw_data/gafo-cc/plymouth/", f, sep = "")
+  jd <- jsonlite::fromJSON(paste(readLines(jf, warn = "FALSE"), collapse = ""))
+  
+  # needed because hedge trials have numbers, box trials have characters
+  jd$targetPosition <- factor(as.character(jd$targetPosition))
+  
+  raw_data_plymouth <- bind_rows(raw_data_plymouth, jd)
+}
+# remove variables that we don't need anymore
+rm(f, files, jf, jd)
+```
+
+```{r}
+tidy_data_plymouth <- raw_data_plymouth %>%
+  
+  # convert all character vectors into factors
+  mutate_if(is.character, as.factor) %>% 
+  
+  mutate(
+    
+    # attention! the SVG coord system starts with 0, 0 in upper left corner
+    # we transform the values so that 0, 0 is lower left corner (for plots etc)
+    clickScaledY = 1080 - clickScaledY,
+    targetY = 1080 - targetY, 
+    targetCenterY = 1080 - targetCenterY, 
+    eyeCenterRightY = 1080 - eyeCenterRightY,
+    eyeCenterLeftY = 1080 - eyeCenterLeftY,
+    pupilFinalRightY = 1080 - pupilFinalRightY,
+    pupilFinalLeftY = 1080 - pupilFinalLeftY, 
+    targetCentralityX = abs(960 - targetCenterX),
+    
+    # similarly here: in svg coords, negative click distance means up. 
+    # here we invert it, so that negative values mean down
+    clickDistFromTargetCenterY = clickDistFromTargetCenterY * -1, 
+    clickDistFromTargetBBoxY = clickDistFromTargetBBoxY * -1, 
+    
+    # positive values for inward clicks (i.e.,towards the center), negative for outward clicks
+    centralityBias = ifelse(targetCenterX <= 1920/2,
+                            clickDistFromTargetCenterX, 
+                            clickDistFromTargetCenterX*-1), 
+    
+    inwardClick = ifelse(centralityBias > 0, TRUE, FALSE), 
+    
+    # did the participant click on the right box?
+    # also for hedge version, here we imagine a box surrounding the target center 
+    # this way, we can compare hedge and box version ;) 
+    boxWidth = 218, 
+    boxBorderLeft = targetCenterX - boxWidth/2, 
+    boxBorderRight = targetCenterX + boxWidth/2,
+    correctBox = ifelse(boxBorderLeft <= clickScaledX & clickScaledX <= boxBorderRight, TRUE, FALSE), 
+    
+    datacollection = as.factor("in-person - supervised"), 
+    sample = as.factor("na"),
+    studytype = as.factor("vali"), 
+  ) %>%
+  mutate(subjID =as.factor(subjID))%>%select(-touchScreen)%>%
+  distinct(subjID, trialNr, .keep_all = T)#%>%select(subjID, population, trialType, trialNr, targetPosition, targetCentralityX, clickDistFromTargetCenterX)
+
+
+#unique(tidy_data_leipzig$subjID)
+```
+
+```{r}
+tidy_data_plymouth%>%
+  filter(trialType == "test")%>%
+  group_by(subjID)%>%
+  summarise(n = n())
+
+tidy_data_plymouth%>%
+  filter(trialType == "test")%>%
+  summarise(n = n_distinct(subjID))
+```
+
+```{r demographics}
+raw_demographics_plymouth <- bind_rows(
+  read_xlsx("../../raw_data/gafo-cc/plymouth/participants_information.xlsx", sheet = 1)
+  )
+
+test_date_plymouth <- tidy_data_plymouth%>%
+  select(subjID, timestamp)%>%
+  mutate(test_date = as.Date(substr(timestamp, 1,10),format = "%Y-%m-%d"))%>%
+  select(-timestamp)%>%
+  rename_all(tolower)
+
+tidy_demographics_plymouth <- raw_demographics_plymouth %>% 
+  select(-test_date)%>%
+  left_join(test_date_plymouth)%>%
+  mutate(
+    ageinyears = as.numeric(difftime(test_date,birth_date, units = "days")/365.25),
+    younger_children = ifelse(younger_children == "N/A", NA, younger_children),
+    younger_children = as.numeric(younger_children)
+  )  %>%
+  select(-c(test_date, birth_date, comment))%>%
+  filter(!is.na(ageinyears))
+```
+```{r}
+data_plymouth <- tidy_demographics_plymouth%>%
+  left_join(tidy_data_plymouth%>%rename_all(tolower),by = c("subjid"))%>%
+  distinct(subjid, trialnr, .keep_all = TRUE)
+
+data_plymouth%>%
+  #mutate(age_group = substr(ageinyears, 1,1))%>%
+  #group_by(age_group)%>%
+  summarise(n = n_distinct(subjid))
+
+data_plymouth%>%
+  group_by(subjid)%>%
+  summarise(n())
+
+
+  
+```
+
+
+# Mexico
+
+```{r read_data}
+# get all .json files
+files <- list.files("../../../../../../Cloud/QuantEx/Gafo-cc/data/mexico/", pattern = "*.json",recursive = T)
+
+# convert json files to tibbles
+raw_data_mex <- tibble()
+for (f in files) {
+  jf <- paste("../../../../../../Cloud/QuantEx/Gafo-cc/data/mexico/", f, sep = "")
+  jd <- jsonlite::fromJSON(paste(readLines(jf, warn = "FALSE"), collapse = ""))
+  
+  # needed because hedge trials have numbers, box trials have characters
+  jd$targetPosition <- factor(as.character(jd$targetPosition))
+  
+  raw_data_mex <- bind_rows(raw_data_mex, jd)
+}
+# remove variables that we don't need anymore
+rm(f, files, jf, jd)
+```
+
+```{r}
+tidy_data_mex <- raw_data_mex %>%
+  
+  # convert all character vectors into factors
+  mutate_if(is.character, as.factor) %>% 
+  
+  mutate(
+    
+    # attention! the SVG coord system starts with 0, 0 in upper left corner
+    # we transform the values so that 0, 0 is lower left corner (for plots etc)
+    clickScaledY = 1080 - clickScaledY,
+    targetY = 1080 - targetY, 
+    targetCenterY = 1080 - targetCenterY, 
+    eyeCenterRightY = 1080 - eyeCenterRightY,
+    eyeCenterLeftY = 1080 - eyeCenterLeftY,
+    pupilFinalRightY = 1080 - pupilFinalRightY,
+    pupilFinalLeftY = 1080 - pupilFinalLeftY, 
+    targetCentralityX = abs(960 - targetCenterX),
+    
+    # similarly here: in svg coords, negative click distance means up. 
+    # here we invert it, so that negative values mean down
+    clickDistFromTargetCenterY = clickDistFromTargetCenterY * -1, 
+    clickDistFromTargetBBoxY = clickDistFromTargetBBoxY * -1, 
+    
+    # positive values for inward clicks (i.e.,towards the center), negative for outward clicks
+    centralityBias = ifelse(targetCenterX <= 1920/2,
+                            clickDistFromTargetCenterX, 
+                            clickDistFromTargetCenterX*-1), 
+    
+    inwardClick = ifelse(centralityBias > 0, TRUE, FALSE), 
+    
+    # did the participant click on the right box?
+    # also for hedge version, here we imagine a box surrounding the target center 
+    # this way, we can compare hedge and box version ;) 
+    boxWidth = 218, 
+    boxBorderLeft = targetCenterX - boxWidth/2, 
+    boxBorderRight = targetCenterX + boxWidth/2,
+    correctBox = ifelse(boxBorderLeft <= clickScaledX & clickScaledX <= boxBorderRight, TRUE, FALSE), 
+    
+    datacollection = as.factor("in-person - supervised"), 
+    sample = as.factor("na"),
+    studytype = as.factor("vali")
+  ) %>%select(-touchScreen)#%>%select(subjID, population, trialType, trialNr, targetPosition, targetCentralityX, clickDistFromTargetCenterX)
+```
+
+```{r}
+tidy_data_mex%>%
+  summarise(n = n_distinct(subjID))
+```
+
+
+```{r demographics}
+raw_demographics_mex <- bind_rows(
+  read_xlsx("../../../../../../Cloud/QuantEx/Gafo-cc/data/mexico/participants.xlsx", sheet = 1)
+  )%>%
+  filter(!is.na(lastname))%>%
+  mutate(birth_date = ifelse(birth_date == 29042017, 20170429, birth_date))
+
+tidy_demographics_mex <- raw_demographics_mex %>% 
+  mutate(
+    
+    test_date = as.Date(as.character(test_date), format = "%Y%m%d"),
+    birth_date = as.Date(as.character(birth_date), format = "%Y%m%d"),
+    ageinyears = as.numeric(difftime(test_date,birth_date, units = "days")/365.25),
+  )  %>%
+  select(-c(name, lastname, test_date, birth_date, comment))%>%
+  filter(!is.na(ageinyears))
+
+```
+
+```{r}
+data_mex <- tidy_demographics_mex%>%
+  left_join(tidy_data_mex%>%rename_all(tolower),by = c("subjid"))%>%
+  mutate(community = "mexico")%>%
+  distinct(subjid, trialnr, .keep_all = TRUE)
+
+data_mex%>%summarise(n = n_distinct(subjid))
+```
+
+
+# China
+
+```{r}
+system("rsync -zaP ccp-odcJ:/srv/ccp-odc/gafo-china/data/ ~/Work/Local/QuantEx/Gafo/raw_data/gafo-cc/china/")
+```
+
+```{r read_data}
+# get all .json files
+files <- list.files("../../raw_data/gafo-cc/china/", pattern = "*.json",recursive = T)%>% str_subset(pattern = "gafo--", negate = T)
+
+# convert json files to tibbles
+raw_data_china <- tibble()
+for (f in files) {
+  jf <- paste("../../raw_data/gafo-cc/china/", f, sep = "")
+  jd <- jsonlite::fromJSON(paste(readLines(jf, warn = "FALSE"), collapse = ""))
+  
+  # needed because hedge trials have numbers, box trials have characters
+  jd$targetPosition <- factor(as.character(jd$targetPosition))
+  
+  raw_data_china <- bind_rows(raw_data_china, jd)
+}
+# remove variables that we don't need anymore
+rm(f, files, jf, jd)
+```
+
+```{r}
+tidy_data_china <- raw_data_china %>%
+  
+  # convert all character vectors into factors
+  
+  mutate(
+    
+    # attention! the SVG coord system starts with 0, 0 in upper left corner
+    # we transform the values so that 0, 0 is lower left corner (for plots etc)
+    clickScaledY = 1080 - clickScaledY,
+    targetY = 1080 - targetY, 
+    targetCenterY = 1080 - targetCenterY, 
+    eyeCenterRightY = 1080 - eyeCenterRightY,
+    eyeCenterLeftY = 1080 - eyeCenterLeftY,
+    pupilFinalRightY = 1080 - pupilFinalRightY,
+    pupilFinalLeftY = 1080 - pupilFinalLeftY, 
+    targetCentralityX = abs(960 - targetCenterX),
+    
+    # similarly here: in svg coords, negative click distance means up. 
+    # here we invert it, so that negative values mean down
+    clickDistFromTargetCenterY = clickDistFromTargetCenterY * -1, 
+    clickDistFromTargetBBoxY = clickDistFromTargetBBoxY * -1, 
+    
+    # positive values for inward clicks (i.e.,towards the center), negative for outward clicks
+    centralityBias = ifelse(targetCenterX <= 1920/2,
+                            clickDistFromTargetCenterX, 
+                            clickDistFromTargetCenterX*-1), 
+    
+    inwardClick = ifelse(centralityBias > 0, TRUE, FALSE), 
+    
+    # did the participant click on the right box?
+    # also for hedge version, here we imagine a box surrounding the target center 
+    # this way, we can compare hedge and box version ;) 
+    boxWidth = 218, 
+    boxBorderLeft = targetCenterX - boxWidth/2, 
+    boxBorderRight = targetCenterX + boxWidth/2,
+    correctBox = ifelse(boxBorderLeft <= clickScaledX & clickScaledX <= boxBorderRight, TRUE, FALSE), 
+    
+    datacollection = as.factor("in-person - supervised"), 
+    sample = as.factor("na"),
+    studytype = as.factor("vali"), 
+  ) %>%
+  mutate(subjID = ifelse(grepl("2023-04-13T03:1", timestamp), "china075", subjID),
+         subjID = ifelse(grepl("2023-04-13T07:0", timestamp), "china077", subjID))%>%
+  select(-touchScreen)%>%
+  distinct(subjID, trialNr, .keep_all = T)%>%
+   mutate_if(is.character, as.factor)#%>%select(subjID, population, trialType, trialNr, targetPosition, targetCentralityX, clickDistFromTargetCenterX)
+
+
+#unique(tidy_data_leipzig$subjID)
+
+tidy_data_china%>%
+  filter(subjID == "china077")
+
+```
+
+```{r demographics}
+raw_demographics_china <- bind_rows(
+  read_xlsx("../../raw_data/gafo-cc/china/gafo-cc-participants_China_0421.xlsx", sheet = 1, 
+            col_types = c("text", "text", "text", "skip", "skip", "skip", "date", "date", "numeric", "text", "numeric", "numeric", "numeric", "numeric", "numeric", "text"))
+  )%>%
+  filter(!row_number() == 1)
+
+tidy_demographics_china <- raw_demographics_china %>% 
+  mutate(
+    ageinyears = as.numeric(difftime(test_date,birth_date, units = "days")/365.25)
+  )  %>%
+  select(-c(test_date, birth_date, comment))%>%
+  filter(status == "included", 
+         !is.na(ageinyears))%>%
+  select(-status)%>%
+  rename(subjid = id)
+
+tidy_demographics_china%>%
+  arrange(ageinyears)
+```
+
+```{r}
+data_china <- tidy_demographics_china%>%
+  left_join(tidy_data_china%>%rename_all(tolower),by = c("subjid"))%>%
+  distinct(subjid, trialnr, .keep_all = TRUE)
+
+data_china%>%
+  #mutate(age_group = substr(ageinyears, 1,1))%>%
+  #group_by(age_group)%>%
+  summarise(n = n_distinct(subjid))
+
+data_china%>%
+  group_by(subjid)%>%
+  summarise(n())
+
+
+  
+```
 
 # Merge
 ```{r}
 
 data <- bind_rows(
+  data_zambia,
   data_namibia%>%rename(younger_children = youngerchildren),
   data_leipzig,
   data_nigeria,
-  data_zambia,
-  data_stanford
+  data_plymouth,
+  data_stanford,
+  data_mex,
+  data_china
 )%>%
   #mutate(community = paste0("c",as.character(as.numeric(as.factor(community)))))%>%
-  filter(trialtype == "test")
+  filter(trialtype == "test")%>%
+  mutate(age_group = substr(ageinyears, 1,1))
 
+write_csv(data,"../data/gafo-cc-clean-data.csv")
+
+
+data%>%
+  filter(touchscreen == 2)
+```
+
+
+```{r}
+data_plymouth%>%
+  summarise(n= n_distinct(subjid))
 
 data%>%
   group_by(community)%>%
   summarise(n= n_distinct(subjid))
-
 ```
 
-```{r}
-data%>%
-  filter(community == "leipzig")%>%
-  mutate(age_group = substr(ageinyears, 1,1))%>%
-  group_by(screen, age_group)%>%
-  summarise(n = n_distinct(subjid))
-```
-
-
-```{r}
-write_csv(data,"../data/gafo-cc-clean-data-incl-fam.csv")
-```
 
 ```{r}
 data%>%

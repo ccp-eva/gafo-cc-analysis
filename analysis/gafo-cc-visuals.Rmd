@@ -20,7 +20,10 @@ data <- read_csv("../data/gafo-cc-clean-data.csv")%>%
                             khwe = "khwe (namibia)",
                             windhoek = "windhoek (namibia)",
                             stanford = "stanford (usa)",
-                            chimfunshi = "chimfunshi (sambia)"))
+                            chimfunshi = "chimfunshi (sambia)",
+                            mexico = "ocuilan (mexico)",
+                            plymouth = "plymouth (uk)",
+                            beijing = "beijing (china)"))
 ```
 
 ```{r}
@@ -30,20 +33,25 @@ data%>%
 
 data%>%
   summarise(n= n_distinct(subjid))
+
+data%>%
+  group_by(community, age_group)%>%
+  summarise(n = n_distinct(subjid))
 ```
 
 
 
 ```{r}
 data%>%
-  filter(community != "chimfunshi (sambia)")%>%
+  #filter(community != "chimfunshi (sambia)")%>%
   group_by(community,subjid, ageinyears)%>%
   summarise(impr = mean(abs(clickdistfromtargetcenterx)))%>%
   ggplot(aes(x = ageinyears, y = impr, col = community))+
   geom_point(alpha = .25)+
-  geom_smooth(method = "glm")+
-  scale_color_colorblind(name = "Community")+
+  geom_smooth(method = "lm")+
+  scale_color_ptol(name = "Community")+
   ylim(0,1000)+
+  #facet_wrap(~community)+
   labs(x = "Age (in years)", y ="Imprecision (average click distance from target)")+
   scale_x_continuous(breaks = 2:8)+
   theme_minimal()+
@@ -80,17 +88,50 @@ ggsave("../visuals/dev_site.png", width = 8, height = 6, bg = "white")
 ```
 
 ```{r}
+data%>%
+  distinct(targetposition, targetcentralityx)%>%
+  expand_grid(random_click = runif(10000, min = 0, max = 1920))%>%
+  mutate(dist = abs(targetcentralityx - random_click))%>%
+  group_by(targetposition)%>%
+  summarise(random = mean(dist))
+
+
+
+```
+
+
+
+```{r}
 ptp<- data%>%
-  filter(community != "chimfunshi (sambia)")%>%
+  #filter(community != "chimfunshi (sambia)")%>%
   mutate(targetposition = factor(targetposition, levels = c(1:10)))%>%
+  #group_by(community, targetposition, age_group)%>%
   group_by(community, targetposition)%>%
   tidyboot_mean(col= abs(clickdistfromtargetcenterx))
 
 
+alt1 <- data%>%
+  mutate(targetposition = factor(targetposition, levels = c(1:10)))%>%
+  group_by(targetposition)%>%
+  summarise(center = mean(targetcentralityx))%>%
+  mutate(group = "group")%>%
+  ungroup()
+
+alt2 <- data%>%
+  distinct(targetposition, targetcentralityx)%>%
+  expand_grid(random_click = runif(10000, min = 0, max = 1920))%>%
+  mutate(dist = abs(targetcentralityx - random_click))%>%
+  group_by(targetposition)%>%
+  summarise(random = mean(dist))%>%
+  mutate(group = "group")
+
 ggplot(ptp, aes(x = targetposition, y = mean, col = community))+
+  geom_line(data = alt1, aes(x = targetposition, y = center, group = group), lty = 3, alpha = 0.75, col = "black")+
+  geom_line(data = alt2, aes(x = targetposition, y = random, group = group), lty = 3, alpha = 0.75,  col = "black")+
   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
   labs(x = "Target position (binned)", y = "Imprecision (average click distance from target)")+
-  scale_color_colorblind(name = "Community")+
+  scale_color_ptol(name = "Community")+
+  #facet_grid(~age_group)+
   ylim(0,1000)+
   theme_minimal()
 ```
@@ -142,7 +183,7 @@ pred <- data%>%
          household = scale(household), 
          children = scale(children),
          younger_children = scale(younger_children))%>%
-  group_by(subjid, household, children, younger_children)%>%
+  group_by(subjid,community, household, children, younger_children)%>%
   summarise(mean= mean(clickdistfromtargetcenterx))%>%
   pivot_longer(cols = c(household, children, younger_children), names_to = "predictor", values_to = "value")%>%
   group_by(predictor)%>%
