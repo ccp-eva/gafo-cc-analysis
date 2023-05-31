@@ -6,7 +6,7 @@
 # 
 # Put your project-specific ignores here:
 
-
+data/gafo-cc-data-lizbeth.csv
 
 model/output/*.csv
 
