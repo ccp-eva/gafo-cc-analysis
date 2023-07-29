@@ -40,16 +40,16 @@ mdata%>%
 
 
 ```{r}
-# bm_int_id <- brm(click ~ ageinyears  * targetcentralityx + (targetcentralityx+trialnr|subjid) + (ageinyears * targetcentralityx |community), 
-#                               data   = mdata, 
-#                               family = Gamma(link = "log"),
-#                               warmup = 2000, 
-#                               iter   = 6000, 
-#                               chains = 4, 
-#                               cores  = 4,
-#                  control = list(adapt_delta = 0.95),
-#                               backend = "cmdstanr")%>%
-#   add_criterion(., c("waic","loo"))
+bm_int_id <- brm(click ~ ageinyears  * targetcentralityx + (targetcentralityx+trialnr|subjid) + (ageinyears * targetcentralityx |community),
+                              data   = mdata,
+                              family = Gamma(link = "log"),
+                              warmup = 2000,
+                              iter   = 6000,
+                              chains = 4,
+                              cores  = 4,
+                 control = list(adapt_delta = 0.95),
+                              backend = "cmdstanr")%>%
+  add_criterion(., c("waic","loo"))
 
 
 bm_id <- brm(click ~ ageinyears  + targetcentralityx + (targetcentralityx|subjid) + (ageinyears |community), 
@@ -165,9 +165,9 @@ model_weights(bm_null,
 ```
 
 ```{r}
-plot(bm_id)
+plot(bm_int_id)
 
-pp_check(bm_id)
+pp_check(bm_int_id)
 
 ```
 
@@ -198,11 +198,57 @@ ggplot()+
 range(mdata$targetcentralityx)
 ```
 
+```{r}
+ndata <- mdata%>%
+  distinct(community)%>%
+  expand_grid(ageinyears = c(-1,0,1))%>%
+  expand_grid(targetcentralityx = c(min(mdata$targetcentralityx),max(mdata$targetcentralityx)))
+
+
+post <- fitted(bm_int_id, newdata = ndata, re_formula =~(targetcentralityx|community))%>%
+  as_tibble() %>%
+  bind_cols(ndata)
+
+
+ggplot()+
+  geom_smooth(data = post, aes(x = targetcentralityx, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
+  theme_bw()+
+  scale_color_ptol(name = "Community")+
+  scale_fill_ptol(name = "Community")+
+  facet_grid(~ageinyears)+
+  labs(x = "Target centrality", y="Imprecision")
+
+
+range(mdata$ageinyears)
+```
+
+
 
 ```{r}
-ps <- bm_id%>%posterior_samples()%>%
-  select("b_Intercept", "b_ageinyears",starts_with("r_community"))%>%
-  pivot_longer(cols = c(3:6), names_to = "site", values_to = "value")%>%
+ps <- bm_int_id%>%posterior_samples()%>%
+  select(b_targetcentralityx, contains("targetcentralityx") & starts_with("r_community"))%>%
+  select(!contains("ageinyears"))%>%
+  pivot_longer(cols = c(-b_targetcentralityx), names_to = "site", values_to = "value")%>%
+  mutate(site= str_remove(site,"r_community"),
+         site= str_remove(site,"Intercept"),
+         site= str_remove(site,"targetcentralityx"),
+         site= str_remove(site,"\\["),
+         site= str_remove(site,"\\]"),
+         site= str_remove(site,"\\,"))%>%
+  mutate(est = value + b_targetcentralityx)
+
+ggplot(ps,aes(y = site, x = est)) +
+ stat_halfeye(alpha = .7, .width = c(.95, .80)) +
+    labs(x = "Posterior estimate", y ="")+
+  guides(fill = "none")+
+  #facet_grid(~type, scales = "free_x")+
+  #geom_vline(xintercept = 0, linetype = "dashed") +
+  theme_bw()
+```
+```{r}
+ps <- bm_int_id%>%posterior_samples()%>%
+  select("b_Intercept", "b_targetcentralityx",starts_with("r_community"))%>%
+  pivot_longer(cols = c(3:50), names_to = "site", values_to = "value")%>%
   mutate(type = ifelse(grepl("Intercept", site), "intercept", "age"),
          site= str_remove(site,"r_community"),
          site= str_remove(site,"Intercept"),
@@ -224,7 +270,6 @@ ggplot(ps,aes(y = site, x = est)) +
   #geom_vline(xintercept = 0, linetype = "dashed") +
   theme_bw()
 ```
-
 
 
 # Screens
@@ -514,10 +559,12 @@ scdata <- mdata%>%
          )%>%
   group_by(subjid, community, ageinyears, touchscreen, household, children, younger_children)%>%
   summarise(mean_click = mean(click))%>%
+  mutate(older_children = children - 1 - younger_children)%>%
   group_by(community)%>%
   mutate(
          household = scale(household), 
          children = scale(children), 
+         older_children = scale(older_children),
          younger_children = scale(younger_children)
         
          #mean_click = scale(mean_click)
@@ -525,6 +572,7 @@ scdata <- mdata%>%
   na.omit()%>%
   filter(touchscreen != 2)%>%
   mutate(touchscreen = droplevels(touchscreen))
+
 ```
 
 ```{r}
@@ -538,6 +586,40 @@ bm_base <- brm(mean_click ~ ageinyears + (ageinyears |community),
              control = list(adapt_delta = 0.95),
              backend = "cmdstanr")%>%
   add_criterion(., c("waic","loo"))
+
+bm_full_fix <- brm(mean_click ~ ageinyears + touchscreen + household + younger_children + children + (ageinyears |community), 
+                              data   = scdata, 
+                              family = lognormal(),
+                              warmup = 2000, 
+                              iter   = 4000, 
+                              chains = 4, 
+                              cores  = 4,
+             control = list(adapt_delta = 0.95),
+             backend = "cmdstanr")%>%
+  add_criterion(., c("waic","loo"))
+
+bm_fullc_fix <- brm(mean_click ~ ageinyears + touchscreen + younger_children + older_children + (ageinyears |community), 
+                              data   = scdata, 
+                              family = lognormal(),
+                              warmup = 2000, 
+                              iter   = 4000, 
+                              chains = 4, 
+                              cores  = 4,
+             control = list(adapt_delta = 0.95),
+             backend = "cmdstanr")%>%
+  add_criterion(., c("waic","loo"))
+
+bm_full_rand <- brm(mean_click ~ ageinyears + touchscreen + household + younger_children + children + (touchscreen + household + younger_children + children + ageinyears |community), 
+                              data   = scdata, 
+                              family = lognormal(),
+                              warmup = 2000, 
+                              iter   = 4000, 
+                              chains = 4, 
+                              cores  = 4,
+             control = list(adapt_delta = 0.95),
+             backend = "cmdstanr")%>%
+  add_criterion(., c("waic","loo"))
+
 
 bm_hhts_fix <- brm(mean_click ~ ageinyears + touchscreen + household + (ageinyears |community), 
                               data   = scdata, 
@@ -583,7 +665,55 @@ bm_cts_fix <- brm(mean_click ~ ageinyears + touchscreen + children + (ageinyears
              backend = "cmdstanr")%>%
   add_criterion(., c("waic","loo"))
 
+bm_cts_fix_int <- brm(mean_click ~ ageinyears * children + touchscreen  + (ageinyears |community), 
+                              data   = scdata, 
+                              family = lognormal(),
+                              warmup = 2000, 
+                              iter   = 4000, 
+                              chains = 4, 
+                              cores  = 4,
+             control = list(adapt_delta = 0.95),
+             backend = "cmdstanr")%>%
+  add_criterion(., c("waic","loo"))
+
+
+
 bm_cts_rand <- brm(mean_click ~ ageinyears + children + touchscreen + (ageinyears + children + touchscreen |community), 
+                              data   = scdata, 
+                              family = lognormal(),
+                              warmup = 2000, 
+                              iter   = 4000, 
+                              chains = 4, 
+                              cores  = 4,
+             control = list(adapt_delta = 0.95),
+             backend = "cmdstanr")%>%
+  add_criterion(., c("waic","loo"))
+
+bm_cts_rand_int <- brm(mean_click ~ ageinyears * children + touchscreen + (ageinyears * children + touchscreen |community), 
+                              data   = scdata, 
+                              family = lognormal(),
+                              warmup = 2000, 
+                              iter   = 4000, 
+                              chains = 4, 
+                              cores  = 4,
+             control = list(adapt_delta = 0.95),
+             backend = "cmdstanr")%>%
+  add_criterion(., c("waic","loo"))
+
+
+
+bm_ycts_fix <- brm(mean_click ~ ageinyears + touchscreen + younger_children + (ageinyears |community), 
+                              data   = scdata, 
+                              family = lognormal(),
+                              warmup = 2000, 
+                              iter   = 4000, 
+                              chains = 4, 
+                              cores  = 4,
+             control = list(adapt_delta = 0.95),
+             backend = "cmdstanr")%>%
+  add_criterion(., c("waic","loo"))
+
+bm_octs_fix <- brm(mean_click ~ ageinyears + touchscreen + older_children + (ageinyears |community), 
                               data   = scdata, 
                               family = lognormal(),
                               warmup = 2000, 
@@ -597,17 +727,25 @@ bm_cts_rand <- brm(mean_click ~ ageinyears + children + touchscreen + (ageinyear
 
 
 ```{r}
-loo_compare(bm_base, 
-            bm_cts_fix, 
-            bm_cts_rand#,
+loo_compare(bm_base,
+            bm_full_fix, 
+            bm_full_rand,
+            bm_fullc_fix,
+            bm_cts_fix,
+            bm_ycts_fix,
+            bm_octs_fix
+            #bm_hhts_fix#,
+            #bm_cts_fix_int,
+            #bm_cts_rand_int,
+            #bm_cts_rand#,
             #bm_hhts_rand_2, 
             #bm_hhts_rand
             )%>%as_tibble(rownames = "model")
 
 model_weights(bm_base, 
-            bm_cts_fix, criterion = "waic")%>%as_tibble(rownames = "model")
+            bm_octs_fix, criterion = "loo")%>%as_tibble(rownames = "model")
 
-fixef(bm_cts_fix)
+fixef(bm_octs_fix)
 ```
 ```{r}
 ndata <- scdata%>%
@@ -631,13 +769,13 @@ ggplot()+
 
 
 ```{r}
-pssc <- bm_cts_fix%>%posterior_samples()%>%
-  select("b_ageinyears","b_touchscreen1", "b_children")%>%
+pssc <- bm_octs_fix%>%posterior_samples()%>%
+  select("b_ageinyears","b_touchscreen1", "b_older_children")%>%
   pivot_longer(cols = everything(), names_to = "parameter", values_to = "value")%>%
   mutate(parameter= tolower(str_remove(parameter,"b_")))
 
 ggplot(pssc,aes(y = parameter, x = value)) +
- stat_halfeye(alpha = .7, .width = c(.95, .80)) +
+ stat_halfeye(alpha = .7, .width = c(.95, .89)) +
     labs(x = "Posterior estimate", y ="")+
   guides(fill = "none")+
   #facet_grid(~type, scales = "free_x")+
@@ -646,7 +784,7 @@ ggplot(pssc,aes(y = parameter, x = value)) +
 ```
 
 ```{r}
-as_draws_df(bm_cts_rand)%>%
+as_draws_df(bm_cts_rand_int)%>%
   select(contains("children"))%>%
   select(contains("children"))%>%
   pivot_longer(cols = contains("children]"), names_to = "community", values_to = "value")%>%
@@ -654,7 +792,7 @@ as_draws_df(bm_cts_rand)%>%
          community = str_remove(community, "r_community"),
          community = str_remove(community, ",children"))%>%
   ggplot(aes(x= post, y = community))+
-  stat_slabinterval(col = "firebrick")+
+  stat_slabinterval()+
   xlim(-0.15, 0.1)+
   theme_bw()
 ```
@@ -667,7 +805,7 @@ ncdata <- scdata%>%
   expand_grid(children = c(min(scdata$children):max(scdata$children)))
 
 
-cpost <- fitted(bm_cts_rand, newdata = ncdata, re_formula =~(children|community))%>%
+cpost <- fitted(bm_cts_rand_int, newdata = ncdata, re_formula =~(children|community))%>%
   as_tibble() %>%
   bind_cols(ncdata)
 
