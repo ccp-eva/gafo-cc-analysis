@@ -1291,7 +1291,7 @@ merge_raw_data <- bind_rows(
   mutate(age_group = substr(ageinyears, 1,1), 
          trialnr = as.numeric(factor(trialnr)))
 
-write_csv(data,"../data/gafo-cc-raw-data.csv")
+write_csv(merge_raw_data,"../data/gafo-cc-raw-data.csv")
 
 data <- merge_raw_data%>%
   select(subjid, community, age_group, ageinyears, sex, screen, touchscreen, household, children, younger_children, trialnr, targetposition,targetcenterx, targetcentralityx, clickdistfromtargetcenterx)%>%
@@ -1300,12 +1300,17 @@ data <- merge_raw_data%>%
 write_csv(data,"../data/gafo-cc-clean-data.csv")
 
 
-data%>%
-  #group_by(community)%>%
-  summarise(n = n_distinct(subjid))
+
+
 ```
 
 ```{r}
+data <- read_csv("../data/gafo-cc-clean-data.csv")
+
+data%>%
+  #group_by(community)%>%
+  summarise(n = n_distinct(subjid))
+
 data%>%
   filter(touchscreen == 2)%>%
   distinct(subjid)
@@ -1347,12 +1352,12 @@ data%>%
 # Data for model 
 
 ```{r}
-data <- read_csv("../data/gafo-cc-clean-data.csv")
+merge_raw_data <- read_csv("../data/gafo-cc-raw-data.csv")
 ```
 
 
 ```{r}
-chimfunshi_data <- data%>%
+chimfunshi_data <- merge_raw_data%>%
   filter(community == "chimfunshi",
          voiceover == F)%>%
   mutate(agecentered = ageinyears - min(ageinyears))%>%
@@ -1362,7 +1367,7 @@ write(toJSON(chimfunshi_data), file = "../model/model_data/chimfunshi-model-data
 ```
 
 ```{r}
-haillom_data <- data%>%
+haillom_data <- merge_raw_data%>%
   filter(community == "hai||om",
          voiceover == F)%>%
   mutate(agecentered = ageinyears - min(ageinyears))%>%
