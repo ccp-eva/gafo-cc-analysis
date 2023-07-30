@@ -33,11 +33,13 @@ var deg2rad = function(x) {
 
 // data
 
-var data = json.read('model_data/haillom-model-data.json');
+var data = json.read('model_data/chimfunshi-model-data.json');
 
 //var trialTypes = levels(data, "trialType")
 
-var subjects = levels(data, "subjID")
+var subjects = levels(data, "subjid")
+
+//display(subjects)
 
 var maxCoord = 1920
 
@@ -78,12 +80,11 @@ var model = function() {
     //var priorSigma = uniformDrift({ a: 0, b: 50, width: 5 }
 
 
-
-    var sampLog = map(function(subjID) {
+    var sampLog = map(function(subjid) {
 
         //var guess = uniformDrift({a: 0, b:1, width: 0.1})
 
-        var idData = _.filter(data, { subjID: subjID })
+        var idData = _.filter(data, { subjid: subjid })
 
         var age = idData[0].agecentered
 
@@ -121,20 +122,17 @@ var model = function() {
         var subLog = map(function(row) {
 
 
-            //var click = row.clickScaledX
-            var click = Math.round(row.clickScaledX)
-                //display(click)
-            //var targetPosition = row.targetPosition
-            //var targetCenterX = row.targetCenterX
-            var targetCenterY = row.targetCenterY
-            var eyeCenterLX = row.eyeCenterLeftX
-            var eyeCenterLY = row.eyeCenterLeftY
-            var eyeCenterRX = row.eyeCenterRightX
-            var eyeCenterRY = row.eyeCenterRightY
-            var pupilLX = row.pupilFinalLeftX
-            var pupilLY = row.pupilFinalLeftY
-            var pupilRX = row.pupilFinalRightX
-            var pupilRY = row.pupilFinalRightY
+            var click = Math.round(row.clickscaledx)
+            
+            var targetCenterY = row.targetcentery
+            var eyeCenterLX = row.eyecenterleftx
+            var eyeCenterLY = row.eyecenterlefty
+            var eyeCenterRX = row.eyecenterrightx
+            var eyeCenterRY = row.eyecenterrighty
+            var pupilLX = row.pupilfinalleftx
+            var pupilLY = row.pupilfinallefty
+            var pupilRX = row.pupilfinalrightx
+            var pupilRY = row.pupilfinalrighty
 
             var tAlphaL = eyeCenterLX > pupilLX ?
                 Math.atan(Math.abs(eyeCenterLX - pupilLX) / (eyeCenterLY - pupilLY)) :
@@ -288,7 +286,7 @@ var model = function() {
 
 var header = "iteration,chain,model,loglike,score"
 
-var output_file = 'output/haillom_model_comparison_chain' + chain + '.csv'
+var output_file = 'output/chimfunshi_model_comparison_chain' + chain + '.csv'
 var callback = webpplSampleWriter.streamQueryCSV(output_file, header);
 
 var output = Infer({
