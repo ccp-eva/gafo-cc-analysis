@@ -1271,8 +1271,7 @@ data_nz%>%
 
 # Merge
 ```{r}
-
-data <- bind_rows(
+merge_raw_data <- bind_rows(
   data_zambia,
   data_namibia%>%rename(younger_children = youngerchildren),
   data_leipzig,
@@ -1290,7 +1289,11 @@ data <- bind_rows(
          voiceover == F
          )%>%
   mutate(age_group = substr(ageinyears, 1,1), 
-         trialnr = as.numeric(factor(trialnr)))%>%
+         trialnr = as.numeric(factor(trialnr)))
+
+write_csv(data,"../data/gafo-cc-raw-data.csv")
+
+data <- merge_raw_data%>%
   select(subjid, community, age_group, ageinyears, sex, screen, touchscreen, household, children, younger_children, trialnr, targetposition,targetcenterx, targetcentralityx, clickdistfromtargetcenterx)%>%
   filter(ageinyears > 1)
 
