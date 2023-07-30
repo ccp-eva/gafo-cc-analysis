@@ -37,287 +37,58 @@ data <- read_csv("../data/gafo-cc-clean-data.csv")
 
 ```
 
-## Click distribution based on performance
+# Model comparison
 
-# Model 
+## Hai||om
 
 ```{r, message=FALSE, warning=F}
-model <- rbindlist(
+haillom_model_comparison <- rbindlist(
   list(
-     fread("../model/output/gafo-cc_gran_20_chain1.csv"),
-     fread("../model/output/gafo-cc_gran_20_chain2.csv"),
-     fread("../model/output/gafo-cc_gran_20_chain3.csv"),
-     fread("../model/output/gafo-cc_gran_20_chain4.csv"),
-     fread("../model/output/gafo-cc_gran_20_chain5.csv"),
-     fread("../model/output/gafo-cc_gran_20_chain6.csv"),
-     fread("../model/output/gafo-cc_gran_20_chain7.csv"),
-     fread("../model/output/gafo-cc_gran_20_chain8.csv")
-    ), use.names=TRUE)#%>%saveRDS("../models/output/model_kids_box.rds")
+     fread("../model/output/haillom_model_comparison_chain1.csv"),
+     fread("../model/output/haillom_model_comparison_chain1.csv"),
+     fread("../model/output/haillom_model_comparison_chain1.csv"),
+     fread("../model/output/haillom_model_comparison_chain1.csv"),
+     fread("../model/output/haillom_model_comparison_chain1.csv"),
+     fread("../model/output/haillom_model_comparison_chain1.csv")
+    ), use.names=TRUE)%>%saveRDS("../models/output/haillom_model_comparison.rds")%>%
+  group_by(chain, iteration, model)%>%
+  summarise(like = sum(loglike))%>%
+  mutate(community = "hai||om")
 
-
-
-# saveRDS(model, "../model/output/gafo-cc-model.rds")
-# 
-# model <- readRDS("../model/output/gafo-cc-model.rds")
-```
-
-## Global Paramters
-
-### Guessing
-
-```{r}
-model%>%
-  filter(scope == "global", 
-         parameter == "guessing",
-         chain != 5,
-         chain != 6)%>%
-ggplot(aes(x= value, fill = factor(chain)))+
-  geom_density(alpha = .5)+
-  facet_wrap(community~type, scales = "free_y", nrow = 2)+
-  theme_few()+
-  scale_fill_viridis_d()
-```
-
-### Bias
-
-```{r}
-model%>%
-  filter(
-         parameter == "bias",
-         chain != 5)%>%
-ggplot(aes(x= value, fill = factor(chain)))+
-  geom_density(alpha = .5)+
-  facet_grid(community~type)+
-  theme_few()+
-  scale_fill_viridis_d()
-```
-
-### Inference
-
-```{r}
-model%>%
-  filter(scope == "global", 
-         parameter == "inference",
-         chain != 5,
-         chain != 4)%>%
-ggplot(aes(x= value, fill = factor(chain)))+
-  geom_density(alpha = .5)+
-  facet_wrap(community~type, scales = "free_y")+
-  theme_minimal()+
-  scale_fill_viridis_d()
-```
-## Development
-
-### Guessing
-```{r}
-guess_map <- model%>%
-  filter(scope == "global", 
-         parameter == "guessing")%>%
-  group_by(community, type)%>%
-  summarise(mode = estimate_mode(value))%>%
-  pivot_wider(names_from = "type", values_from = "mode")%>%
-  expand_grid(age = seq(0,5.5, by = 0.1))%>%
-  mutate(guess = plogis(intercept + slope * age))
-
-
-guess_samp <- model%>%
-  filter(scope == "global",
-         parameter == "guessing")%>%
-  pivot_wider(names_from = "type", values_from = "value")%>%
-  sample_n(1000)%>%
-  expand_grid(age = seq(0,5.5, by = 0.1))%>%
-  mutate(guess = plogis(intercept + slope * age))
-
-# guess_samp <- model%>%
-#   filter(scope == "global", 
-#          parameter == "guessing")%>%
-#   pivot_wider(names_from = "type", values_from = "value")%>%
-#   group_by(chain)%>%
-#   expand_grid(age = seq(0,3, by = 0.1))%>%
-#   mutate(sd_inf = exp(intercept + slope * age))%>%
-#   group_by(age)%>%
-#   summarise(uci = hdi_upper(sd_inf),
-#             lci = hdi_lower(sd_inf))
-
-ggplot()+
-  geom_line(data = guess_samp, aes(x = age+2.5, y = guess, group = paste(chain,iteration)), alpha = .01)+
-  #geom_line(data = inf_samp, aes(x = age+3, y = uci), lty = 2)+
-  #geom_line(data = inf_samp, aes(x = age+3, y = lci), lty = 2)+
-  geom_line(data = guess_map, aes(x = age+2.5, y = guess), col = "firebrick")+
-  facet_grid(~community)+
-  #xlim(2.5,8)+
-  xlab("Age")+
-  #ylim(0,1)+
-  theme_minimal()
-```
-
-### Bias
-```{r}
-bias_map <- model%>%
-  filter(scope == "global", 
-         parameter == "bias")%>%
-  group_by(community,type)%>%
-  summarise(mode = estimate_mode(value))%>%
-  pivot_wider(names_from = "type", values_from = "mode")%>%
-  expand_grid(age = seq(0,5.5, by = 0.1))%>%
-  mutate(bias = plogis(intercept + slope * age))
-
-
-bias_samp <- model%>%
-  filter(scope == "global",
-         parameter == "bias")%>%
-  pivot_wider(names_from = "type", values_from = "value")%>%
-  sample_n(1000)%>%
-  expand_grid(age = seq(0,5.5, by = 0.1))%>%
-  mutate(bias = plogis(intercept + slope * age))
-
-# bias_samp <- model%>%
-#   filter(scope == "global", 
-#          parameter == "bias")%>%
-#   pivot_wider(names_from = "type", values_from = "value")%>%
-#   group_by(chain)%>%
-#   expand_grid(age = seq(0,3, by = 0.1))%>%
-#   mutate(sd_inf = exp(intercept + slope * age))%>%
-#   group_by(age)%>%
-#   summarise(uci = hdi_upper(sd_inf),
-#             lci = hdi_lower(sd_inf))
-
-ggplot()+
-  geom_line(data = bias_samp, aes(x = age+2.5, y = bias, group = paste(chain,iteration)), alpha = .01)+
-  #geom_line(data = inf_samp, aes(x = age+3, y = uci), lty = 2)+
-  #geom_line(data = inf_samp, aes(x = age+3, y = lci), lty = 2)+
-  geom_line(data = bias_map, aes(x = age+2.5, y = bias), col = "firebrick")+
-  #xlim(3,6)+
-  facet_grid(~community)+
-  xlab("Age")+
-  #ylim(0,1)+
-  theme_minimal()
-```
-
-
-### Inference
-
-```{r}
-inf_map <- model%>%
-  filter(scope == "global", 
-         parameter == "inference")%>%
-  group_by(community,type)%>%
-  summarise(mode = estimate_mode(value))%>%
-  pivot_wider(names_from = "type", values_from = "mode")%>%
-  expand_grid(age = seq(0,5.5, by = 0.1))%>%
-  mutate(sd_inf = plogis(intercept + slope * age))
-
-
-inf_samp <- model%>%
-  filter(scope == "global",
-         parameter == "inference")%>%
-  pivot_wider(names_from = "type", values_from = "value")%>%
-  group_by(chain)%>%
-  sample_n(1000)%>%
-  expand_grid(age = seq(0,5.5, by = 0.1))%>%
-  mutate(sd_inf = plogis(intercept + slope * age))
-
-# inf_samp <- model%>%
-#   filter(scope == "global",
-#          parameter == "inference")%>%
-#   pivot_wider(names_from = "type", values_from = "value")%>%
-#   group_by(chain)%>%
-#   expand_grid(age = seq(0,3, by = 0.1))%>%
-#   mutate(sd_inf = exp(intercept + slope * age))%>%
-#   group_by(age)%>%
-#   summarise(uci = hdi_upper(sd_inf),
-#             lci = hdi_lower(sd_inf))
-
-ggplot()+
-  geom_line(data = inf_samp, aes(x = age+2.5, y = sd_inf, group = paste(chain,iteration)), alpha = .01, size = 0.1)+
-   # geom_line(data = inf_samp, aes(x = age+3, y = uci), lty = 2)+
-   # geom_line(data = inf_samp, aes(x = age+3, y = lci), lty = 2)+
-  geom_line(data = inf_map, aes(x = age+2.5, y = sd_inf), col = "firebrick")+
-  #xlim(3,6)+
-  facet_grid(~community)+
-  labs(x = "Age", y = "Gaze inference precision (across individuals)")+
-  #ylim(0,1)+
-  theme_minimal()
+ haillom_model_comparison <- readRDS("../model/output/haillom_model_comparison.rds")
 ```
 
 ```{r}
-ggsave("../graphs/sd_dev.png", width = 8, height = 4, scale = 1, bg = "white")
+haillom_model_comparison%>%
+  group_by(community, model,chain)%>%
+  summarise(margllh = logSumExp(like))%>%
+  pivot_wider(names_from = model, values_from = margllh)
 ```
 
 
-```{r}
-alt <- model%>%
-  filter(scope == "global", 
-         parameter != "inference")%>%
-  group_by(community,parameter,type)%>%
-  summarise(mode = estimate_mode(value))%>%
-  filter(type != "sigma")%>%
-  pivot_wider(names_from = c("parameter", "type"), values_from = "mode")%>%
-  expand_grid(age = seq(0,3, by = 0.1))%>%
-  mutate(guess = plogis(guessing_intercept + guessing_slope * age),
-         bias_raw = plogis(bias_intercept + bias_slope * age),
-         inference = 1- guess,
-         center_bias = guess * bias_raw,
-         random_guessing = 1- inference - center_bias)%>%
-  ungroup()%>%
-  select(age,community, center_bias, random_guessing, inference)%>%
-  pivot_longer(names_to = "parameter", values_to = "value", cols = c(center_bias, random_guessing, inference))%>%
-  mutate(parameter = factor(parameter, levels = c("inference", "random_guessing", "center_bias")))
+# Summary
 
-ggplot(alt, aes(x = age+3, y = value, fill = parameter))+
-  geom_area(alpha = .9)+
-  xlim(3,6)+
-  xlab("Age")+
-  ylim(0,1)+
-  facet_grid(~community)+
+```{r}
+bind_rows(
+  haillom_model_comparison
+) %>%
+  group_by(community, model)%>%
+  summarise(margllh = logSumExp(like))%>%
+  pivot_wider(names_from = model, values_from = margllh)%>%
+  summarise(bf_inf_center = inf - center, 
+            bf_inf_guess = inf - guess)
+
+```
+
+```{r}
+bind_rows(
+  haillom_model_comparison
+)%>%
+  ggplot(aes(x = like))+
+  geom_histogram(alpha = .5, aes(fill = model), col = "black")+
+  facet_wrap(~community, scales = "free")+
   scale_fill_colorblind()+
-  theme_minimal()
+  xlim(-8000, -5000)+
+  theme_bw()
 ```
-
-## Individual 
-
-### Guessing
-
-```{r}
-model%>%
-  filter(scope == "id", 
-         parameter == "guessing")%>%
-  ggplot(aes(x = value, fill = factor(chain)))+
-  geom_density(alpha = .25)+
-  facet_wrap(~id, scales = "free")+
-  theme_void()+
-  scale_fill_colorblind()
-```
-
-### Inference
-
-```{r}
-model%>%
-  filter(scope == "id", 
-         parameter == "inference")%>%
-  ggplot(aes(x = value, fill = factor(chain)))+
-  geom_density(alpha = .25)+
-  facet_wrap(~id, scales = "free")+
-  theme_minimal()+
-  scale_fill_colorblind()+
-  xlim(0,2)
-```
-
-### Relation between paramters
-
-```{r}
-rel <- model%>%
-  filter(scope == "id")%>%
-  group_by(parameter, id)%>%
-  summarise(mode = estimate_mode(value))%>%
-  left_join(data%>%rename(id = subjID)%>%select(id, ageInYears))
-
-ggplot(rel,aes(x = parameter, y = mode))+
-  geom_line(aes(group = id), alpha = .25)+
-  geom_point(col = "dodgerblue", pch = 1,alpha = .5)+
-  facet_grid(~ageInYears)+
-  theme_minimal()
-```
-
-
 

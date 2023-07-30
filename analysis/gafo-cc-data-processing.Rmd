@@ -1344,9 +1344,21 @@ data%>%
 # Data for model 
 
 ```{r}
-
 data <- read_csv("../data/gafo-cc-clean-data.csv")
+```
 
+
+```{r}
+chimfunshi_data <- data%>%
+  filter(community == "chimfunshi",
+         voiceover == F)%>%
+  mutate(agecentered = ageinyears - min(ageinyears))%>%
+  select(-c(sex,ageinyears, wrongareaclick, earlyclick, durationanimationballoontotal, durationanimationcomplete, responsetime, clientscreenwidth, clientscreenheight, clientscreenscaling, clickoriginalx, clickoriginaly, hitbbtargetx, hitbbtargety, clickdistfromtargetbboxx, clickedarea, studyversion, boxesnr,population, inhouse, os, mobile, browser, browserversion, safari, iossafari,target, voiceover, epoch, timestamp, inwardclick, boxwidth,boxborderleft, boxborderright , correctbox, datacollection, sample, studytype, comment, status, site,`location` ))
+
+write(toJSON(chimfunshi_data), file = "../model/model_data/chimfunshi-model-data.json")
+```
+
+```{r}
 haillom_data <- data%>%
   filter(community == "hai||om",
          voiceover == F)%>%
