@@ -1355,6 +1355,55 @@ data%>%
 merge_raw_data <- read_csv("../data/gafo-cc-raw-data.csv")
 ```
 
+```{r}
+akure_data <- merge_raw_data%>%
+  filter(community == "akure",
+         voiceover == F)%>%
+  mutate(agecentered = ageinyears - min(ageinyears))%>%
+  select(-c(sex,ageinyears, wrongareaclick, earlyclick, durationanimationballoontotal, durationanimationcomplete, responsetime, clientscreenwidth, clientscreenheight, clientscreenscaling, clickoriginalx, clickoriginaly, hitbbtargetx, hitbbtargety, clickdistfromtargetbboxx, clickedarea, studyversion, boxesnr,population, inhouse, os, mobile, browser, browserversion, safari, iossafari,target, voiceover, epoch, timestamp, inwardclick, boxwidth,boxborderleft, boxborderright , correctbox, datacollection, sample, studytype, comment, status, site,`location` ))
+
+write(toJSON(akure_data), file = "../model/model_data/akure-model-data.json")
+```
+
+```{r}
+buenos_aires_data <- merge_raw_data%>%
+  filter(community == "buenos_aires",
+         voiceover == F)%>%
+  mutate(agecentered = ageinyears - min(ageinyears))%>%
+  select(-c(sex,ageinyears, wrongareaclick, earlyclick, durationanimationballoontotal, durationanimationcomplete, responsetime, clientscreenwidth, clientscreenheight, clientscreenscaling, clickoriginalx, clickoriginaly, hitbbtargetx, hitbbtargety, clickdistfromtargetbboxx, clickedarea, studyversion, boxesnr,population, inhouse, os, mobile, browser, browserversion, safari, iossafari,target, voiceover, epoch, timestamp, inwardclick, boxwidth,boxborderleft, boxborderright , correctbox, datacollection, sample, studytype, comment, status, site,`location` ))
+
+write(toJSON(buenos_aires_data), file = "../model/model_data/buenos_aires-model-data.json")
+```
+
+```{r}
+beijing_data <- merge_raw_data%>%
+  filter(community == "beijing",
+         voiceover == F)%>%
+  mutate(agecentered = ageinyears - min(ageinyears))%>%
+  select(-c(sex,ageinyears, wrongareaclick, earlyclick, durationanimationballoontotal, durationanimationcomplete, responsetime, clientscreenwidth, clientscreenheight, clientscreenscaling, clickoriginalx, clickoriginaly, hitbbtargetx, hitbbtargety, clickdistfromtargetbboxx, clickedarea, studyversion, boxesnr,population, inhouse, os, mobile, browser, browserversion, safari, iossafari,target, voiceover, epoch, timestamp, inwardclick, boxwidth,boxborderleft, boxborderright , correctbox, datacollection, sample, studytype, comment, status, site,`location` ))
+
+write(toJSON(beijing_data), file = "../model/model_data/beijing-model-data.json")
+```
+
+```{r}
+india_data <- merge_raw_data%>%
+  filter(community == "india",
+         voiceover == F)%>%
+  mutate(agecentered = ageinyears - min(ageinyears))%>%
+  select(-c(sex,ageinyears, wrongareaclick, earlyclick, durationanimationballoontotal, durationanimationcomplete, responsetime, clientscreenwidth, clientscreenheight, clientscreenscaling, clickoriginalx, clickoriginaly, hitbbtargetx, hitbbtargety, clickdistfromtargetbboxx, clickedarea, studyversion, boxesnr,population, inhouse, os, mobile, browser, browserversion, safari, iossafari,target, voiceover, epoch, timestamp, inwardclick, boxwidth,boxborderleft, boxborderright , correctbox, datacollection, sample, studytype, comment, status, site,`location` ))
+
+write(toJSON(india_data), file = "../model/model_data/india-model-data.json")
+```
+
+```{r}
+mexico_data <- merge_raw_data%>%
+  filter(community == "mexico",
+         voiceover == F)%>%
+  mutate(agecentered = ageinyears - min(ageinyears))%>%
+  select(-c(sex,ageinyears, wrongareaclick, earlyclick, durationanimationballoontotal, durationanimationcomplete, responsetime, clientscreenwidth, clientscreenheight, clientscreenscaling, clickoriginalx, clickoriginaly, hitbbtargetx, hitbbtargety, clickdistfromtargetbboxx, clickedarea, studyversion, boxesnr,population, inhouse, os, mobile, browser, browserversion, safari, iossafari,target, voiceover, epoch, timestamp, inwardclick, boxwidth,boxborderleft, boxborderright , correctbox, datacollection, sample, studytype, comment, status, site,`location` ))
+
+write(toJSON(mexico_data), file = "../model/model_data/mexico-model-data.json")
+```
 
 ```{r}
 chimfunshi_data <- merge_raw_data%>%
