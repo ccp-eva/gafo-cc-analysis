@@ -180,21 +180,81 @@ nigeria_model_comparison%>%
   pivot_wider(names_from = model, values_from = margllh)
 ```
 
+## Beijing
+
+```{r, message=FALSE, warning=F}
+china_model_comparison <- rbindlist(
+  list(
+     fread("../model/output/beijing_model_comparison_chain1.csv"),
+     fread("../model/output/beijing_model_comparison_chain2.csv"),
+     fread("../model/output/beijing_model_comparison_chain3.csv"),
+     fread("../model/output/beijing_model_comparison_chain4.csv"),
+     fread("../model/output/beijing_model_comparison_chain5.csv"),
+     fread("../model/output/beijing_model_comparison_chain6.csv")
+    ), use.names=TRUE)%>%
+  group_by(chain, iteration, model)%>%
+  summarise(like = sum(loglike))%>%
+  mutate(community = "china")%>%
+  saveRDS("../model/output/china_model_comparison.rds")
+
+china_model_comparison <- readRDS("../model/output/china_model_comparison.rds")
+```
+
+```{r}
+china_model_comparison%>%
+  group_by(community, model,chain)%>%
+  summarise(margllh = logSumExp(like), 
+            n = n_distinct(iteration))%>%
+  pivot_wider(names_from = model, values_from = margllh)
+```
+
+## Buenos Aires
+
+```{r, message=FALSE, warning=F}
+argentina_model_comparison <- rbindlist(
+  list(
+     fread("../model/output/buenos_aires_model_comparison_chain1.csv"),
+     fread("../model/output/buenos_aires_model_comparison_chain2.csv"),
+     fread("../model/output/buenos_aires_model_comparison_chain3.csv"),
+     fread("../model/output/buenos_aires_model_comparison_chain4.csv"),
+     fread("../model/output/buenos_aires_model_comparison_chain5.csv"),
+     fread("../model/output/buenos_aires_model_comparison_chain6.csv")
+    ), use.names=TRUE)%>%
+  group_by(chain, iteration, model)%>%
+  summarise(like = sum(loglike))%>%
+  mutate(community = "argentina")%>%
+  saveRDS("../model/output/argentina_model_comparison.rds")
+
+argentina_model_comparison <- readRDS("../model/output/argentina_model_comparison.rds")
+```
+
+```{r}
+argentina_model_comparison%>%
+  group_by(community, model,chain)%>%
+  summarise(margllh = logSumExp(like), 
+            n = n_distinct(iteration))%>%
+  pivot_wider(names_from = model, values_from = margllh)
+```
+
 # Summary
 
 ```{r}
-bind_rows(
+bf_comparison <- bind_rows(
   haillom_model_comparison,
   chimfunshi_model_comparison,
   mexico_model_comparison,
   india_model_comparison,
-  nigeria_model_comparison
+  nigeria_model_comparison,
+  china_model_comparison,
+  argentina_model_comparison
 ) %>%
   group_by(community, model)%>%
   summarise(margllh = logSumExp(like))%>%
   pivot_wider(names_from = model, values_from = margllh)%>%
   summarise(bf_inf_center = inf - center, 
             bf_inf_guess = inf - guess)
+
+saveRDS(bf_comparison, "../model/output/bf_comparison.rds")
 
 ```
 
