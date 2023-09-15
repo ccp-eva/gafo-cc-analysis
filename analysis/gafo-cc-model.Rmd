@@ -45,15 +45,16 @@ data <- read_csv("../data/gafo-cc-clean-data.csv")
 haillom_model_comparison <- rbindlist(
   list(
      fread("../model/output/haillom_model_comparison_chain1.csv"),
-     fread("../model/output/haillom_model_comparison_chain1.csv"),
-     fread("../model/output/haillom_model_comparison_chain1.csv"),
-     fread("../model/output/haillom_model_comparison_chain1.csv"),
-     fread("../model/output/haillom_model_comparison_chain1.csv"),
-     fread("../model/output/haillom_model_comparison_chain1.csv")
-    ), use.names=TRUE)%>%saveRDS("../models/output/haillom_model_comparison.rds")%>%
+     fread("../model/output/haillom_model_comparison_chain2.csv"),
+     fread("../model/output/haillom_model_comparison_chain3.csv"),
+     fread("../model/output/haillom_model_comparison_chain4.csv"),
+     fread("../model/output/haillom_model_comparison_chain5.csv"),
+     fread("../model/output/haillom_model_comparison_chain6.csv")
+    ), use.names=TRUE)%>%
   group_by(chain, iteration, model)%>%
   summarise(like = sum(loglike))%>%
-  mutate(community = "hai||om")
+  mutate(community = "hai||om")%>%
+  saveRDS("../model/output/haillom_model_comparison.rds")
 
  haillom_model_comparison <- readRDS("../model/output/haillom_model_comparison.rds")
 ```
@@ -61,16 +62,191 @@ haillom_model_comparison <- rbindlist(
 ```{r}
 haillom_model_comparison%>%
   group_by(community, model,chain)%>%
-  summarise(margllh = logSumExp(like))%>%
+  summarise(margllh = logSumExp(like), 
+            n = n_distinct(iteration))%>%
+  pivot_wider(names_from = model, values_from = margllh)
+```
+
+## Chimfunshi
+
+```{r, message=FALSE, warning=F}
+chimfunshi_model_comparison <- rbindlist(
+  list(
+     fread("../model/output/chimfunshi_model_comparison_chain1.csv"),
+     fread("../model/output/chimfunshi_model_comparison_chain2.csv"),
+     fread("../model/output/chimfunshi_model_comparison_chain3.csv"),
+     fread("../model/output/chimfunshi_model_comparison_chain4.csv"),
+     fread("../model/output/chimfunshi_model_comparison_chain5.csv"),
+     fread("../model/output/chimfunshi_model_comparison_chain6.csv")
+    ), use.names=TRUE)%>%
+  group_by(chain, iteration, model)%>%
+  summarise(like = sum(loglike))%>%
+  mutate(community = "chimfunshi")%>%
+  saveRDS("../model/output/chimfunshi_model_comparison.rds")
+
+ chimfunshi_model_comparison <- readRDS("../model/output/chimfunshi_model_comparison.rds")
+```
+
+```{r}
+chimfunshi_model_comparison%>%
+  group_by(community, model,chain)%>%
+  summarise(margllh = logSumExp(like), 
+            n = n_distinct(iteration))%>%
+  pivot_wider(names_from = model, values_from = margllh)
+```
+
+## Mexico
+
+```{r, message=FALSE, warning=F}
+mexico_model_comparison <- rbindlist(
+  list(
+     fread("../model/output/mexico_model_comparison_chain1.csv"),
+     fread("../model/output/mexico_model_comparison_chain2.csv"),
+     fread("../model/output/mexico_model_comparison_chain3.csv"),
+     fread("../model/output/mexico_model_comparison_chain4.csv"),
+     fread("../model/output/mexico_model_comparison_chain5.csv"),
+     fread("../model/output/mexico_model_comparison_chain6.csv")
+    ), use.names=TRUE)%>%
+  group_by(chain, iteration, model)%>%
+  summarise(like = sum(loglike))%>%
+  mutate(community = "mexico")%>%
+  saveRDS("../model/output/mexico_model_comparison.rds")
+
+ mexico_model_comparison <- readRDS("../model/output/mexico_model_comparison.rds")
+```
+
+```{r}
+mexico_model_comparison%>%
+  group_by(community, model,chain)%>%
+  summarise(margllh = logSumExp(like), 
+            n = n_distinct(iteration))%>%
   pivot_wider(names_from = model, values_from = margllh)
 ```
 
 
+## India
+
+```{r, message=FALSE, warning=F}
+india_model_comparison <- rbindlist(
+  list(
+     fread("../model/output/india_model_comparison_chain1.csv"),
+     fread("../model/output/india_model_comparison_chain2.csv"),
+     fread("../model/output/india_model_comparison_chain3.csv"),
+     fread("../model/output/india_model_comparison_chain4.csv"),
+     fread("../model/output/india_model_comparison_chain5.csv"),
+     fread("../model/output/india_model_comparison_chain6.csv")
+    ), use.names=TRUE)%>%
+  group_by(chain, iteration, model)%>%
+  summarise(like = sum(loglike))%>%
+  mutate(community = "india")%>%
+  saveRDS("../model/output/india_model_comparison.rds")
+
+  india_model_comparison <- readRDS("../model/output/india_model_comparison.rds")
+```
+
+```{r}
+india_model_comparison%>%
+  group_by(community, model,chain)%>%
+  summarise(margllh = logSumExp(like), 
+            n = n_distinct(iteration))%>%
+  pivot_wider(names_from = model, values_from = margllh)
+```
+
+## Akure
+
+```{r, message=FALSE, warning=F}
+nigeria_model_comparison <- rbindlist(
+  list(
+     fread("../model/output/akure_model_comparison_chain1.csv"),
+     fread("../model/output/akure_model_comparison_chain2.csv"),
+     fread("../model/output/akure_model_comparison_chain3.csv"),
+     fread("../model/output/akure_model_comparison_chain4.csv"),
+     fread("../model/output/akure_model_comparison_chain5.csv"),
+     fread("../model/output/akure_model_comparison_chain6.csv")
+    ), use.names=TRUE)%>%
+  group_by(chain, iteration, model)%>%
+  summarise(like = sum(loglike))%>%
+  mutate(community = "nigeria")%>%
+  saveRDS("../model/output/nigeria_model_comparison.rds")
+
+nigeria_model_comparison <- readRDS("../model/output/nigeria_model_comparison.rds")
+```
+
+```{r}
+nigeria_model_comparison%>%
+  group_by(community, model,chain)%>%
+  summarise(margllh = logSumExp(like), 
+            n = n_distinct(iteration))%>%
+  pivot_wider(names_from = model, values_from = margllh)
+```
+
+## Beijing
+
+```{r, message=FALSE, warning=F}
+china_model_comparison <- rbindlist(
+  list(
+     fread("../model/output/beijing_model_comparison_chain1.csv"),
+     fread("../model/output/beijing_model_comparison_chain2.csv"),
+     fread("../model/output/beijing_model_comparison_chain3.csv"),
+     fread("../model/output/beijing_model_comparison_chain4.csv"),
+     fread("../model/output/beijing_model_comparison_chain5.csv"),
+     fread("../model/output/beijing_model_comparison_chain6.csv")
+    ), use.names=TRUE)%>%
+  group_by(chain, iteration, model)%>%
+  summarise(like = sum(loglike))%>%
+  mutate(community = "china")%>%
+  saveRDS("../model/output/china_model_comparison.rds")
+
+china_model_comparison <- readRDS("../model/output/china_model_comparison.rds")
+```
+
+```{r}
+china_model_comparison%>%
+  group_by(community, model,chain)%>%
+  summarise(margllh = logSumExp(like), 
+            n = n_distinct(iteration))%>%
+  pivot_wider(names_from = model, values_from = margllh)
+```
+
+## Buenos Aires
+
+```{r, message=FALSE, warning=F}
+argentina_model_comparison <- rbindlist(
+  list(
+     fread("../model/output/buenos_aires_model_comparison_chain1.csv"),
+     fread("../model/output/buenos_aires_model_comparison_chain2.csv"),
+     fread("../model/output/buenos_aires_model_comparison_chain3.csv"),
+     fread("../model/output/buenos_aires_model_comparison_chain4.csv"),
+     fread("../model/output/buenos_aires_model_comparison_chain5.csv"),
+     fread("../model/output/buenos_aires_model_comparison_chain6.csv")
+    ), use.names=TRUE)%>%
+  group_by(chain, iteration, model)%>%
+  summarise(like = sum(loglike))%>%
+  mutate(community = "argentina")%>%
+  saveRDS("../model/output/argentina_model_comparison.rds")
+
+argentina_model_comparison <- readRDS("../model/output/argentina_model_comparison.rds")
+```
+
+```{r}
+argentina_model_comparison%>%
+  group_by(community, model,chain)%>%
+  summarise(margllh = logSumExp(like), 
+            n = n_distinct(iteration))%>%
+  pivot_wider(names_from = model, values_from = margllh)
+```
+
 # Summary
 
 ```{r}
-bind_rows(
-  haillom_model_comparison
+bf_comparison <- bind_rows(
+  haillom_model_comparison,
+  chimfunshi_model_comparison,
+  mexico_model_comparison,
+  india_model_comparison,
+  nigeria_model_comparison,
+  china_model_comparison,
+  argentina_model_comparison
 ) %>%
   group_by(community, model)%>%
   summarise(margllh = logSumExp(like))%>%
@@ -78,17 +254,8 @@ bind_rows(
   summarise(bf_inf_center = inf - center, 
             bf_inf_guess = inf - guess)
 
+saveRDS(bf_comparison, "../model/output/bf_comparison.rds")
+
 ```
 
-```{r}
-bind_rows(
-  haillom_model_comparison
-)%>%
-  ggplot(aes(x = like))+
-  geom_histogram(alpha = .5, aes(fill = model), col = "black")+
-  facet_wrap(~community, scales = "free")+
-  scale_fill_colorblind()+
-  xlim(-8000, -5000)+
-  theme_bw()
-```
 

@@ -33,7 +33,7 @@ var deg2rad = function(x) {
 
 // data
 
-var data = json.read('model_data/chimfunshi-model-data.json');
+var data = json.read('model_data/akure-model-data.json');
 
 //var trialTypes = levels(data, "trialType")
 
@@ -286,7 +286,7 @@ var model = function() {
 
 var header = "iteration,chain,model,loglike,score"
 
-var output_file = 'output/chimfunshi_model_comparison_chain' + chain + '.csv'
+var output_file = 'output/akure_model_comparison_chain' + chain + '.csv'
 var callback = webpplSampleWriter.streamQueryCSV(output_file, header);
 
 var output = Infer({
