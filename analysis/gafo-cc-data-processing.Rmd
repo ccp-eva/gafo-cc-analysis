@@ -1151,12 +1151,12 @@ system("rsync -zaP ccp-odcJ:/srv/ccp-odc/gafo-newzealand/data/ ~/Work/Local/Quan
 
 ```{r read_data}
 # get all .json files
-files <- list.files("../../raw_data/gafo-cc/auckland/", pattern = "*.json",recursive = T)%>% str_subset(pattern = "gafo--", negate = T)
+files <- list.files("../../../../../../Cloud/QuantEx/Gafo-cc/data/new_zealand/data/", pattern = "*.json",recursive = T)
 
 # convert json files to tibbles
 raw_data_nz <- tibble()
 for (f in files) {
-  jf <- paste("../../raw_data/gafo-cc/auckland/", f, sep = "")
+  jf <- paste("../../../../../../Cloud/QuantEx/Gafo-cc/data/new_zealand/data/", f, sep = "")
   jd <- jsonlite::fromJSON(paste(readLines(jf, warn = "FALSE"), collapse = ""))
   
   # needed because hedge trials have numbers, box trials have characters
@@ -1256,6 +1256,7 @@ tidy_demographics_nz <- raw_demographics_nz %>%
 
 ```{r}
 data_nz <- tidy_demographics_nz%>%
+  filter(subjid != "NZ000001")%>%
   left_join(tidy_data_nz%>%rename_all(tolower),by = c("subjid"))%>%
   distinct(subjid, trialnr, .keep_all = TRUE)
 
@@ -1268,6 +1269,120 @@ data_nz%>%
   group_by(age)%>%
   summarise(n())
 ```
+
+# Turkey
+
+```{r read_data}
+# get all .json files
+files <- list.files("../../../../../../Cloud/QuantEx/Gafo-cc/data/turkey/data/", pattern = "*.json",recursive = T)
+
+# convert json files to tibbles
+raw_data_tur <- tibble()
+for (f in files) {
+  jf <- paste("../../../../../../Cloud/QuantEx/Gafo-cc/data/turkey/data/", f, sep = "")
+  jd <- jsonlite::fromJSON(paste(readLines(jf, warn = "FALSE"), collapse = ""))
+  
+  # needed because hedge trials have numbers, box trials have characters
+  jd$targetPosition <- factor(as.character(jd$targetPosition))
+  
+  raw_data_tur <- bind_rows(raw_data_tur, jd)
+}
+# remove variables that we don't need anymore
+rm(f, files, jf, jd)
+```
+
+```{r}
+tidy_data_tur <- raw_data_tur %>%
+  
+  # convert all character vectors into factors
+  mutate_if(is.character, as.factor) %>% 
+  
+  mutate(
+    
+    # attention! the SVG coord system starts with 0, 0 in upper left corner
+    # we transform the values so that 0, 0 is lower left corner (for plots etc)
+    clickScaledY = 1080 - clickScaledY,
+    targetY = 1080 - targetY, 
+    targetCenterY = 1080 - targetCenterY, 
+    eyeCenterRightY = 1080 - eyeCenterRightY,
+    eyeCenterLeftY = 1080 - eyeCenterLeftY,
+    pupilFinalRightY = 1080 - pupilFinalRightY,
+    pupilFinalLeftY = 1080 - pupilFinalLeftY, 
+    targetCentralityX = abs(960 - targetCenterX),
+    
+    # similarly here: in svg coords, negative click distance means up. 
+    # here we invert it, so that negative values mean down
+    clickDistFromTargetCenterY = clickDistFromTargetCenterY * -1, 
+    clickDistFromTargetBBoxY = clickDistFromTargetBBoxY * -1, 
+    
+    # positive values for inward clicks (i.e.,towards the center), negative for outward clicks
+    centralityBias = ifelse(targetCenterX <= 1920/2,
+                            clickDistFromTargetCenterX, 
+                            clickDistFromTargetCenterX*-1), 
+    
+    inwardClick = ifelse(centralityBias > 0, TRUE, FALSE), 
+    
+    # did the participant click on the right box?
+    # also for hedge version, here we imagine a box surrounding the target center 
+    # this way, we can compare hedge and box version ;) 
+    boxWidth = 218, 
+    boxBorderLeft = targetCenterX - boxWidth/2, 
+    boxBorderRight = targetCenterX + boxWidth/2,
+    correctBox = ifelse(boxBorderLeft <= clickScaledX & clickScaledX <= boxBorderRight, TRUE, FALSE), 
+    
+    datacollection = as.factor("in-person - supervised"), 
+    sample = as.factor("na"),
+    studytype = as.factor("vali"),
+  ) %>%select(-touchScreen)#%>%select(subjID, population, trialType, trialNr, targetPosition, targetCentralityX, clickDistFromTargetCenterX)
+```
+
+```{r}
+tidy_data_tur%>%
+  summarise(n = n_distinct(subjID))
+
+tidy_data_tur%>%
+  group_by(subjID)%>%
+  summarise(n = n())
+
+
+```
+
+```{r }
+raw_demographics_tur <- read_xlsx("../../../../../../Cloud/QuantEx/Gafo-cc/data/turkey/gafo-cc-turkey-participants.xlsx", sheet = 1)
+
+tidy_demographics_tur <- raw_demographics_tur %>% 
+  mutate(
+    test_date = as.Date(as.character(test_date), format = "%Y%m%d"),
+    birth_date = as.Date(as.character(birth_date), format = "%Y%m%d"),
+    ageinyears = as.numeric(difftime(test_date,birth_date, units = "days")/365.25),
+  )  %>%
+  select(-c(first_name, last_name, test_date, birth_date, comment))%>%
+  #filter(!is.na(ageinyears))%>%
+  rename(subjid = id)
+
+```
+
+```{r}
+data_tur <- tidy_demographics_tur%>%
+  left_join(tidy_data_tur%>%rename_all(tolower),by = c("subjid"))%>%
+  mutate(community = "turkey")%>%
+  distinct(subjid, trialnr, .keep_all = TRUE)%>%
+  mutate(subjid = recode(subjid, 
+                     "EBRAR100" = "TUR00002",
+                     "FATMA400" = "TUR00003",
+                     "ASYAA200" = "TUR00004"))
+
+data_tur%>%
+  group_by(subjid)%>%
+  summarise(n = n())
+
+data_tur%>%
+  group_by(subjid)%>%
+  summarise(n = n(), 
+            mean = mean(abs(clickdistfromtargetcenterx)))
+
+```
+
 
 # Merge
 ```{r}
@@ -1282,7 +1397,7 @@ merge_raw_data <- bind_rows(
   data_china, 
   data_arg,
   data_ind,
-  #data_nz
+  data_nz
 )%>%
   #mutate(community = paste0("c",as.character(as.numeric(as.factor(community)))))%>%
   filter(trialtype == "test",

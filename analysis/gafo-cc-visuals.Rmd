@@ -9,7 +9,9 @@ library(ggpubr)
 library(ggthemes)
 library(tidyboot)
 library(maps)
+library(brms)
 ```
+
 
 
 ```{r}
@@ -26,7 +28,21 @@ data <- read_csv("../data/gafo-cc-clean-data.csv")%>%
                             plymouth = "plymouth (uk)",
                             beijing = "beijing (china)", 
                             india = "pune (india)",
-                            buenos_aires = "buenos aires (argentina)"))
+                            buenos_aires = "buenos aires (argentina)",
+                            auckland = "auckland (new zealand)"))
+```
+
+```{r}
+library(pals)
+
+library(RColorBrewer)
+qual_col_pals = brewer.pal.info[brewer.pal.info$colorblind == TRUE,]
+col_vector = unlist(mapply(brewer.pal, qual_col_pals$maxcolors, rownames(qual_col_pals)))
+
+colors=kelly(n=n_distinct(data$community)+1)
+
+colors <- colors[ !colors == '#F2F3F4']
+
 ```
 
 ```{r}
@@ -51,7 +67,7 @@ data%>%
   ggplot(aes(x = ageinyears, y = impr, col = community))+
   geom_point(alpha = .25)+
   geom_smooth(method = "glm")+
-  scale_color_ptol(name = "Community")+
+  scale_color_manual(name = "Community", values = colors)+
   ylim(0,1000)+
   facet_wrap(~community)+
   labs(x = "Age (in years)", y ="Imprecision (average click distance from target)")+
@@ -128,11 +144,11 @@ alt2 <- data%>%
   mutate(group = "group")
 
 ggplot(ptp, aes(x = targetposition, y = mean, col = community))+
-  geom_line(data = alt1, aes(x = targetposition, y = center, group = group), lty = 3, alpha = 0.75, col = "black")+
-  geom_line(data = alt2, aes(x = targetposition, y = random, group = group), lty = 3, alpha = 0.75,  col = "black")+
+  #geom_line(data = alt1, aes(x = targetposition, y = center, group = group), lty = 3, alpha = 0.75, col = "black")+
+  #geom_line(data = alt2, aes(x = targetposition, y = random, group = group), lty = 3, alpha = 0.75,  col = "black")+
   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
   labs(x = "Target position (binned)", y = "Imprecision (average click distance from target)")+
-  scale_color_ptol(name = "Community")+
+  scale_color_manual(name = "Community", values = colors)+
   #facet_grid(~age_group)+
   ylim(0,1000)+
   theme_minimal()
@@ -140,6 +156,33 @@ ggplot(ptp, aes(x = targetposition, y = mean, col = community))+
 
 ```{r}
 ggsave("../visuals/target_position_site.png", width = 8, height = 6, bg = "white")
+```
+
+
+```{r}
+ptp2<- data%>%
+  #filter(community != "chimfunshi (sambia)")%>%
+  mutate(targetposition = factor(targetposition, levels = c(1:10)))%>%
+  #group_by(community, targetposition, age_group)%>%
+  group_by(community,age_group, targetposition)%>%
+  tidyboot_mean(col= abs(clickdistfromtargetcenterx))
+
+
+ptp2%>%
+  #filter(community == "leipzig (germany)")%>%
+  ggplot(.,aes(x = targetposition, y = mean, col = community))+
+  #geom_line(data = alt1, aes(x = targetposition, y = center, group = group), lty = 3, alpha = 0.75, col = "black")+
+  #geom_line(data = alt2, aes(x = targetposition, y = random, group = group), lty = 3, alpha = 0.75,  col = "black")+
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
+  labs(x = "Target position (binned)", y = "Imprecision (average click distance from target)")+
+  scale_color_manual(name = "Community", values = colors)+
+  facet_grid(~factor(age_group))+
+  ylim(0,1000)+
+  theme_few()
+```
+
+```{r}
+ggsave("../visuals/target_position_site_age.png", width = 12, height = 4, bg = "white", scale = 1.5)
 ```
 
 ```{r}
@@ -227,8 +270,7 @@ bm_base <- brm(mean_click ~ ageinyears + (ageinyears |community),
                               iter   = 4000, 
                               chains = 4, 
                               cores  = 4,
-             control = list(adapt_delta = 0.95),
-             backend = "cmdstanr")
+             control = list(adapt_delta = 0.95))
 ```
 
 
@@ -245,16 +287,16 @@ post <- fitted(bm_base, newdata = ndata, re_formula =~(ageinyears|community))%>%
 
 ggplot()+
   geom_smooth(data = post, aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
-  theme_bw()+
+  theme_minimal()+
   geom_point(data = ddata, aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.5)+
-  scale_color_ptol(name = "Community")+
-  scale_fill_ptol(name = "Community")+
+  scale_fill_manual(name = "Community", values = colors)+
+  scale_color_manual(name = "Community", values = colors)+
   labs(x = "Age", y="Imprecision")#+
   facet_wrap(~community)+guides(col = "none", fill = "none")
 ```
 
 ```{r}
-ggsave("../visuals/dev.png", width = 10, height = 6, bg = "white")
+ggsave("../visuals/dev.png", width = 12, height = 8, bg = "white")
 ```
 
 # Map
@@ -279,7 +321,8 @@ data_map <- read_csv("../data/gafo-cc-clean-data.csv")%>%
                             plymouth = "UK",
                             beijing = "China",
                             india = "India",
-                            buenos_aires = "Argentina"))%>%
+                            buenos_aires = "Argentina",
+                            auckland = "New Zealand"))%>%
   mutate(loc_lat = recode(community,
                             akure = 7.251070,
                             leipzig = 51.339695,
@@ -292,7 +335,8 @@ data_map <- read_csv("../data/gafo-cc-clean-data.csv")%>%
                             plymouth = 50.37469737043179,
                             beijing = 39.91475103408255, 
                             india = 18.5265350616402,
-                            buenos_aires = -34.60217085665333))%>%
+                            buenos_aires = -34.60217085665333,
+                            auckland = -36.850146242932965))%>%
     mutate(loc_long = recode(community,
                             akure = 5.203540,
                             leipzig = 12.373075,
@@ -305,7 +349,8 @@ data_map <- read_csv("../data/gafo-cc-clean-data.csv")%>%
                             plymouth = -4.140423156946285,
                             beijing = 116.40832763995694, 
                             india = 73.86056457627757,
-                            buenos_aires = -58.39139837939201))%>%
+                            buenos_aires = -58.39139837939201,
+                            auckland = 174.7651647587945))%>%
   group_by(community, loc_lat, loc_long, region)%>%
   summarise(Participants = n_distinct(subjid))
 
@@ -457,7 +502,7 @@ remove_new <- function(aes) {
 ggplot(data = selWorld, mapping = aes(x = long, y = lat, group = group)) + 
   coord_map("moll")+
   geom_polygon(aes(fill = fill)) +
-  scale_fill_manual(breaks = c("out", "in"), values = c("grey", "#12664F"), guide = "none")+
+  scale_fill_manual(breaks = c("out", "in"), values = c("grey", "#DBD56E"), guide = "none")+
   new_scale("fill") +
   geom_point(pch = 21, data = data_map, aes(x = loc_long, y = loc_lat, fill = Participants), col = "black", inherit.aes = F, size = 2.5, stroke = 0.5)+
   #scale_fill_distiller(palette ="RdBu", direction = -1) + # or direction=1
@@ -466,5 +511,5 @@ ggplot(data = selWorld, mapping = aes(x = long, y = lat, group = group)) +
   theme(legend.position = c(0.15, 0.25), legend.background = element_blank())
 ```
 ```{r}
-ggsave("../visuals/map.pdf", width = 10, height = 6, bg = "white")
+ggsave("../visuals/map.png", width = 12, height = 6, bg = "white")
 ```

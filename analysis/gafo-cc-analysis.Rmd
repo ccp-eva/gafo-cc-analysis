@@ -723,6 +723,17 @@ bm_octs_fix <- brm(mean_click ~ ageinyears + touchscreen + older_children + (age
              control = list(adapt_delta = 0.95),
              backend = "cmdstanr")%>%
   add_criterion(., c("waic","loo"))
+
+bm_octs_rand <- brm(mean_click ~ ageinyears + touchscreen + older_children + (ageinyears + older_children |community), 
+                              data   = scdata, 
+                              family = lognormal(),
+                              warmup = 2000, 
+                              iter   = 4000, 
+                              chains = 4, 
+                              cores  = 4,
+             control = list(adapt_delta = 0.95),
+             backend = "cmdstanr")%>%
+  add_criterion(., c("waic","loo"))
 ```
 
 
@@ -802,22 +813,27 @@ ncdata <- scdata%>%
   distinct(community)%>%
   expand_grid(ageinyears = 0)%>%
   mutate(touchscreen = 1)%>%
-  expand_grid(children = c(min(scdata$children):max(scdata$children)))
+  expand_grid(older_children = c(min(scdata$older_children):max(scdata$older_children)))
 
 
-cpost <- fitted(bm_cts_rand_int, newdata = ncdata, re_formula =~(children|community))%>%
+cpost <- fitted(bm_octs_rand, newdata = ncdata, re_formula =~(older_children|community))%>%
   as_tibble() %>%
   bind_cols(ncdata)
 
 
 ggplot()+
-  geom_smooth(data = cpost, aes(x = children, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
+  geom_smooth(data = cpost, aes(x = older_children, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
   theme_bw()+
-  scale_color_ptol(name = "Community")+
-  scale_fill_ptol(name = "Community")+
+  scale_color_manual(name = "Community", values = colors)+
+  scale_fill_manual(name = "Community", values = colors)+
   facet_grid(~community)+
-  labs(x = "No of children (scaled)", y="Imprecision")
+  labs(x = "No of children older than the target child (scaled)", y="Imprecision")
 
+```
+
+
+```{r}
+ggsave("../visuals/old_child_site.png", width = 12, height = , bg = "white")
 ```
 
 
