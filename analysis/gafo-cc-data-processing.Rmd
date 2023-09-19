@@ -1397,7 +1397,8 @@ merge_raw_data <- bind_rows(
   data_china, 
   data_arg,
   data_ind,
-  data_nz
+  data_nz, 
+  data_tur
 )%>%
   #mutate(community = paste0("c",as.character(as.numeric(as.factor(community)))))%>%
   filter(trialtype == "test",
@@ -1413,7 +1414,6 @@ data <- merge_raw_data%>%
   filter(ageinyears > 1)
 
 write_csv(data,"../data/gafo-cc-clean-data.csv")
-
 
 
 
