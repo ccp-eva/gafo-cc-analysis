@@ -29,7 +29,8 @@ data <- read_csv("../data/gafo-cc-clean-data.csv")%>%
                             beijing = "beijing (china)", 
                             india = "pune (india)",
                             buenos_aires = "buenos aires (argentina)",
-                            auckland = "auckland (new zealand)"))
+                            auckland = "auckland (new zealand)",
+                            turkey = "malatya (turkey)"))
 ```
 
 ```{r}
@@ -322,7 +323,8 @@ data_map <- read_csv("../data/gafo-cc-clean-data.csv")%>%
                             beijing = "China",
                             india = "India",
                             buenos_aires = "Argentina",
-                            auckland = "New Zealand"))%>%
+                            auckland = "New Zealand",
+                            turkey = "Turkey"))%>%
   mutate(loc_lat = recode(community,
                             akure = 7.251070,
                             leipzig = 51.339695,
@@ -336,7 +338,8 @@ data_map <- read_csv("../data/gafo-cc-clean-data.csv")%>%
                             beijing = 39.91475103408255, 
                             india = 18.5265350616402,
                             buenos_aires = -34.60217085665333,
-                            auckland = -36.850146242932965))%>%
+                            auckland = -36.850146242932965,
+                          turkey = 38.35501382975052))%>%
     mutate(loc_long = recode(community,
                             akure = 5.203540,
                             leipzig = 12.373075,
@@ -350,7 +353,8 @@ data_map <- read_csv("../data/gafo-cc-clean-data.csv")%>%
                             beijing = 116.40832763995694, 
                             india = 73.86056457627757,
                             buenos_aires = -58.39139837939201,
-                            auckland = 174.7651647587945))%>%
+                            auckland = 174.7651647587945, 
+                            turkey = 38.33313216647862))%>%
   group_by(community, loc_lat, loc_long, region)%>%
   summarise(Participants = n_distinct(subjid))
 
