@@ -584,7 +584,8 @@ bm_base <- brm(mean_click ~ ageinyears + (ageinyears |community),
                               chains = 4, 
                               cores  = 4,
              control = list(adapt_delta = 0.95),
-             backend = "cmdstanr")%>%
+             #backend = "cmdstanr"
+             )%>%
   add_criterion(., c("waic","loo"))
 
 bm_full_fix <- brm(mean_click ~ ageinyears + touchscreen + household + younger_children + children + (ageinyears |community), 
@@ -617,7 +618,8 @@ bm_full_rand <- brm(mean_click ~ ageinyears + touchscreen + household + younger_
                               chains = 4, 
                               cores  = 4,
              control = list(adapt_delta = 0.95),
-             backend = "cmdstanr")%>%
+             #backend = "cmdstanr"
+             )%>%
   add_criterion(., c("waic","loo"))
 
 
@@ -710,7 +712,8 @@ bm_ycts_fix <- brm(mean_click ~ ageinyears + touchscreen + younger_children + (a
                               chains = 4, 
                               cores  = 4,
              control = list(adapt_delta = 0.95),
-             backend = "cmdstanr")%>%
+             #backend = "cmdstanr"
+             )%>%
   add_criterion(., c("waic","loo"))
 
 bm_octs_fix <- brm(mean_click ~ ageinyears + touchscreen + older_children + (ageinyears |community), 
@@ -721,7 +724,20 @@ bm_octs_fix <- brm(mean_click ~ ageinyears + touchscreen + older_children + (age
                               chains = 4, 
                               cores  = 4,
              control = list(adapt_delta = 0.95),
-             backend = "cmdstanr")%>%
+            # backend = "cmdstanr"
+             )%>%
+  add_criterion(., c("waic","loo"))
+
+bm_octs_fix_int <- brm(mean_click ~  touchscreen + ageinyears * older_children + (ageinyears |community), 
+                              data   = scdata, 
+                              family = lognormal(),
+                              warmup = 2000, 
+                              iter   = 4000, 
+                              chains = 4, 
+                              cores  = 4,
+             control = list(adapt_delta = 0.95),
+            # backend = "cmdstanr"
+             )%>%
   add_criterion(., c("waic","loo"))
 
 bm_octs_rand <- brm(mean_click ~ ageinyears + touchscreen + older_children + (ageinyears + older_children |community), 
@@ -732,19 +748,36 @@ bm_octs_rand <- brm(mean_click ~ ageinyears + touchscreen + older_children + (ag
                               chains = 4, 
                               cores  = 4,
              control = list(adapt_delta = 0.95),
-             backend = "cmdstanr")%>%
+             #backend = "cmdstanr"
+             )%>%
+  add_criterion(., c("waic","loo"))
+
+bm_octs_rand_int <- brm(mean_click ~ touchscreen + ageinyears*older_children + (ageinyears * older_children |community), 
+                              data   = scdata, 
+                              family = lognormal(),
+                              warmup = 2000, 
+                              iter   = 4000, 
+                              chains = 4, 
+                              cores  = 4,
+             control = list(adapt_delta = 0.95),
+             #backend = "cmdstanr"
+             )%>%
   add_criterion(., c("waic","loo"))
 ```
 
 
 ```{r}
 loo_compare(bm_base,
-            bm_full_fix, 
-            bm_full_rand,
-            bm_fullc_fix,
-            bm_cts_fix,
-            bm_ycts_fix,
-            bm_octs_fix
+            #bm_full_fix, 
+            #bm_full_rand,
+            #bm_fullc_fix,
+            #bm_cts_fix,
+            #bm_ycts_fix,
+            bm_octs_fix,
+            bm_octs_fix_int,
+            bm_octs_rand_int,
+            bm_octs_rand,
+            bm_full_rand
             #bm_hhts_fix#,
             #bm_cts_fix_int,
             #bm_cts_rand_int,
@@ -772,8 +805,8 @@ post <- fitted(bm_base, newdata = ndata, re_formula =~(ageinyears|community))%>%
 ggplot()+
   geom_smooth(data = post, aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
   theme_bw()+
-  scale_color_ptol(name = "Community")+
-  scale_fill_ptol(name = "Community")+
+  scale_color_manual(name = "Community", values = colors)+
+  scale_fill_manual(name = "Community", values = colors)+
   labs(x = "Age", y="Imprecision")#+
   facet_wrap(~community)+guides(col = "none", fill = "none")
 ```
@@ -826,7 +859,31 @@ ggplot()+
   theme_bw()+
   scale_color_manual(name = "Community", values = colors)+
   scale_fill_manual(name = "Community", values = colors)+
-  facet_grid(~community)+
+  facet_wrap(~community, nrow = 2)+
+  labs(x = "No of children older than the target child (scaled)", y="Imprecision")
+
+```
+
+
+```{r}
+ncdata <- scdata%>%
+  distinct(community)%>%
+  expand_grid(ageinyears = c(-1, 0, 1))%>%
+  mutate(touchscreen = 1)%>%
+  expand_grid(older_children = c(min(scdata$older_children):max(scdata$older_children)))
+
+
+cpost <- fitted(bm_octs_rand_int, newdata = ncdata, re_formula =~(older_children|community))%>%
+  as_tibble() %>%
+  bind_cols(ncdata)
+
+
+ggplot()+
+  geom_smooth(data = cpost, aes(x = older_children, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill = factor(ageinyears), col = factor(ageinyears)), stat = "identity", alpha = .25)+
+  theme_bw()+
+  scale_color_ptol()+
+  scale_fill_ptol()+
+  facet_wrap(~community, nrow = 2)+
   labs(x = "No of children older than the target child (scaled)", y="Imprecision")
 
 ```
