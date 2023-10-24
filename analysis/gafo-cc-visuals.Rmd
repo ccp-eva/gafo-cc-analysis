@@ -30,7 +30,9 @@ data <- read_csv("../data/gafo-cc-clean-data.csv")%>%
                             india = "pune (india)",
                             buenos_aires = "buenos aires (argentina)",
                             auckland = "auckland (new zealand)",
-                            turkey = "malatya (turkey)"))
+                            turkey = "malatya (turkey)",
+                            bandongo = "bandongo (rep. congo)",
+                            bayaka = "bayaka (rep. congo)"))
 ```
 
 ```{r}
@@ -70,7 +72,7 @@ data%>%
   geom_smooth(method = "glm")+
   scale_color_manual(name = "Community", values = colors)+
   ylim(0,1000)+
-  facet_wrap(~community)+
+  #facet_wrap(~community)+
   labs(x = "Age (in years)", y ="Imprecision (average click distance from target)")+
   scale_x_continuous(breaks = 2:8)+
   theme_minimal()+
