@@ -17,6 +17,9 @@ library(brms)
 ```{r}
 data <- read_csv("../data/gafo-cc-clean-data.csv")%>%
   mutate(community = recode(community,
+                            bandongo = "congo",
+                            bayaka = "congo"))%>%
+  mutate(community = recode(community,
                             akure = "akure (nigeria)",
                             leipzig = "leipzig (germany)",
                             `hai||om` = "hai||om (namibia)",
@@ -31,8 +34,7 @@ data <- read_csv("../data/gafo-cc-clean-data.csv")%>%
                             buenos_aires = "buenos aires (argentina)",
                             auckland = "auckland (new zealand)",
                             turkey = "malatya (turkey)",
-                            bandongo = "bandongo (rep. congo)",
-                            bayaka = "bayaka (rep. congo)"))
+                            congo = "likouala (rep. congo)"))
 ```
 
 ```{r}
@@ -306,12 +308,14 @@ ggsave("../visuals/dev.png", width = 12, height = 8, bg = "white")
 
 ```{r}
 world <- map_data("world")
-
 ```
 
 
 ```{r}
 data_map <- read_csv("../data/gafo-cc-clean-data.csv")%>%
+  mutate(community = recode(community,
+                            bandongo = "congo",
+                            bayaka = "congo"))%>%
   mutate(region = recode(community,
                             akure = "Nigeria",
                             leipzig = "Germany",
@@ -326,7 +330,8 @@ data_map <- read_csv("../data/gafo-cc-clean-data.csv")%>%
                             india = "India",
                             buenos_aires = "Argentina",
                             auckland = "New Zealand",
-                            turkey = "Turkey"))%>%
+                            turkey = "Turkey",
+                            congo = "Republic of Congo"))%>%
   mutate(loc_lat = recode(community,
                             akure = 7.251070,
                             leipzig = 51.339695,
@@ -341,7 +346,8 @@ data_map <- read_csv("../data/gafo-cc-clean-data.csv")%>%
                             india = 18.5265350616402,
                             buenos_aires = -34.60217085665333,
                             auckland = -36.850146242932965,
-                          turkey = 38.35501382975052))%>%
+                            turkey = 38.35501382975052, 
+                          congo = 2.262200395167898))%>%
     mutate(loc_long = recode(community,
                             akure = 5.203540,
                             leipzig = 12.373075,
@@ -356,7 +362,8 @@ data_map <- read_csv("../data/gafo-cc-clean-data.csv")%>%
                             india = 73.86056457627757,
                             buenos_aires = -58.39139837939201,
                             auckland = 174.7651647587945, 
-                            turkey = 38.33313216647862))%>%
+                            turkey = 38.33313216647862, 
+                            congo = 17.400644575618752))%>%
   group_by(community, loc_lat, loc_long, region)%>%
   summarise(Participants = n_distinct(subjid))
 
