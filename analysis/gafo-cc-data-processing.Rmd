@@ -1265,9 +1265,9 @@ data_nz%>%
   #group_by(age)%>%
   summarise(n = n_distinct(subjid))
 
-data_nz%>%
-  group_by(age)%>%
-  summarise(n())
+# data_nz%>%
+#   group_by(age)%>%
+#   summarise(n())
 ```
 
 # Turkey
@@ -1333,7 +1333,15 @@ tidy_data_tur <- raw_data_tur %>%
     datacollection = as.factor("in-person - supervised"), 
     sample = as.factor("na"),
     studytype = as.factor("vali"),
-  ) %>%select(-touchScreen)#%>%select(subjID, population, trialType, trialNr, targetPosition, targetCentralityX, clickDistFromTargetCenterX)
+    subjID = as.character(subjID),
+    subjID = ifelse(subjID == "TUR79000", "TUR00079",subjID),
+    subjID = ifelse(subjID == "TUR80000", "TUR00080",subjID),
+    subjID = ifelse(subjID == "TUR81000", "TUR00081",subjID),
+    subjID = ifelse(subjID == "TUR83000", "TUR00083",subjID),
+    subjID = ifelse(subjID == "TUR84000", "TUR00084",subjID),
+    subjID = ifelse(subjID == "TUR85000", "TUR00085",subjID)
+  ) %>%select(-touchScreen)%>%
+  mutate(subjID = factor(subjID))#%>%select(subjID, population, trialType, trialNr, targetPosition, targetCentralityX, clickDistFromTargetCenterX)
 ```
 
 ```{r}
@@ -1344,7 +1352,7 @@ tidy_data_tur%>%
   group_by(subjID)%>%
   summarise(n = n())
 
-
+unique(tidy_data_tur$subjID)
 ```
 
 ```{r }
@@ -1377,9 +1385,9 @@ data_tur%>%
   summarise(n = n())
 
 data_tur%>%
-  group_by(subjid)%>%
-  summarise(n = n(), 
-            mean = mean(abs(clickdistfromtargetcenterx)))
+  mutate(age_group = substr(ageinyears, 1,1))%>%
+  group_by(age_group)%>%
+  summarise(n = n_distinct(subjid))
 
 ```
 
@@ -1462,11 +1470,11 @@ tidy_data_cong%>%
 
 ```{r }
 raw_demographics_cong <- bind_rows(
-    read_xlsx("../../../../../../Cloud/QuantEx/Gafo-cc/data/congo/gafo-cc-congo-participants_2023.xlsx", sheet = 1)%>%
+    read_xlsx("../../../../../../Cloud/QuantEx/Gafo-cc/data/congo/gafo-cc-congo-participants_2023_V3.xlsx", sheet = 1)%>%
       mutate(household = as.character(household),
              children = as.character(children),
              younger_children = as.character(younger_children)),
-    read_xlsx("../../../../../../Cloud/QuantEx/Gafo-cc/data/congo/gafo-cc-congo-participants_2023.xlsx", sheet = 2),
+    read_xlsx("../../../../../../Cloud/QuantEx/Gafo-cc/data/congo/gafo-cc-congo-participants_2023_V3.xlsx", sheet = 2),
   )
 
 tidy_demographics_cong <- raw_demographics_cong %>%
@@ -1537,8 +1545,37 @@ data <- merge_raw_data%>%
 write_csv(data,"../data/gafo-cc-clean-data.csv")
 
 
+methods_data <- merge_raw_data%>%
+  select(subjid, community, age_group, ageinyears, trialnr, targetposition,targetcentralityx, clickdistfromtargetcenterx)%>%
+  filter(ageinyears > 1)
 
+write_csv(methods_data,"../../tango-cc-methods/data/data.csv")
 ```
+
+```{r}
+fam_excl <- bind_rows(
+  data_zambia,
+  data_namibia%>%rename(younger_children = youngerchildren),
+  data_leipzig,
+  data_nigeria,
+  data_plymouth,
+  data_stanford,
+  data_mex,
+  data_china, 
+  data_arg,
+  data_ind,
+  data_nz, 
+  data_tur,
+  data_cong
+)%>%
+  filter(trialtype != "test")%>%
+  group_by(subjid,community)%>%
+  mutate(click = abs(clickdistfromtargetcenterx))%>%
+  summarise(mean_click = mean(click))%>%
+  filter(mean_click > 100)%>%
+  pull(subjid)
+```
+
 
 ```{r}
 data <- read_csv("../data/gafo-cc-clean-data.csv")
