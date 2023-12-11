@@ -17,9 +17,6 @@ library(brms)
 ```{r}
 data <- read_csv("../data/gafo-cc-clean-data.csv")%>%
   mutate(community = recode(community,
-                            bandongo = "congo",
-                            bayaka = "congo"))%>%
-  mutate(community = recode(community,
                             akure = "akure (nigeria)",
                             leipzig = "leipzig (germany)",
                             `hai||om` = "hai||om (namibia)",
@@ -34,7 +31,8 @@ data <- read_csv("../data/gafo-cc-clean-data.csv")%>%
                             buenos_aires = "buenos aires (argentina)",
                             auckland = "auckland (new zealand)",
                             turkey = "malatya (turkey)",
-                            congo = "likouala (rep. congo)"))
+                            bandongo = "bandongo (rep. congo)",
+                            bayaka = "bayaka (rep. congo)"))
 ```
 
 ```{r}
@@ -74,7 +72,7 @@ data%>%
   geom_smooth(method = "glm")+
   scale_color_manual(name = "Community", values = colors)+
   ylim(0,1000)+
-  #facet_wrap(~community)+
+  facet_wrap(~community)+
   labs(x = "Age (in years)", y ="Imprecision (average click distance from target)")+
   scale_x_continuous(breaks = 2:8)+
   theme_minimal()+
@@ -162,6 +160,29 @@ ggplot(ptp, aes(x = targetposition, y = mean, col = community))+
 ```{r}
 ggsave("../visuals/target_position_site.png", width = 8, height = 6, bg = "white")
 ```
+
+
+```{r}
+ptp%>%
+  select(community, targetposition, mean)%>%
+  pivot_wider(names_from = targetposition, values_from = mean)%>%
+  mutate(t1_vs_t10 = `1` - `10`,
+         t2_vs_t9 = `2` - `9`,
+         t3_vs_t8 = `3` - `8`,
+         t4_vs_t7 = `4` - `7`,
+         t5_vs_t6 = `5` - `6`)%>%
+  select(community, t1_vs_t10, t2_vs_t9, t3_vs_t8, t4_vs_t7, t5_vs_t6)%>%
+  pivot_longer(names_to = "side_bias", values_to = "value", cols = c(t1_vs_t10, t2_vs_t9, t3_vs_t8, t4_vs_t7, t5_vs_t6))%>%
+  mutate(side_bias = factor(side_bias, levels = c("t1_vs_t10", "t2_vs_t9", "t3_vs_t8", "t4_vs_t7", "t5_vs_t6")))%>%
+  ggplot(., aes(y = side_bias, x = value, col = community))+
+    geom_vline(xintercept = 0, lty = 3, alpha = 0.75)+
+    scale_color_manual(name = "Community", values = colors)+
+    geom_point()+
+    geom_path(aes(group = community))+
+    labs(x = "Side bias (pos = better performance on right)", y = "Target position")+
+    theme_minimal()
+```
+
 
 
 ```{r}
@@ -296,7 +317,7 @@ ggplot()+
   geom_point(data = ddata, aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.5)+
   scale_fill_manual(name = "Community", values = colors)+
   scale_color_manual(name = "Community", values = colors)+
-  labs(x = "Age", y="Imprecision")#+
+  labs(x = "Age", y="Imprecision")+
   facet_wrap(~community)+guides(col = "none", fill = "none")
 ```
 
@@ -313,9 +334,6 @@ world <- map_data("world")
 
 ```{r}
 data_map <- read_csv("../data/gafo-cc-clean-data.csv")%>%
-  mutate(community = recode(community,
-                            bandongo = "congo",
-                            bayaka = "congo"))%>%
   mutate(region = recode(community,
                             akure = "Nigeria",
                             leipzig = "Germany",
@@ -331,7 +349,8 @@ data_map <- read_csv("../data/gafo-cc-clean-data.csv")%>%
                             buenos_aires = "Argentina",
                             auckland = "New Zealand",
                             turkey = "Turkey",
-                            congo = "Republic of Congo"))%>%
+                            bandongo = "Republic of Congo",
+                            bayaka = "Republic of Congo"))%>%
   mutate(loc_lat = recode(community,
                             akure = 7.251070,
                             leipzig = 51.339695,
@@ -347,7 +366,8 @@ data_map <- read_csv("../data/gafo-cc-clean-data.csv")%>%
                             buenos_aires = -34.60217085665333,
                             auckland = -36.850146242932965,
                             turkey = 38.35501382975052, 
-                          congo = 2.262200395167898))%>%
+                            bandongo = 2.062200395167898,
+                            bayaka = 3.5404910412941893))%>%
     mutate(loc_long = recode(community,
                             akure = 5.203540,
                             leipzig = 12.373075,
@@ -363,7 +383,8 @@ data_map <- read_csv("../data/gafo-cc-clean-data.csv")%>%
                             buenos_aires = -58.39139837939201,
                             auckland = 174.7651647587945, 
                             turkey = 38.33313216647862, 
-                            congo = 17.400644575618752))%>%
+                            bandongo = 17.000644575618752,
+                            bayaka = 17.88784692818756))%>%
   group_by(community, loc_lat, loc_long, region)%>%
   summarise(Participants = n_distinct(subjid))
 
