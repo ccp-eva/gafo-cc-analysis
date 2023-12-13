@@ -1512,6 +1512,126 @@ data_cong%>%
             mean = mean(abs(clickdistfromtargetcenterx)))
 
 ```
+# Uganda
+
+```{r read_data}
+# get all .json files
+files <- list.files("../../raw_data/gafo-cc/uganda/", pattern = "*.json",recursive = T)%>% str_subset(pattern = "gafo--", negate = T)
+
+# convert json files to tibbles
+raw_data_uganda <- tibble()
+for (f in files) {
+  jf <- paste("../../raw_data/gafo-cc/uganda/", f, sep = "")
+  jd <- jsonlite::fromJSON(paste(readLines(jf, warn = "FALSE"), collapse = ""))
+  
+  # needed because hedge trials have numbers, box trials have characters
+  jd$targetPosition <- factor(as.character(jd$targetPosition))
+  
+  raw_data_uganda <- bind_rows(raw_data_uganda, jd)
+}
+# remove variables that we don't need anymore
+rm(f, files, jf, jd)
+```
+
+```{r}
+tidy_data_uganda <- raw_data_uganda %>%
+  
+  # convert all character vectors into factors
+  
+  mutate(
+    
+    # attention! the SVG coord system starts with 0, 0 in upper left corner
+    # we transform the values so that 0, 0 is lower left corner (for plots etc)
+    clickScaledY = 1080 - clickScaledY,
+    targetY = 1080 - targetY, 
+    targetCenterY = 1080 - targetCenterY, 
+    eyeCenterRightY = 1080 - eyeCenterRightY,
+    eyeCenterLeftY = 1080 - eyeCenterLeftY,
+    pupilFinalRightY = 1080 - pupilFinalRightY,
+    pupilFinalLeftY = 1080 - pupilFinalLeftY, 
+    targetCentralityX = abs(960 - targetCenterX),
+    
+    # similarly here: in svg coords, negative click distance means up. 
+    # here we invert it, so that negative values mean down
+    clickDistFromTargetCenterY = clickDistFromTargetCenterY * -1, 
+    clickDistFromTargetBBoxY = clickDistFromTargetBBoxY * -1, 
+    
+    # positive values for inward clicks (i.e.,towards the center), negative for outward clicks
+    centralityBias = ifelse(targetCenterX <= 1920/2,
+                            clickDistFromTargetCenterX, 
+                            clickDistFromTargetCenterX*-1), 
+    
+    inwardClick = ifelse(centralityBias > 0, TRUE, FALSE), 
+    
+    # did the participant click on the right box?
+    # also for hedge version, here we imagine a box surrounding the target center 
+    # this way, we can compare hedge and box version ;) 
+    boxWidth = 218, 
+    boxBorderLeft = targetCenterX - boxWidth/2, 
+    boxBorderRight = targetCenterX + boxWidth/2,
+    correctBox = ifelse(boxBorderLeft <= clickScaledX & clickScaledX <= boxBorderRight, TRUE, FALSE), 
+    
+    datacollection = as.factor("in-person - supervised"), 
+    sample = as.factor("na"),
+    studytype = as.factor("vali")
+  ) %>%
+  mutate(subjID = ifelse(subjID == "ugaand04", "ugand004", subjID),
+         subjID =as.factor(subjID))%>%
+  select(-touchScreen)%>%
+  mutate_if(is.character, as.factor)%>% 
+  distinct(subjID, trialNr, .keep_all = T)#%>%select(subjID, population, trialType, trialNr, targetPosition, targetCentralityX, clickDistFromTargetCenterX)
+
+
+unique(tidy_data_uganda$subjID)
+```
+
+```{r}
+tidy_data_uganda%>%
+  filter(trialType == "test")%>%
+  group_by(subjID)%>%
+  summarise(n = n())
+
+tidy_data_uganda%>%
+  filter(trialType == "test")%>%
+  summarise(n = n_distinct(subjID))
+
+```
+
+```{r demographics}
+raw_demographics_uganda <- read_xlsx("../../raw_data/gafo-cc/uganda/gafo_uganda_participants.xlsx", sheet = 1)[-1, ]
+
+tidy_demographics_uganda <- raw_demographics_uganda %>%
+  rename(subjid = id)%>%
+  mutate_all(tolower)%>%
+  filter(status == "keep")%>%
+  mutate(
+    test_date = as.Date(as.character(test_date), format = "%Y%m%d"),
+    birth_date = as.Date(as.character(birth_date), format = "%Y%m%d"),
+    ageinyears = as.numeric(difftime(test_date,birth_date, units = "days")/365.25),
+    screen = as.numeric(screen), 
+    touchscreen = as.numeric(touchscreen),
+    household = as.numeric(household), 
+    children = as.numeric(children),
+    younger_children = as.numeric(younger_children)
+  )  %>%
+  select(-c(test_date, birth_date, comment, age))%>%
+  filter(!is.na(ageinyears))
+
+```
+
+```{r}
+data_uganda <- tidy_demographics_uganda%>%
+  left_join(tidy_data_uganda%>%rename_all(tolower),by = c("subjid"))%>%
+  distinct(subjid, trialnr, .keep_all = TRUE)
+
+data_uganda%>%
+  mutate(age_group = substr(ageinyears, 1,1))%>%
+  group_by(age_group)%>%
+  summarise(n = n_distinct(subjid))
+
+```
+
+
 # Merge
 ```{r}
 merge_raw_data <- bind_rows(
@@ -1527,7 +1647,8 @@ merge_raw_data <- bind_rows(
   data_ind,
   data_nz, 
   data_tur,
-  data_cong
+  data_cong,
+  data_uganda
 )%>%
   #mutate(community = paste0("c",as.character(as.numeric(as.factor(community)))))%>%
   filter(trialtype == "test",
