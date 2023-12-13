@@ -11,6 +11,7 @@ library(tidyverse)
 library(tidybayes)
 library(ggthemes)
 library(brms)
+library(ggridges)
 ```
 
 
@@ -731,6 +732,7 @@ bm_octs_fix <- brm(mean_click ~ ageinyears + touchscreen + older_children + (age
              )%>%
   add_criterion(., c("waic","loo"))
 
+
 bm_octs_fix_int <- brm(mean_click ~  touchscreen + ageinyears * older_children + (ageinyears |community), 
                               data   = scdata, 
                               family = lognormal(),
@@ -743,7 +745,7 @@ bm_octs_fix_int <- brm(mean_click ~  touchscreen + ageinyears * older_children +
              )%>%
   add_criterion(., c("waic","loo"))
 
-bm_octs_rand <- brm(mean_click ~ ageinyears + touchscreen + older_children + (ageinyears + older_children |community), 
+bm_octs_rand <- brm(mean_click ~ ageinyears + touchscreen + older_children + (ageinyears + touchscreen + older_children |community), 
                               data   = scdata, 
                               family = lognormal(),
                               warmup = 2000, 
@@ -796,8 +798,8 @@ model_weights(bm_base,
             #bm_cts_fix,
             #bm_ycts_fix,
             bm_octs_fix,
-            bm_octs_fix_int,
-            bm_octs_rand_int,
+            #bm_octs_fix_int,
+            #bm_octs_rand_int,
             bm_octs_rand,
             #bm_full_rand
             #bm_hhts_fix#,
@@ -808,7 +810,7 @@ model_weights(bm_base,
             #bm_hhts_rand,
             criterion = "loo")%>%as_tibble(rownames = "model")
 
-fixef(bm_cts_rand)
+fixef(bm_octs_rand)
 ```
 ```{r}
 ndata <- scdata%>%
@@ -847,17 +849,95 @@ ggplot(pssc,aes(y = parameter, x = value)) +
 ```
 
 ```{r}
-as_draws_df(bm_cts_rand_int)%>%
+as_draws_df(bm_octs_rand)%>%
   select(contains("children"))%>%
   select(contains("children"))%>%
   pivot_longer(cols = contains("children]"), names_to = "community", values_to = "value")%>%
-  mutate(post = value + b_children, 
+  mutate(post = value + b_older_children, 
          community = str_remove(community, "r_community"),
-         community = str_remove(community, ",children"))%>%
+         community = str_remove(community, ",older_children]"),
+         community = str_remove(community, "\\["))%>%
   ggplot(aes(x= post, y = community))+
-  stat_slabinterval()+
-  xlim(-0.15, 0.1)+
+  geom_vline(xintercept = 0, lty = 3, alpha = 0.75)+
+  geom_density_ridges(rel_min_height = 0.01, col = "white", alpha = .75)+
+  #stat_pointinterval()+
+  #xlim(-0.15, 0.1)+
   theme_bw()
+
+as_draws_df(bm_octs_rand)%>%
+  select(contains("touchscreen"))%>%
+  select(contains("touchscreen"))%>%
+  pivot_longer(cols = contains("touchscreen1]"), names_to = "community", values_to = "value")%>%
+  mutate(post = value + b_touchscreen1, 
+         community = str_remove(community, "r_community"),
+         community = str_remove(community, ",touchscreen1]"),
+         community = str_remove(community, "\\["))%>%
+  ggplot(aes(x= post, y = community))+
+  geom_vline(xintercept = 0, lty = 3, alpha = 0.75)+
+  geom_density_ridges(rel_min_height = 0.01, col = "white", alpha = .75)+
+  #stat_pointinterval()+
+  #xlim(-0.15, 0.1)+
+  theme_bw()
+
+as_draws_df(bm_octs_rand)%>%
+  select(contains("ageinyears"))%>%
+  select(contains("ageinyears"))%>%
+  pivot_longer(cols = contains("ageinyears]"), names_to = "community", values_to = "value")%>%
+  mutate(post = value + b_ageinyears, 
+         community = str_remove(community, "r_community"),
+         community = str_remove(community, ",ageinyears]"),
+         community = str_remove(community, "\\["))%>%
+  ggplot(aes(x= post, y = community))+
+  geom_vline(xintercept = 0, lty = 3, alpha = 0.75)+
+  geom_density_ridges(rel_min_height = 0.01, col = "white", alpha = .75)+
+  #stat_pointinterval()+
+  #xlim(-0.15, 0.1)+
+  theme_bw()
+
+bind_rows(
+as_draws_df(bm_octs_rand)%>%
+  select(contains("children"))%>%
+  select(contains("children"))%>%
+  pivot_longer(cols = contains("children]"), names_to = "community", values_to = "value")%>%
+  mutate(post = value + b_older_children, 
+         community = str_remove(community, "r_community"),
+         community = str_remove(community, ",older_children]"),
+         community = str_remove(community, "\\["))%>%
+  select(community, post)%>%
+  mutate(type = "older_children"), 
+
+as_draws_df(bm_octs_rand)%>%
+  select(contains("touchscreen"))%>%
+  select(contains("touchscreen"))%>%
+  pivot_longer(cols = contains("touchscreen1]"), names_to = "community", values_to = "value")%>%
+  mutate(post = value + b_touchscreen1, 
+         community = str_remove(community, "r_community"),
+         community = str_remove(community, ",touchscreen1]"),
+         community = str_remove(community, "\\["))%>%
+  select(community, post)%>%
+  mutate(type = "touchscreen"),
+
+as_draws_df(bm_octs_rand)%>%
+  select(contains("ageinyears"))%>%
+  select(contains("ageinyears"))%>%
+  pivot_longer(cols = contains("ageinyears]"), names_to = "community", values_to = "value")%>%
+  mutate(post = value + b_ageinyears, 
+         community = str_remove(community, "r_community"),
+         community = str_remove(community, ",ageinyears]"),
+         community = str_remove(community, "\\["))%>%
+  select(community, post)%>%
+  mutate(type = "ageinyears")
+
+)%>%
+  ggplot(aes(x= post, y = community))+
+  geom_density_ridges(rel_min_height = 0.005, col = "black", alpha = .75, fill = NA)+
+  geom_vline(xintercept = 0, lty = 3)+
+  facet_grid(~type, scales = "free_x")+
+  #stat_pointinterval(size = 0.1)+
+  #xlim(-0.15, 0.1)+
+  theme_minimal()+
+  theme(panel.border = element_rect(colour = "black", fill=NA, size = .5))
+  
 ```
 
 ```{r}

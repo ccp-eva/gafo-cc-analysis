@@ -10,12 +10,22 @@ library(ggthemes)
 library(tidyboot)
 library(maps)
 library(brms)
+library(cowplot)
 ```
 
 
 
 ```{r}
 data <- read_csv("../data/gafo-cc-clean-data.csv")%>%
+  mutate(continent = ifelse(
+    community %in% c("leipzig", "plymouth"), "Europe", 
+    ifelse(
+      community %in% c("akure", "hai||om", "khwe", "chimfunshi", "bandongo", "bayaka", "windhoek", "uganda"), "Africa",
+      ifelse(community %in% c("stanford", "mexico", "buenos_aires"), "America",
+             ifelse(community %in% c("india", "beijing", "turkey"), "Asia", "Oceania"))
+    )
+  ))%>%
+  mutate(continent = factor(continent, levels = c("America", "Africa", "Europe", "Asia", "Oceania"), ordered = T))%>%
   mutate(community = recode(community,
                             akure = "akure (nigeria)",
                             leipzig = "leipzig (germany)",
@@ -32,8 +42,17 @@ data <- read_csv("../data/gafo-cc-clean-data.csv")%>%
                             auckland = "auckland (new zealand)",
                             turkey = "malatya (turkey)",
                             bandongo = "bandongo (rep. congo)",
-                            bayaka = "bayaka (rep. congo)"))
+                            bayaka = "bayaka (rep. congo)", 
+                            uganda = "nyabyeya (uganda)"))
 ```
+```{r}
+# Population of the countries involved
+(1394016000 + 1426093184 + 332639104	+ 214028304	+ 128649568 + 82017512 + 80159664 + 65761116 + 45479120 + 2630073	 + 43252968	 + 4925477	+ 17426624) /
+8078229894 # proportion of world population 
+
+```
+
+
 
 ```{r}
 library(pals)
@@ -50,7 +69,7 @@ colors <- colors[ !colors == '#F2F3F4']
 
 ```{r}
 data%>%
-  group_by(community)%>%
+  group_by(continent, community)%>%
   summarise(n= n_distinct(subjid))
 
 data%>%
@@ -65,14 +84,15 @@ data%>%
 
 ```{r}
 data%>%
-  group_by(community,subjid, ageinyears)%>%
+  group_by(continent, community,subjid, ageinyears)%>%
   summarise(impr = mean(abs(clickdistfromtargetcenterx)))%>%
   ggplot(aes(x = ageinyears, y = impr, col = community))+
   geom_point(alpha = .25)+
   geom_smooth(method = "glm")+
   scale_color_manual(name = "Community", values = colors)+
   ylim(0,1000)+
-  facet_wrap(~community)+
+  facet_wrap(~continent)+
+  #facet_wrap(~community)+
   labs(x = "Age (in years)", y ="Imprecision (average click distance from target)")+
   scale_x_continuous(breaks = 2:8)+
   theme_minimal()+
@@ -127,7 +147,7 @@ ptp<- data%>%
   #filter(community != "chimfunshi (sambia)")%>%
   mutate(targetposition = factor(targetposition, levels = c(1:10)))%>%
   #group_by(community, targetposition, age_group)%>%
-  group_by(community, targetposition)%>%
+  group_by(continent, community, targetposition)%>%
   tidyboot_mean(col= abs(clickdistfromtargetcenterx))
 
 
@@ -152,7 +172,7 @@ ggplot(ptp, aes(x = targetposition, y = mean, col = community))+
   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
   labs(x = "Target position (binned)", y = "Imprecision (average click distance from target)")+
   scale_color_manual(name = "Community", values = colors)+
-  #facet_grid(~age_group)+
+  facet_grid(~continent)+
   ylim(0,1000)+
   theme_minimal()
 ```
@@ -284,7 +304,7 @@ ggsave("../visuals/pred_household.png", width = 12, height = 6, bg = "white")
 ```{r}
 ddata <- data%>%
   mutate(click = abs(clickdistfromtargetcenterx))%>%
-  group_by(subjid, community, ageinyears)%>%
+  group_by(subjid, continent,community, ageinyears)%>%
   summarise(mean_click = mean(click))%>%
   ungroup()%>%
   mutate(ageinyears = ageinyears - min(ageinyears))
@@ -302,7 +322,7 @@ bm_base <- brm(mean_click ~ ageinyears + (ageinyears |community),
 
 ```{r}
 ndata <- ddata%>%
-  distinct(community, ageinyears)
+  distinct(continent, community, ageinyears)
 
 
 post <- fitted(bm_base, newdata = ndata, re_formula =~(ageinyears|community))%>%
@@ -312,18 +332,94 @@ post <- fitted(bm_base, newdata = ndata, re_formula =~(ageinyears|community))%>%
 
 
 ggplot()+
+  geom_point(data = ddata, aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
   geom_smooth(data = post, aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
   theme_minimal()+
-  geom_point(data = ddata, aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.5)+
   scale_fill_manual(name = "Community", values = colors)+
   scale_color_manual(name = "Community", values = colors)+
   labs(x = "Age", y="Imprecision")+
-  facet_wrap(~community)+guides(col = "none", fill = "none")
+  theme(legend.position = "right")+
+  facet_wrap(~continent, nrow = 2)#+guides(col = "none", fill = "none")
 ```
 
 ```{r}
 ggsave("../visuals/dev.png", width = 12, height = 8, bg = "white")
 ```
+
+```{r}
+am <- ggplot()+
+  geom_point(data = ddata%>%filter(continent == "America"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
+  geom_smooth(data = post%>%filter(continent == "America"), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
+  theme_few()+
+  scale_fill_colorblind(name = "")+
+  scale_color_colorblind(name = "")+
+  labs(x = "Age", y="Imprecision")+
+  scale_x_continuous(limits = c(2,10))+
+  scale_y_continuous(limits = c(0,1000))+
+  theme(legend.position = c(0.7, 0.9), legend.background = element_blank(),axis.title.x = element_blank())+
+  facet_wrap(~continent, nrow = 1)#+guides(col = "none", fill = "none")
+
+af <- ggplot()+
+  geom_point(data = ddata%>%filter(continent == "Africa"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
+  geom_smooth(data = post%>%filter(continent == "Africa"), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
+  theme_few()+
+  scale_fill_colorblind(name = "")+
+  scale_color_colorblind(name = "")+
+  labs(x = "Age", y="Imprecision")+
+    scale_x_continuous(limits = c(2,10))+
+  scale_y_continuous(limits = c(0,1000))+
+  theme(legend.position = "right", legend.background = element_blank(), axis.title.y = element_blank(), axis.ticks.y = element_blank())+
+  facet_wrap(~continent, nrow = 1)#+guides(col = "none", fill = "none")
+  
+eu <- ggplot()+
+  geom_point(data = ddata%>%filter(continent == "Europe"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
+  geom_smooth(data = post%>%filter(continent == "Europe"), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
+  theme_few()+
+  scale_fill_colorblind(name = "")+
+  scale_color_colorblind(name = "")+
+  labs(x = "Age", y="Imprecision")+
+    scale_x_continuous(limits = c(2,10))+
+  scale_y_continuous(limits = c(0,1000))+
+  theme(legend.position = c(0.7, 0.9), legend.background = element_blank(), axis.title.y = element_blank(), axis.ticks.y = element_blank(),
+        axis.title.x = element_blank())+
+  facet_wrap(~continent, nrow = 1)#+guides(col = "none", fill = "none")
+  
+as <- ggplot()+
+  geom_point(data = ddata%>%filter(continent == "Asia"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
+  geom_smooth(data = post%>%filter(continent == "Asia"), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
+  theme_few()+
+  scale_fill_colorblind(name = "")+
+  scale_color_colorblind(name = "")+
+  labs(x = "Age", y="Imprecision")+
+    scale_x_continuous(limits = c(2,10))+
+  scale_y_continuous(limits = c(0,1000))+
+  theme(legend.position = c(0.7, 0.9), legend.background = element_blank(), axis.title.y = element_blank(), axis.ticks.y = element_blank(),
+        axis.title.x = element_blank())+
+  facet_wrap(~continent, nrow = 1)#+guides(col = "none", fill = "none")
+  
+oc <- ggplot()+
+  geom_point(data = ddata%>%filter(continent == "Oceania"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
+  geom_smooth(data = post%>%filter(continent == "Oceania"), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
+  theme_few()+
+  scale_fill_colorblind(name = "")+
+  scale_color_colorblind(name = "")+
+  labs(x = " ", y="Imprecision")+
+    scale_x_continuous(limits = c(2,10))+
+  scale_y_continuous(limits = c(0,1000))+
+  theme(legend.position = c(0.7, 0.9), legend.background = element_blank(), )+
+  facet_wrap(~continent, nrow = 1)#+guides(col = "none", fill = "none")
+```
+
+```{r}
+plot_grid(
+  plot_grid(am, eu, as,  nrow = 1),
+  plot_grid(oc, af, NULL, rel_widths = c(0.975,1.45, 0.55), nrow = 1), nrow = 2, rel_heights = c(1,1.1) )
+```
+```{r}
+ggsave("../visuals/dev_con.png", width = 14, height = 8, bg = "white", scale = 1)
+```
+
+
 
 # Map
 
@@ -350,7 +446,8 @@ data_map <- read_csv("../data/gafo-cc-clean-data.csv")%>%
                             auckland = "New Zealand",
                             turkey = "Turkey",
                             bandongo = "Republic of Congo",
-                            bayaka = "Republic of Congo"))%>%
+                            bayaka = "Republic of Congo", 
+                         uganda = "Uganda"))%>%
   mutate(loc_lat = recode(community,
                             akure = 7.251070,
                             leipzig = 51.339695,
@@ -367,7 +464,8 @@ data_map <- read_csv("../data/gafo-cc-clean-data.csv")%>%
                             auckland = -36.850146242932965,
                             turkey = 38.35501382975052, 
                             bandongo = 2.062200395167898,
-                            bayaka = 3.5404910412941893))%>%
+                            bayaka = 3.5404910412941893, 
+                            uganda = 1.6766777415592256))%>%
     mutate(loc_long = recode(community,
                             akure = 5.203540,
                             leipzig = 12.373075,
@@ -384,7 +482,8 @@ data_map <- read_csv("../data/gafo-cc-clean-data.csv")%>%
                             auckland = 174.7651647587945, 
                             turkey = 38.33313216647862, 
                             bandongo = 17.000644575618752,
-                            bayaka = 17.88784692818756))%>%
+                            bayaka = 17.88784692818756,
+                            uganda = 31.549794624310884))%>%
   group_by(community, loc_lat, loc_long, region)%>%
   summarise(Participants = n_distinct(subjid))
 
