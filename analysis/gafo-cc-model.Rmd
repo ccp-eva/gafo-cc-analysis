@@ -42,19 +42,19 @@ data <- read_csv("../data/gafo-cc-clean-data.csv")
 ## Hai||om
 
 ```{r, message=FALSE, warning=F}
-haillom_model_comparison <- rbindlist(
-  list(
-     fread("../model/output/haillom_model_comparison_chain1.csv"),
-     fread("../model/output/haillom_model_comparison_chain2.csv"),
-     fread("../model/output/haillom_model_comparison_chain3.csv"),
-     fread("../model/output/haillom_model_comparison_chain4.csv"),
-     fread("../model/output/haillom_model_comparison_chain5.csv"),
-     fread("../model/output/haillom_model_comparison_chain6.csv")
-    ), use.names=TRUE)%>%
-  group_by(chain, iteration, model)%>%
-  summarise(like = sum(loglike))%>%
-  mutate(community = "hai||om")%>%
-  saveRDS("../model/output/haillom_model_comparison.rds")
+# haillom_model_comparison <- rbindlist(
+#   list(
+#      fread("../model/output/haillom_model_comparison_chain1.csv"),
+#      fread("../model/output/haillom_model_comparison_chain2.csv"),
+#      fread("../model/output/haillom_model_comparison_chain3.csv"),
+#      fread("../model/output/haillom_model_comparison_chain4.csv"),
+#      fread("../model/output/haillom_model_comparison_chain5.csv"),
+#      fread("../model/output/haillom_model_comparison_chain6.csv")
+#     ), use.names=TRUE)%>%
+#   group_by(chain, iteration, model)%>%
+#   summarise(like = sum(loglike))%>%
+#   mutate(community = "hai||om")%>%
+#   saveRDS("../model/output/haillom_model_comparison.rds")
 
  haillom_model_comparison <- readRDS("../model/output/haillom_model_comparison.rds")
 ```
@@ -70,19 +70,19 @@ haillom_model_comparison%>%
 ## Chimfunshi
 
 ```{r, message=FALSE, warning=F}
-chimfunshi_model_comparison <- rbindlist(
-  list(
-     fread("../model/output/chimfunshi_model_comparison_chain1.csv"),
-     fread("../model/output/chimfunshi_model_comparison_chain2.csv"),
-     fread("../model/output/chimfunshi_model_comparison_chain3.csv"),
-     fread("../model/output/chimfunshi_model_comparison_chain4.csv"),
-     fread("../model/output/chimfunshi_model_comparison_chain5.csv"),
-     fread("../model/output/chimfunshi_model_comparison_chain6.csv")
-    ), use.names=TRUE)%>%
-  group_by(chain, iteration, model)%>%
-  summarise(like = sum(loglike))%>%
-  mutate(community = "chimfunshi")%>%
-  saveRDS("../model/output/chimfunshi_model_comparison.rds")
+# chimfunshi_model_comparison <- rbindlist(
+#   list(
+#      fread("../model/output/chimfunshi_model_comparison_chain1.csv"),
+#      fread("../model/output/chimfunshi_model_comparison_chain2.csv"),
+#      fread("../model/output/chimfunshi_model_comparison_chain3.csv"),
+#      fread("../model/output/chimfunshi_model_comparison_chain4.csv"),
+#      fread("../model/output/chimfunshi_model_comparison_chain5.csv"),
+#      fread("../model/output/chimfunshi_model_comparison_chain6.csv")
+#     ), use.names=TRUE)%>%
+#   group_by(chain, iteration, model)%>%
+#   summarise(like = sum(loglike))%>%
+#   mutate(community = "chimfunshi")%>%
+#   saveRDS("../model/output/chimfunshi_model_comparison.rds")
 
  chimfunshi_model_comparison <- readRDS("../model/output/chimfunshi_model_comparison.rds")
 ```
@@ -98,19 +98,19 @@ chimfunshi_model_comparison%>%
 ## Mexico
 
 ```{r, message=FALSE, warning=F}
-mexico_model_comparison <- rbindlist(
-  list(
-     fread("../model/output/mexico_model_comparison_chain1.csv"),
-     fread("../model/output/mexico_model_comparison_chain2.csv"),
-     fread("../model/output/mexico_model_comparison_chain3.csv"),
-     fread("../model/output/mexico_model_comparison_chain4.csv"),
-     fread("../model/output/mexico_model_comparison_chain5.csv"),
-     fread("../model/output/mexico_model_comparison_chain6.csv")
-    ), use.names=TRUE)%>%
-  group_by(chain, iteration, model)%>%
-  summarise(like = sum(loglike))%>%
-  mutate(community = "mexico")%>%
-  saveRDS("../model/output/mexico_model_comparison.rds")
+# mexico_model_comparison <- rbindlist(
+#   list(
+#      fread("../model/output/mexico_model_comparison_chain1.csv"),
+#      fread("../model/output/mexico_model_comparison_chain2.csv"),
+#      fread("../model/output/mexico_model_comparison_chain3.csv"),
+#      fread("../model/output/mexico_model_comparison_chain4.csv"),
+#      fread("../model/output/mexico_model_comparison_chain5.csv"),
+#      fread("../model/output/mexico_model_comparison_chain6.csv")
+#     ), use.names=TRUE)%>%
+#   group_by(chain, iteration, model)%>%
+#   summarise(like = sum(loglike))%>%
+#   mutate(community = "mexico")%>%
+#   saveRDS("../model/output/mexico_model_comparison.rds")
 
  mexico_model_comparison <- readRDS("../model/output/mexico_model_comparison.rds")
 ```
@@ -127,19 +127,19 @@ mexico_model_comparison%>%
 ## India
 
 ```{r, message=FALSE, warning=F}
-india_model_comparison <- rbindlist(
-  list(
-     fread("../model/output/india_model_comparison_chain1.csv"),
-     fread("../model/output/india_model_comparison_chain2.csv"),
-     fread("../model/output/india_model_comparison_chain3.csv"),
-     fread("../model/output/india_model_comparison_chain4.csv"),
-     fread("../model/output/india_model_comparison_chain5.csv"),
-     fread("../model/output/india_model_comparison_chain6.csv")
-    ), use.names=TRUE)%>%
-  group_by(chain, iteration, model)%>%
-  summarise(like = sum(loglike))%>%
-  mutate(community = "india")%>%
-  saveRDS("../model/output/india_model_comparison.rds")
+# india_model_comparison <- rbindlist(
+#   list(
+#      fread("../model/output/india_model_comparison_chain1.csv"),
+#      fread("../model/output/india_model_comparison_chain2.csv"),
+#      fread("../model/output/india_model_comparison_chain3.csv"),
+#      fread("../model/output/india_model_comparison_chain4.csv"),
+#      fread("../model/output/india_model_comparison_chain5.csv"),
+#      fread("../model/output/india_model_comparison_chain6.csv")
+#     ), use.names=TRUE)%>%
+#   group_by(chain, iteration, model)%>%
+#   summarise(like = sum(loglike))%>%
+#   mutate(community = "india")%>%
+#   saveRDS("../model/output/india_model_comparison.rds")
 
   india_model_comparison <- readRDS("../model/output/india_model_comparison.rds")
 ```
@@ -155,19 +155,19 @@ india_model_comparison%>%
 ## Akure
 
 ```{r, message=FALSE, warning=F}
-nigeria_model_comparison <- rbindlist(
-  list(
-     fread("../model/output/akure_model_comparison_chain1.csv"),
-     fread("../model/output/akure_model_comparison_chain2.csv"),
-     fread("../model/output/akure_model_comparison_chain3.csv"),
-     fread("../model/output/akure_model_comparison_chain4.csv"),
-     fread("../model/output/akure_model_comparison_chain5.csv"),
-     fread("../model/output/akure_model_comparison_chain6.csv")
-    ), use.names=TRUE)%>%
-  group_by(chain, iteration, model)%>%
-  summarise(like = sum(loglike))%>%
-  mutate(community = "nigeria")%>%
-  saveRDS("../model/output/nigeria_model_comparison.rds")
+# nigeria_model_comparison <- rbindlist(
+#   list(
+#      fread("../model/output/akure_model_comparison_chain1.csv"),
+#      fread("../model/output/akure_model_comparison_chain2.csv"),
+#      fread("../model/output/akure_model_comparison_chain3.csv"),
+#      fread("../model/output/akure_model_comparison_chain4.csv"),
+#      fread("../model/output/akure_model_comparison_chain5.csv"),
+#      fread("../model/output/akure_model_comparison_chain6.csv")
+#     ), use.names=TRUE)%>%
+#   group_by(chain, iteration, model)%>%
+#   summarise(like = sum(loglike))%>%
+#   mutate(community = "nigeria")%>%
+#   saveRDS("../model/output/nigeria_model_comparison.rds")
 
 nigeria_model_comparison <- readRDS("../model/output/nigeria_model_comparison.rds")
 ```
@@ -183,19 +183,19 @@ nigeria_model_comparison%>%
 ## Beijing
 
 ```{r, message=FALSE, warning=F}
-china_model_comparison <- rbindlist(
-  list(
-     fread("../model/output/beijing_model_comparison_chain1.csv"),
-     fread("../model/output/beijing_model_comparison_chain2.csv"),
-     fread("../model/output/beijing_model_comparison_chain3.csv"),
-     fread("../model/output/beijing_model_comparison_chain4.csv"),
-     fread("../model/output/beijing_model_comparison_chain5.csv"),
-     fread("../model/output/beijing_model_comparison_chain6.csv")
-    ), use.names=TRUE)%>%
-  group_by(chain, iteration, model)%>%
-  summarise(like = sum(loglike))%>%
-  mutate(community = "china")%>%
-  saveRDS("../model/output/china_model_comparison.rds")
+# china_model_comparison <- rbindlist(
+#   list(
+#      fread("../model/output/beijing_model_comparison_chain1.csv"),
+#      fread("../model/output/beijing_model_comparison_chain2.csv"),
+#      fread("../model/output/beijing_model_comparison_chain3.csv"),
+#      fread("../model/output/beijing_model_comparison_chain4.csv"),
+#      fread("../model/output/beijing_model_comparison_chain5.csv"),
+#      fread("../model/output/beijing_model_comparison_chain6.csv")
+#     ), use.names=TRUE)%>%
+#   group_by(chain, iteration, model)%>%
+#   summarise(like = sum(loglike))%>%
+#   mutate(community = "china")%>%
+#   saveRDS("../model/output/china_model_comparison.rds")
 
 china_model_comparison <- readRDS("../model/output/china_model_comparison.rds")
 ```
@@ -211,25 +211,277 @@ china_model_comparison%>%
 ## Buenos Aires
 
 ```{r, message=FALSE, warning=F}
-argentina_model_comparison <- rbindlist(
-  list(
-     fread("../model/output/buenos_aires_model_comparison_chain1.csv"),
-     fread("../model/output/buenos_aires_model_comparison_chain2.csv"),
-     fread("../model/output/buenos_aires_model_comparison_chain3.csv"),
-     fread("../model/output/buenos_aires_model_comparison_chain4.csv"),
-     fread("../model/output/buenos_aires_model_comparison_chain5.csv"),
-     fread("../model/output/buenos_aires_model_comparison_chain6.csv")
-    ), use.names=TRUE)%>%
-  group_by(chain, iteration, model)%>%
-  summarise(like = sum(loglike))%>%
-  mutate(community = "argentina")%>%
-  saveRDS("../model/output/argentina_model_comparison.rds")
+# argentina_model_comparison <- rbindlist(
+#   list(
+#      fread("../model/output/buenos_aires_model_comparison_chain1.csv"),
+#      fread("../model/output/buenos_aires_model_comparison_chain2.csv"),
+#      fread("../model/output/buenos_aires_model_comparison_chain3.csv"),
+#      fread("../model/output/buenos_aires_model_comparison_chain4.csv"),
+#      fread("../model/output/buenos_aires_model_comparison_chain5.csv"),
+#      fread("../model/output/buenos_aires_model_comparison_chain6.csv")
+#     ), use.names=TRUE)%>%
+#   group_by(chain, iteration, model)%>%
+#   summarise(like = sum(loglike))%>%
+#   mutate(community = "argentina")%>%
+#   saveRDS("../model/output/argentina_model_comparison.rds")
 
 argentina_model_comparison <- readRDS("../model/output/argentina_model_comparison.rds")
 ```
 
 ```{r}
 argentina_model_comparison%>%
+  group_by(community, model,chain)%>%
+  summarise(margllh = logSumExp(like), 
+            n = n_distinct(iteration))%>%
+  pivot_wider(names_from = model, values_from = margllh)
+```
+
+## Leipzig
+
+```{r, message=FALSE, warning=F}
+# leipzig_model_comparison <- rbindlist(
+#   list(
+#      fread("../model/output/leipzig_model_comparison_chain1.csv"),
+#      fread("../model/output/leipzig_model_comparison_chain2.csv"),
+#      fread("../model/output/leipzig_model_comparison_chain3.csv"),
+#      fread("../model/output/leipzig_model_comparison_chain4.csv"),
+#      fread("../model/output/leipzig_model_comparison_chain5.csv"),
+#      fread("../model/output/leipzig_model_comparison_chain6.csv")
+#     ), use.names=TRUE)%>%
+#   group_by(chain, iteration, model)%>%
+#   summarise(like = sum(loglike))%>%
+#   mutate(community = "leipzig")%>%
+#   saveRDS("../model/output/leipzig_model_comparison.rds")
+
+leipzig_model_comparison <- readRDS("../model/output/leipzig_model_comparison.rds")
+```
+
+```{r}
+leipzig_model_comparison%>%
+  group_by(community, model,chain)%>%
+  summarise(margllh = logSumExp(like), 
+            n = n_distinct(iteration))%>%
+  pivot_wider(names_from = model, values_from = margllh)
+```
+
+## Auckland
+
+```{r, message=FALSE, warning=F}
+# auckland_model_comparison <- rbindlist(
+#   list(
+#     fread("../model/output/auckland_model_comparison_chain1.csv"),
+#     fread("../model/output/auckland_model_comparison_chain2.csv"),
+#     fread("../model/output/auckland_model_comparison_chain3.csv"),
+#     fread("../model/output/auckland_model_comparison_chain4.csv"),
+#     fread("../model/output/auckland_model_comparison_chain5.csv"),
+#     fread("../model/output/auckland_model_comparison_chain6.csv")
+#   ), use.names=TRUE)%>%
+#   group_by(chain, iteration, model)%>%
+#   summarise(like = sum(loglike))%>%
+#   mutate(community = "auckland")%>%
+#   saveRDS("../model/output/auckland_model_comparison.rds")
+
+auckland_model_comparison <- readRDS("../model/output/auckland_model_comparison.rds")
+```
+
+```{r}
+auckland_model_comparison%>%
+  group_by(community, model,chain)%>%
+  summarise(margllh = logSumExp(like), 
+            n = n_distinct(iteration))%>%
+  pivot_wider(names_from = model, values_from = margllh)
+```
+
+## bandongo
+
+```{r, message=FALSE, warning=F}
+# bandongo_model_comparison <- rbindlist(
+#   list(
+#     fread("../model/output/bandongo_model_comparison_chain1.csv"),
+#     fread("../model/output/bandongo_model_comparison_chain2.csv"),
+#     fread("../model/output/bandongo_model_comparison_chain3.csv"),
+#     fread("../model/output/bandongo_model_comparison_chain4.csv"),
+#     fread("../model/output/bandongo_model_comparison_chain5.csv"),
+#     fread("../model/output/bandongo_model_comparison_chain6.csv")
+#   ), use.names=TRUE)%>%
+#   group_by(chain, iteration, model)%>%
+#   summarise(like = sum(loglike))%>%
+#   mutate(community = "bandongo")%>%
+#   saveRDS("../model/output/bandongo_model_comparison.rds")
+
+bandongo_model_comparison <- readRDS("../model/output/bandongo_model_comparison.rds")
+```
+
+```{r}
+bandongo_model_comparison%>%
+  group_by(community, model,chain)%>%
+  summarise(margllh = logSumExp(like), 
+            n = n_distinct(iteration))%>%
+  pivot_wider(names_from = model, values_from = margllh)
+```
+
+## bayaka
+
+```{r, message=FALSE, warning=F}
+# bayaka_model_comparison <- rbindlist(
+#   list(
+#     fread("../model/output/bayaka_model_comparison_chain1.csv"),
+#     fread("../model/output/bayaka_model_comparison_chain2.csv"),
+#     fread("../model/output/bayaka_model_comparison_chain3.csv"),
+#     fread("../model/output/bayaka_model_comparison_chain4.csv"),
+#     fread("../model/output/bayaka_model_comparison_chain5.csv"),
+#     fread("../model/output/bayaka_model_comparison_chain6.csv")
+#   ), use.names=TRUE)%>%
+#   group_by(chain, iteration, model)%>%
+#   summarise(like = sum(loglike))%>%
+#   mutate(community = "bayaka")%>%
+#   saveRDS("../model/output/bayaka_model_comparison.rds")
+
+bayaka_model_comparison <- readRDS("../model/output/bayaka_model_comparison.rds")
+```
+
+```{r}
+bayaka_model_comparison%>%
+  group_by(community, model,chain)%>%
+  summarise(margllh = logSumExp(like), 
+            n = n_distinct(iteration))%>%
+  pivot_wider(names_from = model, values_from = margllh)
+```
+
+## khwe
+
+```{r, message=FALSE, warning=F}
+khwe_model_comparison <- rbindlist(
+  list(
+    fread("../model/output/khwe_model_comparison_chain1.csv"),
+    fread("../model/output/khwe_model_comparison_chain2.csv"),
+    fread("../model/output/khwe_model_comparison_chain3.csv"),
+    fread("../model/output/khwe_model_comparison_chain4.csv"),
+    fread("../model/output/khwe_model_comparison_chain5.csv"),
+    fread("../model/output/khwe_model_comparison_chain6.csv")
+  ), use.names=TRUE)%>%
+  group_by(chain, iteration, model)%>%
+  summarise(like = sum(loglike))%>%
+  mutate(community = "khwe")%>%
+  saveRDS("../model/output/khwe_model_comparison.rds")
+
+khwe_model_comparison <- readRDS("../model/output/khwe_model_comparison.rds")
+```
+
+```{r}
+khwe_model_comparison%>%
+  group_by(community, model,chain)%>%
+  summarise(margllh = logSumExp(like), 
+            n = n_distinct(iteration))%>%
+  pivot_wider(names_from = model, values_from = margllh)
+```
+
+## plymouth
+
+```{r, message=FALSE, warning=F}
+plymouth_model_comparison <- rbindlist(
+  list(
+    fread("../model/output/plymouth_model_comparison_chain1.csv"),
+    fread("../model/output/plymouth_model_comparison_chain2.csv"),
+    fread("../model/output/plymouth_model_comparison_chain3.csv"),
+    fread("../model/output/plymouth_model_comparison_chain4.csv"),
+    fread("../model/output/plymouth_model_comparison_chain5.csv"),
+    fread("../model/output/plymouth_model_comparison_chain6.csv")
+  ), use.names=TRUE)%>%
+  group_by(chain, iteration, model)%>%
+  summarise(like = sum(loglike))%>%
+  mutate(community = "plymouth")%>%
+  saveRDS("../model/output/plymouth_model_comparison.rds")
+
+plymouth_model_comparison <- readRDS("../model/output/plymouth_model_comparison.rds")
+```
+
+```{r}
+plymouth_model_comparison%>%
+  group_by(community, model,chain)%>%
+  summarise(margllh = logSumExp(like), 
+            n = n_distinct(iteration))%>%
+  pivot_wider(names_from = model, values_from = margllh)
+```
+
+## stanford
+
+```{r, message=FALSE, warning=F}
+stanford_model_comparison <- rbindlist(
+  list(
+    fread("../model/output/stanford_model_comparison_chain1.csv"),
+    fread("../model/output/stanford_model_comparison_chain2.csv"),
+    fread("../model/output/stanford_model_comparison_chain3.csv"),
+    fread("../model/output/stanford_model_comparison_chain4.csv"),
+    fread("../model/output/stanford_model_comparison_chain5.csv"),
+    fread("../model/output/stanford_model_comparison_chain6.csv")
+  ), use.names=TRUE)%>%
+  group_by(chain, iteration, model)%>%
+  summarise(like = sum(loglike))%>%
+  mutate(community = "stanford")%>%
+  saveRDS("../model/output/stanford_model_comparison.rds")
+
+stanford_model_comparison <- readRDS("../model/output/stanford_model_comparison.rds")
+```
+
+```{r}
+stanford_model_comparison%>%
+  group_by(community, model,chain)%>%
+  summarise(margllh = logSumExp(like), 
+            n = n_distinct(iteration))%>%
+  pivot_wider(names_from = model, values_from = margllh)
+```
+
+## turkey
+
+```{r, message=FALSE, warning=F}
+turkey_model_comparison <- rbindlist(
+  list(
+    fread("../model/output/turkey_model_comparison_chain1.csv"),
+    fread("../model/output/turkey_model_comparison_chain2.csv"),
+    fread("../model/output/turkey_model_comparison_chain3.csv"),
+    fread("../model/output/turkey_model_comparison_chain4.csv"),
+    fread("../model/output/turkey_model_comparison_chain5.csv"),
+    fread("../model/output/turkey_model_comparison_chain6.csv")
+  ), use.names=TRUE)%>%
+  group_by(chain, iteration, model)%>%
+  summarise(like = sum(loglike))%>%
+  mutate(community = "turkey")%>%
+  saveRDS("../model/output/turkey_model_comparison.rds")
+
+turkey_model_comparison <- readRDS("../model/output/turkey_model_comparison.rds")
+```
+
+```{r}
+turkey_model_comparison%>%
+  group_by(community, model,chain)%>%
+  summarise(margllh = logSumExp(like), 
+            n = n_distinct(iteration))%>%
+  pivot_wider(names_from = model, values_from = margllh)
+```
+
+## windhoek
+
+```{r, message=FALSE, warning=F}
+windhoek_model_comparison <- rbindlist(
+  list(
+    fread("../model/output/windhoek_model_comparison_chain1.csv"),
+    fread("../model/output/windhoek_model_comparison_chain2.csv"),
+    fread("../model/output/windhoek_model_comparison_chain3.csv"),
+    fread("../model/output/windhoek_model_comparison_chain4.csv"),
+    fread("../model/output/windhoek_model_comparison_chain5.csv"),
+    fread("../model/output/windhoek_model_comparison_chain6.csv")
+  ), use.names=TRUE)%>%
+  group_by(chain, iteration, model)%>%
+  summarise(like = sum(loglike))%>%
+  mutate(community = "windhoek")%>%
+  saveRDS("../model/output/windhoek_model_comparison.rds")
+
+windhoek_model_comparison <- readRDS("../model/output/windhoek_model_comparison.rds")
+```
+
+```{r}
+windhoek_model_comparison%>%
   group_by(community, model,chain)%>%
   summarise(margllh = logSumExp(like), 
             n = n_distinct(iteration))%>%
@@ -246,7 +498,16 @@ bf_comparison <- bind_rows(
   india_model_comparison,
   nigeria_model_comparison,
   china_model_comparison,
-  argentina_model_comparison
+  argentina_model_comparison,
+  leipzig_model_comparison,
+  auckland_model_comparison,
+  bandongo_model_comparison,
+  bayaka_model_comparison,
+  khwe_model_comparison,
+  plymouth_model_comparison,
+  stanford_model_comparison,
+  turkey_model_comparison,
+  windhoek_model_comparison
 ) %>%
   group_by(community, model)%>%
   summarise(margllh = logSumExp(like))%>%
