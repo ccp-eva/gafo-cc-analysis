@@ -993,6 +993,37 @@ ggsave("../visuals/old_child_site.png", width = 12, height = , bg = "white")
 ```
 
 
+# Trial level analysis
+
+```{r}
+bm_trial_base <- brm(click ~ targetcentralityx + ageinyears + (targetcentralityx|subjid)+ (ageinyears + targetcentralityx |community),
+                              data   = mdata, 
+                              family = Gamma(link = "log"),
+                              warmup = 2000, 
+                              iter   = 6000, 
+                              chains = 4, 
+                              cores  = 4,
+                              threads = threading(8),
+             control = list(adapt_delta = 0.95),
+             backend = "cmdstanr")%>%
+  add_criterion(., c("waic","loo"))
+
+
+bm_trial_pred <- brm(click ~ targetcentralityx + ageinyears + touchscreen + older_children + (targetcentralityx|subjid)+ (ageinyears + touchscreen + older_children |community),
+                              data   = mdata, 
+                              family = Gamma(link = "log"),
+                              warmup = 2000, 
+                              iter   = 6000, 
+                              chains = 4, 
+                              cores  = 4,
+                              threads = threading(8),
+             control = list(adapt_delta = 0.95),
+             backend = "cmdstanr")%>%
+  add_criterion(., c("waic","loo"))
+```
+
+
+
 # Cross-validation
 
 ```{r}
