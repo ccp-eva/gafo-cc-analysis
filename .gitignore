@@ -8,6 +8,8 @@
 
 data/gafo-cc-data-lizbeth.csv
 
+saves/bm_*
+
 model/output/*.csv
 
 # DO NOT CHANGE THE CONTENT THAT FOLLOWS HERE ...

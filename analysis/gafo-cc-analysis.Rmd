@@ -999,6 +999,20 @@ ggsave("../visuals/old_child_site.png", width = 12, height = , bg = "white")
 
 ```{r}
 bm_trial_base <- brm(click ~ targetcentralityx + ageinyears + (targetcentralityx|subjid)+ (ageinyears + targetcentralityx |community),
+                              data   = mdata%>%na.omit(), 
+                              family = Gamma(link = "log"),
+                              warmup = 2000, 
+                              iter   = 6000, 
+                              chains = 4, 
+                              cores  = 4,
+                              threads = threading(8),
+             control = list(adapt_delta = 0.95),
+             backend = "cmdstanr")%>%
+  add_criterion(., c("waic","loo"))
+
+saveRDS(bm_trial_base, "../saves/bm_trial_base.rds")
+
+bm_trial_pred <- brm(click ~ targetcentralityx + ageinyears + touchscreen + older_children + (targetcentralityx|subjid)+ (ageinyears + touchscreen + older_children + targetcentralityx |community),
                               data   = mdata, 
                               family = Gamma(link = "log"),
                               warmup = 2000, 
@@ -1010,20 +1024,115 @@ bm_trial_base <- brm(click ~ targetcentralityx + ageinyears + (targetcentralityx
              backend = "cmdstanr")%>%
   add_criterion(., c("waic","loo"))
 
+saveRDS(bm_trial_pred, "../saves/bm_trial_pred.rds")
 
-bm_trial_pred <- brm(click ~ targetcentralityx + ageinyears + touchscreen + older_children + (targetcentralityx|subjid)+ (ageinyears + touchscreen + older_children |community),
-                              data   = mdata, 
-                              family = Gamma(link = "log"),
-                              warmup = 2000, 
-                              iter   = 6000, 
-                              chains = 4, 
-                              cores  = 4,
-                              threads = threading(8),
-             control = list(adapt_delta = 0.95),
-             backend = "cmdstanr")%>%
-  add_criterion(., c("waic","loo"))
+
+loo_compare(bm_trial_base,
+            bm_trial_pred
+            )%>%as_tibble(rownames = "model")
+
+fixef(bm_trial_pred)
 ```
 
+```{r}
+draws <- bind_rows(
+as_draws_df(bm_trial_pred)%>%
+  select(contains("children"))%>%
+  select(contains("children"))%>%
+  select(-contains("sd"))%>%
+  select(-contains("cor"))%>%
+  pivot_longer(cols = contains("children]"), names_to = "community", values_to = "value")%>%
+  mutate(post = value + b_older_children, 
+         community = str_remove(community, "r_community"),
+         community = str_remove(community, ",older_children]"),
+         community = str_remove(community, "\\["))%>%
+  select(community, post)%>%
+  mutate(type = "older_children"), 
+
+as_draws_df(bm_trial_pred)%>%
+  select(contains("touchscreen"))%>%
+  select(contains("touchscreen"))%>%
+  select(-contains("sd"))%>%
+  select(-contains("cor"))%>%
+  pivot_longer(cols = contains("touchscreen1]"), names_to = "community", values_to = "value")%>%
+  mutate(post = value + b_touchscreen1, 
+         community = str_remove(community, "r_community"),
+         community = str_remove(community, ",touchscreen1]"),
+         community = str_remove(community, "\\["))%>%
+  select(community, post)%>%
+  mutate(type = "touchscreen"),
+
+as_draws_df(bm_trial_pred)%>%
+  select(contains("ageinyears"))%>%
+  select(contains("ageinyears"))%>%
+  select(-contains("sd"))%>%
+  select(-contains("cor"))%>%
+  pivot_longer(cols = contains("ageinyears]"), names_to = "community", values_to = "value")%>%
+  mutate(post = value + b_ageinyears, 
+         community = str_remove(community, "r_community"),
+         community = str_remove(community, ",ageinyears]"),
+         community = str_remove(community, "\\["))%>%
+  select(community, post)%>%
+  mutate(type = "ageinyears"),
+
+as_draws_df(bm_trial_pred)%>%
+  select(contains("targetcentralityx"))%>%
+  select(contains("targetcentralityx"))%>%
+  select(-contains("sd"))%>%
+  select(-contains("cor"))%>%
+  select(-contains("subjid"))%>%
+  pivot_longer(cols = contains("targetcentralityx]"), names_to = "community", values_to = "value")%>%
+  mutate(post = value + b_targetcentralityx, 
+         community = str_remove(community, "r_community"),
+         community = str_remove(community, ",targetcentralityx]"),
+         community = str_remove(community, "\\["))%>%
+  select(community, post)%>%
+  mutate(type = "targetcentrality")
+
+)
+
+pdraws <- draws%>%
+  mutate(continent = ifelse(
+    community %in% c("leipzig", "plymouth"), "Europe", 
+    ifelse(
+      community %in% c("akure", "hai||om", "khwe", "chimfunshi", "bandongo", "bayaka", "windhoek", "uganda"), "Africa",
+      ifelse(community %in% c("stanford", "mexico", "buenos_aires"), "America",
+             ifelse(community %in% c("india", "beijing", "turkey"), "Asia", "Oceania"))
+    )
+  ))%>%
+  mutate(continent = factor(continent, levels = c("America", "Africa", "Europe", "Asia", "Oceania"), ordered = T))%>%
+  mutate(community = recode(community,
+                            akure = "akure (nigeria)",
+                            leipzig = "leipzig (germany)",
+                            `hai||om` = "hai||om (namibia)",
+                            khwe = "khwe (namibia)",
+                            windhoek = "windhoek (namibia)",
+                            stanford = "stanford (usa)",
+                            chimfunshi = "chimfunshi (sambia)",
+                            mexico = "ocuilan (mexico)",
+                            plymouth = "plymouth (uk)",
+                            beijing = "beijing (china)", 
+                            india = "pune (india)",
+                            buenos_aires = "buenos aires (argentina)",
+                            auckland = "auckland (new zealand)",
+                            turkey = "malatya (turkey)",
+                            bandongo = "bandongo (rep. congo)",
+                            bayaka = "bayaka (rep. congo)", 
+                            uganda = "nyabyeya (uganda)"))
+
+saveRDS(pdraws, "../saves/pdraws.rds")
+
+ggplot(pdraws, aes(x= post, y = community))+
+  #geom_density_ridges(rel_min_height = 0.005, col = "black", alpha = .75, fill = NA)+
+  geom_density_ridges(rel_min_height = 0.005, col = "white", alpha = .75, fill = "grey")+
+  geom_vline(xintercept = 0, lty = 3)+
+  facet_grid(continent~type, scales = "free", space = "free_y")+
+  #stat_pointinterval(size = 0.1)+
+  #xlim(-0.15, 0.1)+
+  theme_minimal()+
+  theme(panel.border = element_rect(colour = "black", fill=NA, size = .5))
+
+```
 
 
 # Cross-validation
