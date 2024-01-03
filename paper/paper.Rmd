@@ -1,5 +1,5 @@
 ---
-title             : "The title"
+title             : "Unity in diversity: Children around the globe process gaze in similar ways"
 shorttitle        : "Title"
 
 author: 
@@ -30,15 +30,7 @@ authornote: |
   Enter author note here.
 
 abstract: |
-  One or two sentences providing a **basic introduction** to the field,  comprehensible to a scientist in any discipline.
-  Two to three sentences of **more detailed background**, comprehensible  to scientists in related disciplines.
-  One sentence clearly stating the **general problem** being addressed by  this particular study.
-  One sentence summarizing the main result (with the words "**here we show**" or their equivalent).
-  Two or three sentences explaining what the **main result** reveals in direct comparison to what was thought to be the case previously, or how the  main result adds to previous knowledge.
-  One or two sentences to put the results into a more **general context**.
-  Two or three sentences to provide a **broader perspective**, readily comprehensible to a scientist in any discipline.
-  
-  <!-- https://tinyurl.com/ybremelq -->
+  Representing 46% of the world's population
   
 keywords          : "keywords"
 wordcount         : "X"
@@ -70,8 +62,19 @@ set.seed(42)
 knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 ```
 
+Social cognition is a defining aspect of the human species []. It is supposed to enable unique forms of communication and cooperation that underlie cumulative cultural evolution and the formation of complex societies []. The eyes are the proverbial window to the mind and the starting point for a majority of social reasoning processes. Gaze is used to infer the focus of attention which is a critical aspect of coordinated activities including communication and cooperation []. Developmentally, gaze following emerges early in infancy; before the onset of intentional communication or any form of cooperation []. Furthermore, individual differences gaze following predict later life outcomes [], for example, gaze following leading in the context of episodes of joint attention predict later communicative abilities []. Underlying this description is the wide-held assumption that gaze following works and develops in the same way across diverse human societies. This claim, however, lacks a solid empirical foundation. 
 
-Participants in the study lived in 17 different communities spread over five continents. Taken together, the countries from which data was contributed to the study represent 46% of the world's population. 
+We conducted a large-scale study on the development of gaze following abilities. The XXXX participants (age ) in the study lived in 17 different communities spread over five continents. The countries from which data was contributed to the study represented 46% of the world's population. Communities covered a broad spectrum of geographical locations, social and political systems, languages and subsistence styles [Fig. 1]. While previous comparative work focused on the onset of gaze following in infancy [], our goal was to study potentially universal developmental and processing signatures that would support the interpretation that gaze following is building block of social cognition in human societies all over the world, or not. 
+
+For this purpose, we used an animated picture book tablet task in which participants were asked to locate a hidden object based on observing an agents gaze. Children watched a balloon disappear behind a hedge. An agent followed the trajectory of the balloon with their eyes. The key dependent variable, was the precision with which children located the agent's focus of attention, that is, the deviation between where the agent looked (where the object was) and where the child thought the agent looked. Visuals and voice recordings in the task were adapted specifically to each of the 17 settings (Fig. 1). In previous work, this task showed excellent individual-level measurement properties []. Thus, in addition to group-level trends, we were able to investigate individual-level variation. 
+
+As the first step, we investigated developmental gains. Across all 17 settings, we found a substantial increase in average levels of precision with age (range: $\beta_{min}$ = , 95% HDI () to $\beta_{max}$ = ()). There were marked differences between settings: urban settings around the globe showed higher levels of precision compared to rural settings. We return to this result below. However, differences between settings were small compared to differences between individuals: settings did not form homogeneous clusters but largely overlapping distributions in that some individuals from settings with a lower average level of precision (e.g. ) performed better compared to some individuals from a setting with a very high average level of precision. Furthermore, in all communities some 4-year-olds outperformed children two years older than them.
+
+Consistent developmental gains to not inform us about the cognitive processes children use when location the agent's focus of attention. Recent computational work modeled gaze following as social vector estimation []. When observing the eyes, onlookers estimate a vector from the center of the eye through the pupil. The focus of attention is the location wherever the estimated vector hits a surface (Fig. XX). The estimation process is not perfect, but each individual has a systematic level of uncertainty, which is the cause of individual differences. Importantly, this process model predicts a clear performance signature in our cross-cultural gaze following task. Trials in which the agent looks further away from the center (i.e. to the left or right side of the screen) should be more difficult, that is, result in lower levels of precision, compared to trials in which the agent looks closer to the middle. This prediction is best understood by considering a similar phenomenon: pointing a torch light to a flat surface. The width of the light beam represents each individual's level of uncertainty in vector estimation. When the torch is directed straight down, the light beam is concentrated in a relatively small area. When the torch is rotated to the side, the the light from one half of the cone must travel further than the light from the other half to reach the surface. As a consequence, the light is spread over a wider area. 
+
+There was clear evidence 
+
+3. Predictors of individual differences
 
 # Results
 
