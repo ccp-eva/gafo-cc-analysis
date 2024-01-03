@@ -18,17 +18,19 @@ library(ggridges)
 ```{r}
 mdata <- read_csv("../data/gafo-cc-clean-data.csv")%>%
   ungroup()%>%
+  mutate(older_children = children - 1 - younger_children)%>%
   mutate(ageinyears = scale(ageinyears),
          targetcentralityx = scale(targetcentralityx),
          trialnr = scale(trialnr),
-         #children = scale(children),
-         #household = scale(household),
-         #younger_children = scale(younger_children),
          touchscreen = factor(touchscreen),
         screen = factor(screen),
         click = abs(clickdistfromtargetcenterx))%>%
-  #filter(community != "chimfunshi")%>%
-  select(subjid,community,ageinyears,children, household, younger_children,trialnr, screen,touchscreen, targetcentralityx, click )
+  group_by(community)%>%
+  mutate(children = scale(children),
+         household = scale(household),
+         younger_children = scale(younger_children),
+         older_children = scale(older_children))%>%
+  select(subjid,community,ageinyears,children, household, younger_children,older_children, trialnr, screen,touchscreen, targetcentralityx, click )
 
 
 mdata%>%
