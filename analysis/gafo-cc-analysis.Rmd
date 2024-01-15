@@ -16,8 +16,13 @@ library(ggridges)
 
 
 ```{r}
+exclude <- read_csv("../data/gafo-cc-clean-data.csv")%>%
+  filter(children == younger_children, trialnr == 1)%>%
+  pull(subjid)
+
 mdata <- read_csv("../data/gafo-cc-clean-data.csv")%>%
   ungroup()%>%
+  filter(!subjid %in% exclude)%>%
   mutate(older_children = children - 1 - younger_children)%>%
   mutate(ageinyears = scale(ageinyears),
          targetcentralityx = scale(targetcentralityx),
@@ -31,6 +36,8 @@ mdata <- read_csv("../data/gafo-cc-clean-data.csv")%>%
          younger_children = scale(younger_children),
          older_children = scale(older_children))%>%
   select(subjid,community,ageinyears,children, household, younger_children,older_children, trialnr, screen,touchscreen, targetcentralityx, click )
+
+
 
 
 mdata%>%
@@ -812,7 +819,7 @@ model_weights(bm_base,
             #bm_hhts_rand,
             criterion = "loo")%>%as_tibble(rownames = "model")
 
-fixef(bm_octs_rand)
+fixef(bm_octs_fix)
 ```
 ```{r}
 ndata <- scdata%>%
@@ -1121,6 +1128,8 @@ pdraws <- draws%>%
                             uganda = "nyabyeya (uganda)"))
 
 saveRDS(pdraws, "../saves/pdraws.rds")
+
+pdraws <- readRDS("../saves/pdraws.rds")
 
 ggplot(pdraws, aes(x= post, y = community))+
   #geom_density_ridges(rel_min_height = 0.005, col = "black", alpha = .75, fill = NA)+

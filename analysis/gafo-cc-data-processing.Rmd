@@ -1484,8 +1484,8 @@ tidy_demographics_cong <- raw_demographics_cong %>%
     test_date = as.Date(as.character(test_date), format = "%Y%m%d"),
     birth_date = as.Date(as.character(birth_date), format = "%Y%m%d"),
     ageinyears = as.numeric(difftime(test_date,birth_date, units = "days")/365.25),
-    screen = ifelse(screen == "fallaci", 0, 1), 
-    touchscreen = ifelse(touchscreen == "fallaci", 0, 1),
+    #screen = ifelse(screen == "fallaci", 0, 1), 
+    #touchscreen = ifelse(touchscreen == "fallaci", 0, 1),
     household = as.numeric(household), 
     children = as.numeric(children),
     younger_children = as.numeric(younger_children)
@@ -1655,10 +1655,74 @@ merge_raw_data <- bind_rows(
          voiceover == F
          )%>%
   mutate(age_group = substr(ageinyears, 1,1), 
-         trialnr = as.numeric(factor(trialnr)))
+         trialnr = as.numeric(factor(trialnr)), 
+         sex = ifelse(sex == "F", "f", sex),
+         sex = ifelse(sex == "female", "f", sex),
+         sex = ifelse(sex == "male", "m", sex),
+         sex = ifelse(sex == "NaN", NA, sex), 
+         screen = ifelse(touchscreen == 1, 1, screen),
+         household = ifelse(household == "NaN", NA, household),
+         children = ifelse(children == "NaN", NA, children),
+         younger_children = ifelse(younger_children == "NaN", NA, younger_children))
 
+```
+
+# Quality checks
+
+```{r}
+# data checks
+
+## communities
+unique(merge_raw_data$community)
+
+## age ranges
+range(merge_raw_data$ageinyears)
+
+## sex  
+unique(merge_raw_data$sex)
+
+## screen and touchscreen
+unique(merge_raw_data$screen)
+unique(merge_raw_data$touchscreen)
+# check NAs
+merge_raw_data%>%
+  filter(is.na(screen), trialnr == 1)
+
+merge_raw_data%>%
+  filter(is.na(touchscreen), trialnr == 1)
+
+### check if there are cases that say they don't have a screen but do say they have a touch screen 
+merge_raw_data%>%
+  filter(screen == 0 & touchscreen == 1, trialnr == 1)
+
+# household
+unique(merge_raw_data$household)
+
+merge_raw_data%>%
+  filter(is.na(household), trialnr == 1)
+
+# children 
+unique(merge_raw_data$children)
+## check number of children - should include the one being tested, therefore cannot be 0
+merge_raw_data%>%
+  filter(children == 0, trialnr == 1)
+
+## check if there are cases with more younger children than children (cannot be)
+
+merge_raw_data%>%
+  filter(children < younger_children, trialnr == 1)
+
+merge_raw_data%>%
+  filter(children == younger_children, trialnr == 1)
+
+
+```
+
+```{r}
 write_csv(merge_raw_data,"../data/gafo-cc-raw-data.csv")
+```
 
+```{r}
 data <- merge_raw_data%>%
   select(subjid, community, age_group, ageinyears, sex, screen, touchscreen, household, children, younger_children, trialnr, targetposition,targetcenterx, targetcentralityx, clickdistfromtargetcenterx)%>%
   filter(ageinyears > 1)
@@ -1672,6 +1736,9 @@ methods_data <- merge_raw_data%>%
 
 write_csv(methods_data,"../../tango-cc-methods/data/data.csv")
 ```
+
+
+
 
 ```{r}
 fam_excl <- bind_rows(
