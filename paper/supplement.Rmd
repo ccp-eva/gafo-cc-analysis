@@ -117,52 +117,379 @@ knitr::kable(demtab,
 A total of `r sum(as.numeric(demtab$N))` children between `r round(min(data$ageinyears), 2)` and `r round(max(data$ageinyears), 2)` provided data for the study. Children lived in `r n_distinct(data$community)` different communities, located in `r n_distinct(data$country)` different countries. Table \@ref(tab:demtable) gives the sample size per community together with some basic demographic information. Additional children were recruited but did not contribute data to the study. The recruitment strategy varied from community to community and we therefore cannot provide detailed information about the number of children that were excluded. All children who contributed at least five valid data points were included in the final sample. We did not exclude any participants for performance reasons. A detailed description of each site and the way children were recruited can be found below.
 
 ```{r}
-data%>%
+page <- data%>%
   group_by(community,continent)%>%
   distinct(subjid, .keep_all = T)%>%
   mutate(dens = approxfun(density(ageinyears))(ageinyears))%>%
   ggplot(aes(y = community, x = ageinyears))+
   facet_grid(continent~., scales = "free", space = "free_y")+
-  geom_density_ridges(col = "white")+
-  #geom_point(alpha = .1)+
-  theme_few()
+  geom_density_ridges(
+    jittered_points = TRUE,
+    position = position_points_jitter(width = 0, height = 0),
+    point_shape = '|',  point_alpha = 0.5, alpha = 0.7,
+  )+
+  labs(x = "Age (in years)", y= "")+
+  theme_few()+
+  theme(strip.background = element_blank(),strip.text.y = element_blank())
+
+pred_agg_i <- data%>%
+  mutate(older_children = children - 1 - younger_children)%>%
+  group_by(community, subjid)%>%
+  summarise(screen = mean(screen, na.rm = T),
+            touchscreen = mean(touchscreen, na.rm = T), 
+            older_children = mean(older_children, na.rm = T), 
+            household = mean(household, na.rm = T))
+
+pred_agg_g <- data%>%
+  mutate(older_children = children - 1 - younger_children)%>%
+  group_by(community, continent)%>%
+  summarise(screen = mean(screen, na.rm = T),
+            touchscreen = mean(touchscreen, na.rm = T), 
+            older_children = mean(older_children, na.rm = T), 
+            younger_children = mean(younger_children, na.rm = T), 
+            children = mean(children, na.rm = T), 
+            household = mean(household, na.rm = T))%>%
+  pivot_longer(names_to = "dem", values_to = "value", cols = c(screen, touchscreen, older_children,children, younger_children, household))
+
+ppred <- pred_agg_g%>%
+  filter(dem == "screen" | dem == "touchscreen")%>%
+  ggplot(aes(y = community, x = dem, fill = value))+
+  geom_point(pch = 22, size = 10, stroke = 0)+
+  facet_grid(continent~., scales = "free", space = "free_y")+
+  labs(x = "", y= "")+
+  scale_fill_viridis_c(name = "Prevalence")+
+  theme_few()+
+  scale_x_discrete(guide = guide_axis(n.dodge = 2))+
+  theme(axis.text.y = element_blank(), axis.ticks.y = element_blank(), strip.text.y.right = element_text(angle = 0))
+```
+
+```{r figpred1, include = T, fig.align = "center", fig.cap = "Age distribution (left) and prevalence of different types of technology by community. Left: dots show individual data points. Right: color shows the proportion of children with access to screens or touchscreens."}
+techpred <- plot_grid(page, ppred, align = "h", rel_widths = c(1, 0.5))
+
+ggsave(plot = techpred, "../visuals/techpred.png", height = 10, width = 10, scale = 1)
+
+knitr::include_graphics("../visuals/techpred.png")
+
 ```
 
 ## Site descriptions
 
-### Chimfunshi (Sambia) - Location 
-
-### Hai||om (Namibia) - Ethnic group
-
-### Khwe (Namibia) - Ethnic group
-
-### Windhoek (Namibia) - Location 
-
-### Leipzig (Germany) - Location 
+The descriptions below give detailed information about each data collection site, including the strategy used for recruiting children. The order is alphabetically.
 
 ### Akure (Nigeria) - Location 
 
-### Plymouth (UK) - Location 
+**References and further readings:**
 
-### Stanford (USA) - Location 
+* ...
 
-### Ocuilan (Mexico) - Location 
+### Auckland | Tāmaki Makaurau (New Zealand) - Location 
 
-### Beijing (China) - Location 
+Auckland | Tāmaki Makaurau is the largest city of New Zealand | Aotearoa with a population of about 1.5 million people. The city is located on the North Island | Te Ika-a-Māui inbetween the Hauraki Gulf | Tīkapa Moana to the East and the Waitākere Ranges to the West. The climate is defined as either oceanic (Cfb) or subtropical (NIWA). Temperatures are mild throughout the year, with an average temperature of 23.7 during summer and 14.7 during winter months. 
 
-### Buenos Aires (Argentina) - Location 
+The median age in the Auckland region was 34.7 years. 181,194 Māori people with a median age of 24.9 years were counted in the 2018 census. Overall the population is composed of 53.5% European, 28.2% Asian, 15.5% Pacific Peoples, 11.5% Māori, 2.3% Middle Eastern / Latin American / African and 1.1% Other ethnicity. 92.7% are English speakers, with 4.4% speaking Northern Chinese (Mandarin Chinese), 4.4% speaking Samoan and 2.4% speaking te reo Māori.
 
-### Pune (India) - Location 
+Māori peoples arrived in Auckland | Tāmaki Makaurau around 1350 from other Pacific Islands. Before the arrival of European New Zealanders | Pākehā New Zealand was populated by about 20,000 Māori. Aotearoa was colonized by the Dutch and British Empires in the 18th Century. The effects the British Monarchy had on Aotearoa have been at the center of long lasting societal disputes. The Treaty of Waitangi | Te Tiriti o Waitangi is a document signed by 240 Māori chiefs and representatives of the British Crown in 1840 trying to establish a cooperative relationship while redeeming some of the mistakes that have been made. This document is still important for the revitalization of Māori culture throughout Aotearoa.
 
-### Auckland (New Zealand) - Location 
+51.9% of the people in Auckland are employed full time, with an unemployment rate of 4.1% and 30.4% not in the labor force (i.e. retirees). The main occupations are professionals (25.9%) and managers (18.1%) with only 5.9% operating machinery and 7.9% laborers. The people of Auckland are part of a service society with a median income of 34,400NZD and 19.8% of the population earning more than 70,000NZD. 
 
-### Malatya (Turkey) - Location 
+Auckland is made up of mainly sub-urban areas with single family housing. 45.4% of the population own or partly own a house. People mostly live with their core family in loosely separated areas of the city. Those areas commonly have an economical center with shops and restaurants as well as a mix of private and public education institutions.  The socialization goals and cultural norms are comparable to most western, democratic societies. High education standards are deemed as vital for success. Success is determined by career paths, income and general success in professional and private aspects of life. Sport plays a central role in most aspects of society. The role of sports is viewed as essential for living a healthy and successful life and as such is a central part in education programs.    
+
+Education levels are generally good in Auckland. 18.6% of the population hold a Bachelor's Degree. Interestingly about 9.1% move overseas for their secondary education. Parenting and childcare practises are comparable to other western cultures, with some adjustments being implemented in recent years to include more Māori cultural practises in education programs. Such as starting the day or specific activities | hui with Karakia, a form of incantation to ensure a favorable outcome to important events and undertakings. (see Literature for further information on early childhood education in New Zealand.)    
+
+Aotearoa is an industrialized nation, nearly everybody has a smartphone and uses technology in their everyday life. Many administrative processes are very much digitized. There is no perceived mistrust towards technology and new developments are generally embraced with great interest. 
+
+For this study we reached out to early childcare centers and schools. Two early childcare centers and one primary school agree to participate. Some additional children were tested during home visit sessions. All three educational institutions are visited by children from different cultural and socio-economic backgrounds. One early childcare center is affiliated with the University of Auckland and prioritizes children from University students and staff in their admission process. Testing sessions took place in separated spaces (office or break rooms) with one participant at a time. Participants received a certificate “for becoming a junior scientist” and a small gift (coloring book or sticker set) after their participation. (All numbers in the above description are from the 2018 census data report.)
+
+**References and further readings:**
+
+* Gunn, A. C., Child, C., Madden, B., Purdue, K., Surtees, N., Thurlow, B., & Todd, P. (2004). Building inclusive communities in early childhood education: Diverse perspectives from Aotearoa/New Zealand. Contemporary Issues in Early Childhood, 5(3), 293-308.
+* Shuker, M. J., & Cherrington, S. (2016). Diversity in New Zealand early childhood education: Challenges and opportunities. International Journal of Early Years Education, 24(2), 172-187.
+* Tesar, M. (2015). New Zealand perspectives on early childhood education: Nāku te rourou nāu te rourou ka ora ai te iwi. Journal of Pedagogy, 6(2), 9-18.
+* New Zealand Census 2018 for Auckland Region: https://www.stats.govt.nz/tools/2018-census-place-summaries/auckland-region#population-and-dwellings
 
 ### Bandongo (Rep. Congo) - Ethnic group 
 
+**References and further readings:**
+
+* ...
+
 ### Bayaka (Rep. Congo) - Ethnic group
 
-### Nyabyeya (Uganda) - Location   
+**References and further readings:**
+
+* ...
+
+### Beijing (China) - Location 
+
+Beijing, a municipality directly under the Central Government, is the capital of the People's Republic of China and the country's political, economic, cultural and transportation center as well as a famous historic city and a modern international city. Beijing covers an area of 16,410.54 square kilometers (sq.km) with a population of 21,843,000 in 2022. Beijing ranked second in Chinese cities in terms of GDP in 2022. Geographically, Beijing is located in the northern part of the North China Plain.
+
+Beijing is an inland city and is surrounded by mountains to its west, north and northeast. Mountain areas occupy about 62% of the municipality's total area. The land is characterized by urban and suburban areas, with parks, squares, and historical buildings located mostly in the downtown districts, and flat agricultural land and mountains in the suburban districts. Beijing has a temperate, continental monsoonal climate, characterized by short spring and autumns, hot and rainy summers, and cold and dry winters. Its average annual temperature is 11 to 14oC. The coldest month in Beijing is January, with an average temperature of -9 to -4oC; the hottest month is July, with an average of 25oC. Around 75 percent of its annual precipitation occurs in summer, with the heaviest rainfall in July and August. 
+
+According to the 2021 National Census data, in Beijing, there were 20845166 (95%) Han Chinese along with 1047929 (4.8%) people in other minority nationalities (e.g., Manchu, Hui ethnic, Mongolian ethnic). Mandarin Chinese is commonly spoken by all ethnic groups though many of the minority nationalities also have their own national languages, such as Mongolian language used by Mongolian ethnic. (4)
+
+Beijing is one of the birthplaces of Chinese Civilization and one of the five ancient capital cities in China. With but few interruptions, Beijing has been the capital of China for some eight centuries: including the capital of the State of Yan during the Western Zhou Dynasty (11th Century-771BC), the capital of Jin Dynasty (1153-1215), the capital of Yuan Dynasty (1271-1368), the capital of Ming Dynasty (1421-1644), and the capital of Qing Dynasty (1644-1912). In 1949, Beiping (former name of Beijing) was renamed Beijing and became the capital of the People’s Republic of China. Since then, it gradually develops into a modern metropolis. 
+
+From the early 1950s to the reform and opening up, Beijing aimed to build a modernized industrial base, and the secondary industry became the dominant industry in economic development. In 1954, the proportion of the secondary industry was 44.1%, exceeding the tertiary industry for the first time, and in 1978, the proportion reached 71%. Since the 1980s, Beijing has vigorously developed the tertiary industry, and the proportion of the tertiary industry once again exceeded that of the secondary industry in 1994, and the proportion of the tertiary industry exceeded 60% in 1998, 70% in 2005, and 80% in 2016, reaching 84% in 2022, making it the city's economic "leader". According to the statistical communiqué on the National Economy and Social Development of Beijing in 2022 the top three sectors in terms of absolute volume of GDP are finance (19.7%), information transmission, software and information technology services (17.9%) and industry (12.1%).
+
+Beijing has various types of residential areas, ranging from traditional courtyard houses (siheyuan) in hutongs (narrow alleyways) to modern apartment buildings, gated residential complexes and detached houses. Household composition varies, ranging from single individuals and couples to families with children and multi-generational households. Notably, it is a strong tradition for grandparents to be involved in grandchildren care and household tasks. In big cities, such as Beijing, the involvement of grandparents in grandchild care is especially helpful since it relieves the high-pressure of a two-career family. BTW, China fully implemented the “two-child-per-family” policy in 2016, there are usually one or two children per family now in Beijing.
+
+Parental socialization goals in Beijing (as well as in other cities) align with broader Chinese Confucianism cultural norms and typically emphasize the following seven developmental goals for children: Gaining knowledge, internalizing social norms, being modest about success and ashamed of failure, displaying self-restraint and filial piety, and maintaining harmonious relationships with others.  Education and learning are seen as very important aspects of children’s lives. For primary school children in Beijing, parents (also the education system) especially emphasize on academic achievement. Moreover, with China’s growing exposure to western values, autonomy has been promoted by current educationalists during the last decade, and is especially emphasized in developed cities such as Beijing. As to parental education levels, according to the data of 2020 population census, the average years of schooling for permanent population in Beijing aged 15 and above is 12.64 years, and among whom 48% have university degree (15 years of education and above). So, the percentage for the parents holding a university degree should be much higher than 48%.
+
+It’s common that parents spend large parts of the day away from home and children are cared for externally. Between 2 and 3 years of age young children can attend nurseries (very few nurseries accept children as young as 1.5-year-old). Nurseries are largely commercialized and non-subsidized. Starting at age 3, children can attend either publicly subsidized kindergarten or private kindergarten. Children move on to primary school at six. Public primary education is free and compulsory. There are also private primary schools that cater to other groups, such as international primary schools that serve families catering to the expatriate community and families seeking an international education, as well as those who want to get prepared for studying abroad later. The samples of the current study were drawn from public kindergarten and public primary school.
+
+Children growing up in Beijing have a high exposure to technology. Smartphones and other touchscreen devices are prevalent in most families in Beijing and are used widely for education, communication, and entertainment. In 2022, almost every Chinese netizen accessed the internet via mobile devices and Beijing has been fully covered by ultrafast 5G signals. 
+
+95% of the sampled Children were recruited from local public kindergarten and primary school. We firstly introduced the experiment to the heads of the kindergarten/school. Once getting their permission, we asked the teachers to help send the printed letter (information about the study, informed consent, as well as the five questions) to the parents. And a Mandarin speaking research assistant then tested kids whose parents signed the informed consent in a separate room in the kindergarten/school. A few of the youngest kids (5% of total) were recruited by directly introducing the experiment to the parents who we personally knew and tested the kids either in a separate room at our institute or at their home.
+
+**References and further readings:**
+
+* https://english.beijing.gov.cn/beijinginfo/index.html
+* https://www.chinadiscovery.com/beijing-tours/maps/beijing-districts-map.html
+* https://www.britannica.com/place/Beijing/Landscape; http://english.igsnrr.cas.cn/eocg/moc/200704/t20070409_8626.html
+* http://us.mofcom.gov.cn/article/aboutchina/202011/20201103012649.shtml
+* http://tjj.beijing.gov.cn/EnglishSite/
+* Binah-Pollak, A. (2014). Discourses and practices of child-rearing in China: The bio-power of parenting in Beijing. China Information, 28(1), 27-45. doi:10.1177/0920203x13517617
+* Chen, F., & Liu, G. (2011). The Health Implications of Grandparents Caring for Grandchildren in China. The Journals of Gerontology: Series B, 67B(1), 99-112. doi:10.1093/geronb/gbr132
+* Chen, F., Short, S. E., & Entwisle, B. (2000). The impact of grandparental proximity on maternal childcare in China. Population Research and Policy Review, 19(6), 571-590. doi:10.1023/A:1010618302144
+* Luo, R., Tamis-LeMonda, C. S., & Song, L. (2013). Chinese parents’ goals and practices in early childhood. Early Childhood Research Quarterly, 28(4), 843-857. doi:https://doi.org/10.1016/j.ecresq.2013.08.001
+* Nyland, B., Zeng, X., Nyland, C., & Tran, L. (2009). grandparents as educators and carers in China. Journal of Early Childhood Research, 7(1), 46-57. doi:10.1177/1476718x08098353
+* Xu, H. (2019). Physical and mental health of Chinese grandparents caring for grandchildren and great-grandparents. Social Science & Medicine, 229, 106-116. doi:https://doi.org/10.1016/j.socscimed.2018.05.047
+* Zhu, N., Chang, L. (2019). Education and Parenting in China. In: Sorbring, E., Lansford, J. (eds) School Systems, Parent Behavior, and Academic Achievement. Young People and Learning Processes in School and Everyday Life, vol 3. Springer, Cham. https://doi.org/10.1007/978-3-030-28277-6_2
+
+### Buenos Aires (Argentina) - Location 
+
+**References and further readings:**
+
+* ...
+
+### Chimfunshi (Sambia) - Location 
+
+Chimfunshi wildlife orphanage is an NGO providing a home for about 150 chimpanzees. The sanctuary is located in the Copperbelt region in the northern part of Zambia close to DRC border. The chimpanzees are housed in eight different enclosures; each of an area up to 121.5Ha. The Sanctuary provides housing, medical care and education for the employees and their families which are in total about 300 people living in 5 different compounds around Chimfunshi.
+
+Chimfunshi itself was founded in 1983 by David and Sheila Siddle who lived in Zambia since the 1950’s. In the past years they rehabilitated chimpanzees who were confiscated from poachers and from obsolete zoos and circuses worldwide. Today the sanctuary is managed by a Board of Trustees to ensure the long-term sustainability. 
+
+Throughout the year Zambia has a mainly humid subtropical climate with a dry winter. There are three seasons. The rather cool dry season which lasts from May to August. A short hot dry season which is followed by a hot and humid rainy season from Novmeber to April. Overall, the temperatures are relatively mild due to the altitude of the country in the north but can be cold in winter. The sanctuary is nestled by woodland, savanna and situated near the Kafue river. 
+
+The country has about 18 Million inhabitants. The population consists mostly of Bantu-speaking groups whereby Bemba is the largest ethnicity and the most spoken language beside Chewa, Tonga and Lozi. English which is the country's official language, is only spoken by about 2% of the population as a first language. For people with high education levels English is the most commonly used second language. Complex patterns of migrations created a broad linguistic and cultural variety. Due to the big mining industry, the population in the Copperbelt area consists of people from all parts of Zambia and even from neighboring countries. 
+
+Zambia is mainly a Christian country (Protestant, Romanic Catholic, Jehovah’s Witnesses and some fundamentalists churches) but due to the Asian community, Hindus and Muslim are represented as well. The northeast and northwest part of Zambia is still strongly influenced by cultural traditions of the Congo basin. Zambian people still value traditional norms within their families, villages and clans. Such norms, ideals and morals are for example  mutual respect and reciprocity. 
+
+The main sectors of the economy in Zambia is agriculture and copper mining and smelting especially in the northern Copperbelt region. Despite these large copper deposits, Zambia is one of the poorest countries in the world. Three quarters of the poor live in rural areas. As in other African countries there is a strong trend of movement from rural arears to urban centers whereby men migrate more often and women remain behind in villages. The housing style in rural areas vary a lot by ethnic group. Overall, mud and thatch, brick, or other materials are used for construction. 
+
+People working at Chimfunshi wildlife orphanage are living in compounds. These are little settlements made of stone houses with corrugated iron roofs, a well to access clean water, solar systems for electricity and often little gardens to grow crops and/or keeping farm animals (e.g. chickens). 
+
+Since independence day Zambia invested a lot in education. By now schooling is compulsory for 7- to 14-year-olds. Primary school lasts for 7 years and the secondary level for 5 years. The Twampane School at Chimfunshi was founded in 2011 to give the children of Chimfunshi employees the opportunity to attend school upto grade 9th. Almost 120 of the students live in the Chimfunshi area, the others come from the surrounding farms and settlements, thus the schools provides education for about 220 students. Children who perform well at school are enabled due to sponsorship programs to attend a secondary school. Furthermore, Chimfunshi offers children in the final grades on-site vocational training and further education. (9)
+Depending on the financial possibilities of the families, electrical devices with touch screens such as smartphones or laptops are available. Many still use cellphones and do not own a smartphone, which also makes access to such electronic devices more difficult for some children or even households. 
+
+Before a study can be conducted in Chimfunshi, it must be presented to the Scientific Advisory Board of Chimfunshi. The board members and the sanctuary directress deliberate and decide whether a study can be carried out or not. Once these formalities have been clarified, the parents are approached with the help of an on-site assistant. The study program is explained to each family which are interested to participate in one way or the other in a study. Participation is recorded in writing and can be revoked by the parents at any time.  Depending on the study, recruitment takes place in cooperation with the school teachers. (11)
+
+**References and further readings:**
+
+* https://chimfunshiwildlife.org/
+* https://www.britannica.com/place/Zambia/Education
+* https://legendsandlegaciesofafrica.org/sheilasiddle.php
+
+### Hai||om (Namibia) - Ethnic group
+
+**References and further readings:**
+
+* ...
+
+### Khwe (Namibia) - Ethnic group
+
+**References and further readings:**
+
+* ...
+
+### Leipzig (Germany) - Location 
+
+Leipzig is a medium-sized city located in the east of Germany with a population of approximately 620,000. It serves as a significant urban center within the state of Saxony. Geographically, leipzig is situated in the southernmost part of the North German Plain.
+
+The city landscape is characterized by urban and suburban areas, with parks, squares, and historical buildings. Leipzig has an oceanic climate with continental influence. Winters are cold (average temperature around 1°C) and summers warm (average temperature around 19°C).
+
+The majority of inhabitants of Leipzig are German, many of which have moved from other parts of Germany. Around 17% of the population have a migration background. The largest groups of migrants come from Syria, Ukraine, and the Russian Federation. In comparison to more rural areas in the region, Leipzig has a larger proportion of inhabitants with a migration background and is generally seen as more liberal and progressive. German is the primary language spoken in Leipzig. Additionally, due to its role as a major educational and cultural center, English and other foreign languages are also spoken by a significant portion of the population. 
+
+Historically, Leipzig gained prominence as a trade city during the Middle Ages and later became a major center of the Enlightenment and the arts in the 18th and 19th centuries. Following World War II, Leipzig was part of the socialist German Democratic Republic. Leipzig played a crucial role in the Peaceful Revolution of 1989, which ultimately led to the fall of the Berlin Wall and the reunification of Germany.
+
+Leipzig has been a market economy for centuries. It has a modern and diversified economy that encompasses various sectors, such as manufacturing, services, and creative industries. The city is known for its trade fairs, music, and publishing industries.
+
+The city has a combination of apartment buildings, detached houses, and residential complexes. Household composition varies, ranging from single individuals and couples to families with children and multi-generational households. Children mostly live in nuclear families with one or two children and their caregivers.
+
+Parental socialization goals in Leipzig align with broader German cultural norms and typically emphasize the importance of children’s independence, psychological autonomy, self-confidence and assertiveness. Education and learning are seen as important aspects of children’s lives. Parental education levels are generally very high; adults have at least nine years of formal schooling and high school and university degrees are very widespread. 
+
+Parents spend large parts of the day away from home, and the majority of children are cared for externally: starting at nine months of age, children can attend nurseries, moving on to kindergarten at three and primary school around six. Institutional childcare is provided by the city and financially subsidized; institutionalized primary education is free and compulsory. 
+
+Children growing up in Leipzig have a high exposure to technology. Smartphones and other touchscreen devices are prevalent in most families and educational institutions, reflecting the widespread use of digital technology for communication, entertainment, and information retrieval.
+
+Children were recruited via a database of children whose parents expressed interest in participating in studies of child development. They were tested in a separate room in their kindergartens by a German-speaking research assistant. 
+
+**References and further readings:**
+
+* City website for demographic information: https://english.leipzig.de
+* Otto, H., & Keller, H. (2016). Is there something like German parenting. Contemporary Parenting: a Global Perspective, 81-94.
+
+### Malatya (Turkey) - Location 
+
+Malatya is a big city located in the Eastern Anatolia region of Turkey with a population of approximately 800,000. Due to its strong economy based on agriculture, it is one of the biggest cities in eastern Turkey. 
+ 
+The city landscape is characterized by mostly urban and some rural areas. Malatya has a temperate continental climate with very cold winters (average temperature around -3°C) and very hot summers (average temperature around 33°C).
+ 
+The population of Malatya is diverse which include inhabitants with Turkish, Kurdish, Circassian, Armenian, and Zaza origins. Malatya is also a multilingual city. Although the dominant language is Turkish, around 40% of the population speaks Kurdish. 
+ 
+Malatya has a long history since the Hittite times. It has also been significant location for the Roman Empire, Byzantine Empire, and Ottoman Empire. 
+ 
+Malatya’s economy depends on agriculture, and it is famous for apricot production. Recently, Malatya has also undergone some industrial development such as textile manufacturing. 
+ 
+The urban area of Malatya consists of apartment buildings. Household composition usually involves families with children and multi-generational households. Children live both in nuclear families (with parents and siblings) and in extended families (nuclear family and a set of grandparents). Parental socialization in Malatya aligns with broader Turkish cultural norms, and typically emphasize the importance of children’s interdependence, value of family. Education and learning are seen as important aspects of children’s lives. Parental education levels are generally above the average of Turkey; with most adults have high school or university degrees. 
+ 
+Fathers spend large parts of the day away from home, and the majority of children are cared at home by their mothers and grandparents until they start formal schooling at the age 7. Primary education is free and compulsory. 
+ 
+Children growing up in Malatya have some exposure to technology. Smartphones and other touchscreen devices are somewhat prevalent in most families, reflecting the widespread use of digital technology for communication.
+ 
+Children were recruited through nurseries and schools who expressed interest in participating research. They were tested in a separate room in their nurseries/school kindergartens by a Turkish-speaking research assistant. Some children were also tested in parks and outdoor areas.
+
+### Nyabyeya (Uganda) - Location
+
+Nyabyeya Forestry College is situated in the Masindi district of western Uganda, approximately 25 km from Masindi Town and 240 km from Kampala, the capital city. The college is adjacent to Budongo Tropical High Forest and 8 km from Budongo conservation field station, where primatologists study wild-ranging chimpanzees. The college draws its sample from the surrounding villages, including Marram, Kyempunu, Nyabigoma, Nyabyeya 1 and 2 and Trading Center, Nyakafunjo, and Kyamasuka.
+
+Nyabyeya is located on a green, gently sloping area behind Nyabyeya Hill and is characterized by tropical vegetation and a savanna climate, characterized by daytime temperatures reaching 32°C/90°F and cooler nights at 17°C/63°F. The region observes two distinct agricultural seasons - a wet season from late March to June and August to November, followed by a dry season from early December to March.
+
+The studied villages are culturally very diverse and house ethnic groups such as Bantu, Luo, Nilotics, and Nilo-Hamites. Spoken languages depend on the tribe and include Alur, Lugbara, Runyoro, lendu, kakwa, Acholi, Langi, Luganda, Logo, Kebu, madi, and many others. Kiswahili and English often serve as a common ground. For this study, children who understand Kiswahili were invited. 
+
+During the Second World War, many Polish refugees were brought to Uganda and located in Bunyoro on the fringes of Budongo Forest at Nyabyeya. When the refugees were evacuated after World War II ended, the forestry college was transferred into the facilities the Polish refugees had left behind. It now serves as an educational institute conducting training in Forestry, Agroforestry, Biomass Energy Technologies, and beekeeping.
+
+The community predominantly practices subsistence farming, cultivating crops like maize, cassava, sweet potatoes, and beans. Wealthier families sometimes keep goats, pigs, chickens, or ducks. Additionally, sugarcane and coffee cultivation contribute significantly to the local economy, with the Kinyara Sugar Company playing a pivotal role in sugarcane harvesting.
+Living conditions in the community are characterized by extended families residing together, with an average of 10 people under one roof. While temporary round mud huts are common, permanent houses are found in the trading center of Nyabyeya. Most people in the community live by hand to mouth, and parents (especially women) work hard to provide the basics for their household members.
+
+Parental socialization goals vary, with limited guidance for children in some instances, leading to very independent lives at a young age. Cultural practices include the belief in producing many children as a sign of respect, with specific tribes attaching wealth to the number of daughters. Twins are highly honored, and rituals are performed to welcome them. Often, young children take care of their siblings and carry them around on their backs. Children start working early, for example, by helping their parents with farming or cow herding. Often, families cannot afford school materials for their children and struggle to provide regular food. Early marriages and teenage pregnancies often result in girls leaving school earlier. 
+
+Parental education levels are generally low, with many parents above 50 having only primary education. The education system faces challenges such as inadequate school supplies, leading to high dropout rates. Children start primary school at ages 5-7, and secondary education runs for four years, with options to pursue advanced levels.
+
+The community exhibits low exposure to technology, with smartphones and touchscreen devices considered luxuries. Limited internet usage and power supply challenges contribute to this low adoption. However, technology is more prevalent in institutions like Nyabyeya Forestry College.
+Participating families were recruited by the local research assistants, for example, via personal contact, visiting them at home, or calling them. Families were invited to the Nyabyeya Forestry College (transport offered via boda boda (motorcycle)), and children participated in a quiet room in the College. 
+
+**References and further readings:**
+
+* Budongo Conservation Field Station: http://www.budongo.org/
+* Holden, E., Buryn-Weitzel, J. C., Atim, S., Biroch, H., Donnellan, E., Graham, K. E., Hoffman, M., Jurua, M., Knapper, C. V., Lahiff, N. J., Marshall, S., Paricia, J., Tusiime, F., Wilke, C., Majid, A., & Slocombe, K. E. (2022). Maternal attitudes and behaviours differentially shape infant early life experience: A cross cultural study. PLOS ONE, 17(12), e0278378. https://doi.org/10.1371/journal.pone.0278378
+
+### Ocuilan (Mexico) - Location 
+
+Ocuilan is a municipality located in the centre south of Mexico with a population of 36,223 inhabitants, distributed in 48 towns in an area of 344.84 km2  inside the Mexican State. (Ocuilan, n.d.) Geographically Ocuilan has an altitude of between 1000 to 2,600 m situated 80 km south of Mexico City. (INEGI,2010) 
+
+The communities in Ocuilan are distributed on a mountain range called Trans-Mexican volcanic Belt surrounded by valleys and mountains, the climate is semi-humid with summer rains, and average temperatures vary between 8C and 22C throughout the year. The higher elevations have mixed pine forests with more tropical vegetation in the lowlands. The distribution of the land is 31.91% agriculture, 0.48% urban zone and the rest forest. (INEGI,2010) 
+
+Historically, the municipality of Ocuilan was occupied by three different towns: Tlahuicas, Mazahuas, and Ocuiltecos. Besides being in the same territory, they had their own language, religion, and customs until the arrival of the Mexica people. Within 100 years, the Mexica dominated the area. The territory was under Mexican control until the arrival of the Spanish kingdom, which took advantage of the discontent of the towns dominated under the Aztec Empire. The Spanish kingdom allied itself with those towns and waged war on the Aztec Empire, succeeding in taking the Mexica capital on 13 August 1521. Although there was some resistance, all the towns within what is now the State of Mexico fell to the Spaniards shortly thereafter. (Edo Mex, 2018) 
+
+During the period of Spanish control, the municipality of  Ocuilan was primarily characterized by agricultural activities. The presence of missionary friars played an important role in the dissemination of catholic religion and the Spanish language. (Edo Mex, 2018)  Over the course of the conquest, the Spanish language gradually gained prominence, but it is still possible to find indigenous languages like Tlahuica, Nahualt and Mazahua among the inhabitants. (Ocuilan, n.d.)
+
+Following the attainment of Mexican independence, Ocuilan continued to be a farming area and also emerged as an important religious centre, attracting pilgrims from various regions of Mexico. During the Mexican Revolution, the locality assumed significance as a stronghold of the Zapatistas which played an essential role in the enactment of the Political Constitution of 1917.  In the subsequent decades, political stability, economic development, and population growth in the State of Mexico. (Edo Mex, 2018)   Nowadays, livestock farming and trout rearing stand as the dominant economic pursuits in Ocuilan. (Ocuilan, n.d.)
+
+Demographically, the average household in Ocuilan comprises 4.1 inhabitants, (Ocuilan, n.d.)  primarily adhering to a nuclear family structure characterized by an authoritative rearing model. Parents assume a proactive role in establishing parental control, emphasizing the enforcement of rules and disciplinary measures (Delfín-Ruiz et al., 2021). The parent's education level generally extends to the middle school level, while the prevailing family values involve the mother's engagement in domestic responsibilities and the father's participation in occupational pursuits.
+
+Regarding education, children in Ocuilan typically start their day by attending kindergarten between 8 am to 12 pm. Afterwards, mothers or other family members take care of the children as formal childcare options are limited. Consequently, children typically begin their early schooling experience at around 3 years of age.
+
+In terms of technology, approximately  77.9% of households possess at least one screen device, whereas access to the Internet is available to only  22.7% of households. Consequently, while a significant proportion of children have experienced digital technology a considerable segment lacks exposure and accessibility to such resources. (Ocuilan, n.d.)
+
+For the study, we first obtained permission from Mexican school authorities to visit local kindergartens. Next, we contacted parents and invited them to take part in the research. The evaluation of interested children was then carried out in a separate area within their own kindergartens, overseen by a Spanish-speaking research assistant. 
+
+**References and further readings:**
+
+* Compendio de información geográfica municipal 2010. Instituto Nacional de Estadística, Geografía e Informática INEGI (2010).  Retrieved 3 August  2023, from https://en.www.inegi.org.mx/app/biblioteca/ficha.html?upc=702825293031
+* Delfín-Ruiz, C., Orozco, C. S., & Guzmán, R. C. (2021). Caracterización de los roles familiares y su impacto en las familias de México. Revista de Ciencias Sociales, 27.
+* Ocuilan: Economy, employment, equity, quality of life, education, health and public safety. (n.d.). Data México. Retrieved 13 May 2023, from https://datamexico.org/en/profile/geo/ocuilan
+* Historia del Estado de Mexico. (2018) Gobierno del Estado de México Edo Mex (2018).  Retrieved 13 May 2023  from  https://edomex.gob.mx/historia_edomex  
+
+### Plymouth (UK) - Location 
+
+**References and further readings:**
+
+* ...
+
+### Pune (India) - Location 
+
+**References and further readings:**
+
+* ...
+
+### Stanford (USA) - Location 
+
+The sample was drawn from a children’s museum in San Jose, California located in the western United States of America. San Jose is a large city with a population of approximately 983,000 people and geographically is within the Santa Clara Valley in the southern part of the Bay Area, California.
+
+The city is a large metropolitan area with urban and suburban areas bordered by mountain ranges to the east and west. The land is characterized by bay flats and hills with several rivers running through the city. San Jose’s climate is described as mild, semi-arid, and mediterranean. A wet season typically occurs between November and March with combined rainfall and an average daytime temperature of 50 degrees Fahrenheit. A dry season occurs between March and November where precipitation is minimal and the average daytime temperature is 70 degrees Fahrenheit.
+
+According to the most recent census data, the 3 largest groups by Race are Asian (Non-Hispanic) (37%), White (Non-hispanic) (25%) and Hispanic (31%). 40% of residents immigrated to the United States, with most residents originating from Mexico, Philippines, and China. Although English is the primary language used, more than half (58%) of people also speak a language other than English at home, including Spanish (20%), Chinese (7%), Tagalog (3%), Vietnamese (2%), and other Asian & Pacific Islander languages (19%).
+
+San Jose was originally home to the Tamien people of the Ohlone from around 4000 BC. Around 1777 the Tamien people were displaced and enslaved, and San Jose became the first town in the Spanish colony Nueva California. San Jose would eventually become the first incorporated city and state capital when California became a state in the United States of America following the Mexican-American War.
+
+San Jose historically is a large farming community with a major industry in food processing and agriculture. The Valley was especially known for its tree nuts, berries, and orchard fruits. The city soon became a hub for the manufacturing of electric machinery and motor vehicles, and would eventually become the modern technological hub that it is today. San Jose is presently centered in “Silicon Valley”, a global center for technological innovation and entrepreneurs.
+
+The city has a combination of apartment buildings, detached houses, and residential complexes. Household composition varies, ranging from single individuals and couples to families with children and multi-generational households. Children mostly live in nuclear families with one or two children and their caregivers.
+
+Parental socialization goals in California typically emphasize tolerance, individualism, diversity, personal fulfillment, and holistic autonomy, but vary greatly as a result of its diverse populus. Education and learning are seen as important aspects of children’s lives. Parental education levels are generally very high; many adults have a graduate degree, and most adults have at least 12 years of formal schooling and a 4-year college degree. 
+
+It is common for parents to spend large parts of the day away from home, and typically rely on external care including family, nannies, and daycare for childcare. Daycares are largely commercialized and non-subsidized. Starting around age 2, children can begin attending preschool. At age 5, children can enter kindergarten in publicly subsidized schools and move on to primary school at age 6. While public primary education is typically free and compulsory, around 15% of children in San Jose are enrolled in private, non-subsidized institutions for primary school. 
+
+Children in San Jose have high exposure to technology. Nearly all households in San Jose have a computer (97%), with 93% of households having a broadband internet subscription. Smartphones and other touchscreen devices are used in most families and are used widely for education, communication, and entertainment.
+
+Children were recruited in person at a children’s museum in San Jose. Participants were randomly solicited from patrons visiting the children’s museum. Parents were given information about the study activity and consented before beginning the study. Children completed the study in a separate research room centrally located in the museum.
+
+**References and further readings:**
+
+* Miller, Miguel (1999). Climate of San Jose, NOAA Technical Memorandum, retrieved 22 September 2023 from: https://www.wrh.noaa.gov/mtr/sfd_sjc_climate/sjc/SJC_CLIMATE3.php#:~:text=San%20Jose%20%3Ds%20latitude%20and,total%20falls%20within%20this%20period.
+* Quick Facts: San Jose City, California (2022). United States Census Bureau, retrieved 22 September 2023 from: https://www.census.gov/quickfacts/fact/table/sanjosecitycalifornia/PST045222
+* San Jose, California Population 2023 (2023). World Population Review, retrieved 22 September 2023 from: https://worldpopulationreview.com/us-cities/san-jose-ca-population
+* San Jose Demographics and Diversity (2023). San Jose, retrieved 22 September 2023 from: https://www.sanjose.org/meetings/quick-guides/san-jose-demographics-and-diversity
+* Wilcox, W. D., Wang, W. (2020). State of Contradiction: Progressive Family Culture, Traditional Family Structure in California, Institute for Family Studies, retrieved 22 September 2023 from:
+https://ifstudies.org/blog/state-of-contradiction-progressive-family-culture-traditional-family-structure-in-california
+
+### Windhoek (Namibia) - Location 
+
+**References and further readings:**
+
+* ...
+
+
+
+
+
+
+
+
+```{r figpred2, include = T, fig.align = "center", fig.cap = "Household demographics by community.  Vertical lines show individual data points with minimal horizontal jitter to avoid overplotting.", out.width="100%"}
+
+dempred <- data%>%
+  group_by(community,continent)%>%
+  mutate(older_children = children - 1 - younger_children)%>%
+  distinct(subjid, .keep_all = T)%>%
+  select(subjid, community, continent, older_children,children, younger_children, household)%>%
+  pivot_longer(names_to = "dem", values_to = "value", cols = c(older_children,children, younger_children, household))%>%
+  mutate(dem = recode(dem,
+                      older_children = "older children",
+                            younger_children = "younger children"),
+         dem = factor(dem, levels = c("household", "children", "older children", "younger children")))%>%
+  ggplot(aes(y = community, x = value))+
+  facet_grid(continent~dem, scales = "free", space = "free_y")+
+  geom_density_ridges(
+    jittered_points = TRUE,
+    position = position_points_jitter(width = 0.25, height = 0),
+    point_shape = '|',  point_alpha = 1, alpha = 0.7,
+  )+
+ # geom_density_ridges(
+ #    col = "white",
+ #    jittered_points = TRUE, quantile_lines = TRUE, scale = 0.9, alpha = 0.7,
+ #    vline_size = 1, vline_color = "red",
+ #    point_size = 0.4, point_alpha = 1,
+ #    position = position_raincloud(adjust_vlines = TRUE)
+ #  )
+  labs(x = "No. of individuals", y= "")+
+  #geom_jitter(alpha = .1, width = 0.1, height = 0.1)+
+  theme_few()
+
+ggsave(plot = dempred, "../visuals/dempred.png", height = 8, width = 14, scale = 1.1)
+
+knitr::include_graphics("../visuals/dempred.png")
+```
 
 # Method
 
@@ -172,7 +499,11 @@ We adapted the task developed by Prein and colleagues [@prein2023tango]. We refe
 
 The task was implemented as a browser-based interactive picture book using `HTML` and `JavaScript`. Participants saw animated agents on a touch screen device, listened to pre-recorded audio instructions and responded by touching the screen. In all communities, a research assistant, fluent in the local language(s), guided the child through the task. 
 
-Figure X shows a screenshot from the task. The task was introduced verbally by the assistant as the balloon game in which the participant would play with other children to find a balloon. On each trial, participants saw an agent located in a window in the center of the screen. A balloon fell down from its starting position just below the agent. The agent's gaze followed the trajectory of the balloon. That is, the pupils and the iris were programmed to align with the center of the balloon. Once the balloon had landed on the ground, the agent was instructed to locate it, that is, to touch the location on the screen where they thought the balloon was. On each trial, we recorded the exact x-coordinate of the participant's touch.
+Figure \@ref(fig:task) shows a screenshot from the task. The task was introduced verbally by the assistant as the balloon game in which the participant would play with other children to find a balloon. On each trial, participants saw an agent located in a window in the center of the screen. A balloon fell down from its starting position just below the agent. The agent's gaze followed the trajectory of the balloon. That is, the pupils and the iris were programmed to align with the center of the balloon. Once the balloon had landed on the ground, the agent was instructed to locate it, that is, to touch the location on the screen where they thought the balloon was. On each trial, we recorded the exact x-coordinate of the participant's touch.
+
+```{r figagents, include = T, fig.align = "center", fig.cap = "Screenshot from the task. The scene depicts the choice phase in a test trial. Participants had to use the gaze of the agent to locate the balloon and click on the hedge where they thought the balloon was.", out.width="80%"}
+knitr::include_graphics("../visuals/task.png")
+``` 
 
 There were two types of familiarization trials. In fam1 trials, the balloon fell down and landed in plain sight. Participants simply had to touch the visible balloon. In fam2 trials, the trajectory of the balloon was visible but it landed behind a small barrier (usually a hedge - see Figure XXB). Thus, participants needed to touch the hedge where they saw the balloon land. Next came test trials. Here, the barrier moved up and covered the balloons trajectory. That is, participants only saw the agents eyes move, but not the balloon. They had to infer the location of the balloon based on the agent's gaze direction. During fam1, fam2 and the first test trial, children heard voice overs commenting what happened on the screen. Critically, the agent was described as wanting to help the child and to always look at the balloon (see section [script](#appendix-script) for the English wording). 
 
@@ -195,6 +526,16 @@ knitr::include_graphics("../visuals/agents.png")
 ``` 
 
 ## Questionnaire
+
+The parents of children who participated in the task were asked to fill out a short questionnaire with the following questions (English version):
+
+* Is there a device with a screen in your household? (answer: "yes" or "no")
+* Does your child have experience with touchscreens? (answer: "yes" or "no")
+* How many people live in your household (people residing and sleeping in one place e.g., a house)? (answer: number)
+* How many children live in your household? (answer: number)
+* How many children in your household are younger than the child participating in the study? (answer: number)
+
+The questions were translated to parents native language by a native speaker. In The number of older children living in the same household was computed by subtracting one (the child taking the test) and the number of younger children from the total number of children. Whenever parents were not able to read or write (most relevant for Chimfunshi, BaYaka, Bandongo, Khwe, Ha||om), research assistants asked the question and recorded the answer. 
 
 # Analysis
 
