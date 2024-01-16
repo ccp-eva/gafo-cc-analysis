@@ -12,7 +12,7 @@ output:
     fig_caption: yes
     #code_folding: hide
     number_sections: false
-bibliography: ../../../../References/library.bib
+bibliography: library.bib
 #csl: pnas.csl
 header-includes:
   \usepackage{caption}
@@ -20,7 +20,7 @@ header-includes:
   \renewcommand{\tablename}{Supplementary Table}
 ---
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=F}
 library(tidyverse)
 library(ggpubr)
 library(ggthemes)
@@ -29,6 +29,7 @@ library(maps)
 library(brms)
 library(cowplot)
 library(ggridges)
+library(papaja)
 
 estimate_mode <- function(s) {
   d <- density(s)
@@ -108,7 +109,9 @@ demtab <- data %>%
 
 knitr::kable(demtab,
              col.names = c("Community", "Country", "Continent", "N", "Sex (male)", "Age (range)"),
-             caption = "Participant demographics.", note = "Column age shows mean and range in paranthesis.", digits = 2, align = "l")
+             caption = "Participant demographics.", 
+             #ote = "Column age shows mean and range in paranthesis.", digits = 2, align = "l"
+             )
 ```
 
 A total of `r sum(as.numeric(demtab$N))` children between `r round(min(data$ageinyears), 2)` and `r round(max(data$ageinyears), 2)` provided data for the study. Children lived in `r n_distinct(data$community)` different communities, located in `r n_distinct(data$country)` different countries. Table \@ref(tab:demtable) gives the sample size per community together with some basic demographic information. Additional children were recruited but did not contribute data to the study. The recruitment strategy varied from community to community and we therefore cannot provide detailed information about the number of children that were excluded. All children who contributed at least five valid data points were included in the final sample. We did not exclude any participants for performance reasons. A detailed description of each site and the way children were recruited can be found below.
@@ -197,9 +200,9 @@ The agents were drawn for each cultural setting in close collaboration with loca
 
 # Appendix
 
-## Script 
+## Voice-over script 
 
-### Welcome (before the start of the task): 
+### Welcome (before the start of the task)
 
 Hello! Great that you’re here. We’ll now play a balloon game. Can you see the children in the picture over there? We want to play together with the children using the balloon. We’ll now talk you through exactly what will happen.
 
@@ -225,14 +228,17 @@ Nice, good job! Now, we’ll continue playing. There is the balloon, the girl/bo
 
 The balloon is behind the hedge now. You can’t see it - but the girl/boy can! The balloon falls to the ground and you have to find it. Remember - the girl/boy always looks at the balloon!
 
-### Goodbye
+### Goodbye (after the last test trial)
 
 The children are super happy after playing. Thanks a lot for your help! See you soon and goodbye!
 
 ## Agents
 
-Figure 
+Figure \@ref(fig:figagents) shows the agents that were used in the study. Some agents were used in multiple cultural settings. All agents had the same underlying eye-geometry (size of the pupil and the iris) and only differed in superficial features. 
 
+```{r figagents, include = T, fig.align = "center", fig.cap = "Agents used in the task. Some agents were used for multiple cultural settings", out.width="100%"}
+knitr::include_graphics("../visuals/agents.png")
+```
 
 \newpage
 
