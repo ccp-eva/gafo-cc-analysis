@@ -168,11 +168,9 @@ data%>%
 
 We adapted the task developed by Prein and colleagues [@prein2023tango]. We refer to the original publication for a detailed description of its development, implementation and psychometric evaluation (in Germany). Below give an overview and focus on the cross-cultural adaptation of the task. The task itself, including all the versions used in the study, can be accessed via the following website: https://ccp-odc.eva.mpg.de/tango-cc/
 
-## Design
-
 ## Setup and Procedure
 
-The task was implemented as a browser-based interactive picture book. Participants saw animated agents on a touch screen device, listened to pre-recorded audio instructions and responded by touching the screen. In all communities, a research assistant, fluent in the local language(s), guided the child through the task. 
+The task was implemented as a browser-based interactive picture book using `HTML` and `JavaScript`. Participants saw animated agents on a touch screen device, listened to pre-recorded audio instructions and responded by touching the screen. In all communities, a research assistant, fluent in the local language(s), guided the child through the task. 
 
 Figure X shows a screenshot from the task. The task was introduced verbally by the assistant as the balloon game in which the participant would play with other children to find a balloon. On each trial, participants saw an agent located in a window in the center of the screen. A balloon fell down from its starting position just below the agent. The agent's gaze followed the trajectory of the balloon. That is, the pupils and the iris were programmed to align with the center of the balloon. Once the balloon had landed on the ground, the agent was instructed to locate it, that is, to touch the location on the screen where they thought the balloon was. On each trial, we recorded the exact x-coordinate of the participant's touch.
 
@@ -190,9 +188,11 @@ All children were tested with a touch screen device with a size between 11 and 1
 
 The following components of the task were adapted to each cultural settings: voice-overs, agents, background. The voice overs were originally formulated in British English and German (see section [script](#script)). For each setting, they were first translated/adapted to the local language. In some cases (BaYaka and Bandongo) this was done by first translating them to French. The translations were done by native or near-native speakers. They were not exact translations of the original text but were adapted so that children from the respective community would understand them. For example, the word "hedge" in the British English version  was changed to "bush" for the Nigerian English version to adjust for how children in the respective community would refer to the thing they saw. The content of each utterance was comparable across languages.
 
-The agents were drawn for each cultural setting in close collaboration with local researchers and/or research assistants. They were meant to show young adults and represent the diversity in appearance prevalent in the local population. See section [agents](#agents)) for all faces used in the study. 
+The agents were drawn for each cultural setting in close collaboration with local researchers and/or research assistants. They were meant to show young adults and represent the diversity in appearance prevalent in the local population. Figure \@ref(fig:figagents) shows the agents that were used in the study. Some agents were used in multiple cultural settings. All agents had the same underlying eye-geometry (size of the pupil and the iris) and only differed in superficial features. 
 
-
+```{r figagents, include = T, fig.align = "center", fig.cap = "Agents used in the task. Some agents were used for multiple cultural settings", out.width="100%"}
+knitr::include_graphics("../visuals/agents.png")
+``` 
 
 ## Questionnaire
 
@@ -231,14 +231,6 @@ The balloon is behind the hedge now. You can’t see it - but the girl/boy can! 
 ### Goodbye (after the last test trial)
 
 The children are super happy after playing. Thanks a lot for your help! See you soon and goodbye!
-
-## Agents
-
-Figure \@ref(fig:figagents) shows the agents that were used in the study. Some agents were used in multiple cultural settings. All agents had the same underlying eye-geometry (size of the pupil and the iris) and only differed in superficial features. 
-
-```{r figagents, include = T, fig.align = "center", fig.cap = "Agents used in the task. Some agents were used for multiple cultural settings", out.width="100%"}
-knitr::include_graphics("../visuals/agents.png")
-```
 
 \newpage
 
