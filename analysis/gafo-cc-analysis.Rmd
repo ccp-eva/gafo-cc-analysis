@@ -1148,7 +1148,7 @@ ggplot(pdraws, aes(x= post, y = community))+
 
 ```{r}
 
-bm_base <- brm(click ~ targetcentralityx + ageinyears + (trialnr + targetcentralityx|subjid),
+bm_null <- brm(click ~ targetcentralityx + (trialnr + targetcentralityx|subjid),
                               data   = mdata, 
                               family = Gamma(link = "log"),
                               warmup = 2000, 
@@ -1170,7 +1170,7 @@ bm_cult <- brm(click ~ targetcentralityx + ageinyears + (trialnr + targetcentral
              control = list(adapt_delta = 0.95),
              backend = "cmdstanr")
 
-bm_cult_x_age <- brm(click ~ targetcentralityx + ageinyears + (trialnr + targetcentralityx|subjid)+ (ageinyears |community),
+bm_cult_x_age <- brm(click ~ targetcentralityx + ageinyears + (trialnr + targetcentralityx|subjid)+ (ageinyears + targetcentralityx |community),
                               data   = mdata, 
                               family = Gamma(link = "log"),
                               warmup = 2000, 
