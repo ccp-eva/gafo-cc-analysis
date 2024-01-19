@@ -1007,7 +1007,7 @@ ggsave("../visuals/old_child_site.png", width = 12, height = , bg = "white")
 ```{r}
 bm_trial_base <- brm(click ~ targetcentralityx + ageinyears + (targetcentralityx|subjid)+ (ageinyears + targetcentralityx |community),
                               data   = mdata%>%na.omit(), 
-                              family = Gamma(link = "log"),
+                              family = lognormal(),
                               warmup = 2000, 
                               iter   = 6000, 
                               chains = 4, 
@@ -1021,7 +1021,7 @@ saveRDS(bm_trial_base, "../saves/bm_trial_base.rds")
 
 bm_trial_pred <- brm(click ~ targetcentralityx + ageinyears + touchscreen + older_children + (targetcentralityx|subjid)+ (ageinyears + touchscreen + older_children + targetcentralityx |community),
                               data   = mdata, 
-                              family = Gamma(link = "log"),
+                              family = lognormal(),
                               warmup = 2000, 
                               iter   = 6000, 
                               chains = 4, 
@@ -1148,9 +1148,9 @@ ggplot(pdraws, aes(x= post, y = community))+
 
 ```{r}
 
-bm_null <- brm(click ~ targetcentralityx + (trialnr + targetcentralityx|subjid),
+bm_null <- brm(click ~ targetcentralityx + (targetcentralityx|subjid),
                               data   = mdata, 
-                              family = Gamma(link = "log"),
+                              family = lognormal(),
                               warmup = 2000, 
                               iter   = 6000, 
                               chains = 4, 
@@ -1159,9 +1159,9 @@ bm_null <- brm(click ~ targetcentralityx + (trialnr + targetcentralityx|subjid),
              control = list(adapt_delta = 0.95),
              backend = "cmdstanr")
 
-bm_cult <- brm(click ~ targetcentralityx + ageinyears + (trialnr + targetcentralityx|subjid)+ (1 |community),
+bm_age <- brm(click ~ targetcentralityx + ageinyears + (targetcentralityx|subjid),
                               data   = mdata, 
-                              family = Gamma(link = "log"),
+                              family = lognormal(),
                               warmup = 2000, 
                               iter   = 6000, 
                               chains = 4, 
@@ -1170,9 +1170,9 @@ bm_cult <- brm(click ~ targetcentralityx + ageinyears + (trialnr + targetcentral
              control = list(adapt_delta = 0.95),
              backend = "cmdstanr")
 
-bm_cult_x_age <- brm(click ~ targetcentralityx + ageinyears + (trialnr + targetcentralityx|subjid)+ (ageinyears + targetcentralityx |community),
+bm_cult <- brm(click ~ targetcentralityx + (targetcentralityx|subjid)+ (targetcentralityx |community),
                               data   = mdata, 
-                              family = Gamma(link = "log"),
+                              family = lognormal(),
                               warmup = 2000, 
                               iter   = 6000, 
                               chains = 4, 
@@ -1181,23 +1181,52 @@ bm_cult_x_age <- brm(click ~ targetcentralityx + ageinyears + (trialnr + targetc
              control = list(adapt_delta = 0.95),
              backend = "cmdstanr")
 
+
+bm_cult_age <- brm(click ~ targetcentralityx + ageinyears + (targetcentralityx|subjid)+ (ageinyears + targetcentralityx |community),
+                              data   = mdata, 
+                              family = lognormal(),
+                              warmup = 2000, 
+                              iter   = 6000, 
+                              chains = 4, 
+                              cores  = 4,
+                              threads = threading(8),
+             control = list(adapt_delta = 0.95),
+             backend = "cmdstanr")
 ```
 
 
 ```{r}
-six_fold_cross_validation <- function(data, m1, m2, m3, repeats) {
+six_fold_cross_validation <- function(data, m1, m2, m3, m4, repeats) {
 
   
   N_ids = n_distinct(data$subjid)
 #Prepare results DF
-  results <- tibble(m1_score=numeric(), m2_score=numeric() , m3_score=numeric(), m3_beats_m2=logical(), m3_beats_m1=logical(), m2_beats_m1=logical(), m1 = character(), m2 = character(), m3 = character())
+  results <- tibble(
+    m1_score=numeric(), 
+    m2_score=numeric() , 
+    m3_score=numeric(),
+    m4_score=numeric(),
+    
+    m4_beats_m3=logical(),
+    m4_beats_m2=logical(),
+    m4_beats_m1=logical(),
+    
+    m3_beats_m2=logical(),
+    m3_beats_m1=logical(),
+    
+    m2_beats_m1=logical(), 
+    
+    m1 = character(), 
+    m2 = character(),
+    m3 = character(),
+    m4 = character())
  
 
 #Repeat the whole shebang several times
   for(i in 1:repeats) {
 
   # Split dataset into 6 bins
-  bin_data <- data%>%group_by(community) %>% mutate(bin = rep(1:6, length.out = n()))
+  bin_data <- data%>%group_by(community)%>%distinct(subjid) %>% mutate(bin = rep(1:6, length.out = n()))
 
 for(j in 1:6) {
     # Use bin j as "hold out" data
@@ -1211,35 +1240,49 @@ for(j in 1:6) {
     training_data <- filter(data, subjid %in% training_ids)
 
     # Train models
-    up_m1 <- update(m1, newdata=training_data, cores=4,backend = "cmdstanr")
-    up_m2 <- update(m2, newdata=training_data, cores=4,backend = "cmdstanr")
-    up_m3 <- update(m3, newdata=training_data, cores=4,backend = "cmdstanr")
+    up_m1 <- update(m1, newdata=training_data, cores=4, threads = threading(8),backend = "cmdstanr")
+    up_m2 <- update(m2, newdata=training_data, cores=4, threads = threading(8),backend = "cmdstanr")
+    up_m3 <- update(m3, newdata=training_data, cores=4, threads = threading(8),backend = "cmdstanr")
+    up_m4 <- update(m4, newdata=training_data, cores=4, threads = threading(8),backend = "cmdstanr")
 
     # Sample predictions
     preds_m1 <- posterior_predict(up_m1, newdata=testing_data, allow_new_levels=TRUE, sample_new_levels="gaussian")
     preds_m2 <- posterior_predict(up_m2, newdata=testing_data, allow_new_levels=TRUE, sample_new_levels="gaussian")
     preds_m3 <- posterior_predict(up_m3, newdata=testing_data, allow_new_levels=TRUE, sample_new_levels="gaussian")
+    preds_m4 <- posterior_predict(up_m4, newdata=testing_data, allow_new_levels=TRUE, sample_new_levels="gaussian")
 
     # Evaluate predictive accuracy
-  score_m1 <- mean(sqrt(colMeans((testing_data$mean_click - t(preds_m1))**2)))
-  score_m2 <- mean(sqrt(colMeans((testing_data$mean_click - t(preds_m2))**2)))
-  score_m3 <- mean(sqrt(colMeans((testing_data$mean_click - t(preds_m3))**2)))
+  score_m1 <- mean(sqrt(colMeans((testing_data$click - t(preds_m1))**2)))
+  score_m2 <- mean(sqrt(colMeans((testing_data$click - t(preds_m2))**2)))
+  score_m3 <- mean(sqrt(colMeans((testing_data$click - t(preds_m3))**2)))
+  score_m4 <- mean(sqrt(colMeans((testing_data$click - t(preds_m4))**2)))
 
   m1_name <-  as.character(substitute(m1))
   m2_name <-  as.character(substitute(m2))
   m3_name <-  as.character(substitute(m3))
+  m4_name <-  as.character(substitute(m4))
   
     # Record results
-    results <- add_row(results,
+    results <- add_row(repeats = i,
+                       fold = j, 
+                       results,
                        m1_score = score_m1, 
                        m2_score = score_m2, 
-                       m3_score = score_m3, 
+                       m3_score = score_m3,
+                       m4_score = score_m4,
+
+                       m4_beats_m3 = m4_score < m3_score,
+                       m4_beats_m2 = m4_score < m2_score,
+                       m4_beats_m1 = m4_score < m1_score,
+                       
                        m3_beats_m2 = m3_score < m2_score,
                        m3_beats_m1 = m3_score < m1_score,
                        m2_beats_m1 = m2_score < m1_score, 
+                       
                        m1  = m1_name, 
                        m2 = m2_name, 
-                       m3 = m3_name)
+                       m3 = m3_name,
+                       m4 = m4_name)
  }
   }
   return(results)
@@ -1249,7 +1292,10 @@ for(j in 1:6) {
 ## Test for importance of culture and effect of age 
 
 ```{r}
-cv_cult <- six_fold_cross_validation(scdata, bm_base, bm_cult, bm_cult_x_age, 2)
+cv_cult <- six_fold_cross_validation(mdata, bm_null, bm_cult, bm_age, bm_cult_age, bm_cult_x_age, 2)
 ```
 
-## Test for 
+```{r}
+mean(cv_cult$m4_beats_m1)
+```
+
