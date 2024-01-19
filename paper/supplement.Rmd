@@ -1,5 +1,5 @@
 ---
-title: "Unity in diversity: Children from 17 communities process gaze in similar ways"
+title: "Unity in diversity: shared basic social-cognitive processing in children from from 17 diverse communities"
 subtitle: "Supplementary material"
 author: "..."
 output: 
@@ -114,59 +114,59 @@ knitr::kable(demtab,
              )
 ```
 
-A total of `r sum(as.numeric(demtab$N))` children between `r round(min(data$ageinyears), 2)` and `r round(max(data$ageinyears), 2)` provided data for the study. Children lived in `r n_distinct(data$community)` different communities, located in `r n_distinct(data$country)` different countries. Table \@ref(tab:demtable) gives the sample size per community together with some basic demographic information. Additional children were recruited but did not contribute data to the study. The recruitment strategy varied from community to community and we therefore cannot provide detailed information about the number of children that were excluded. All children who contributed at least five valid data points were included in the final sample. We did not exclude any participants for performance reasons. A detailed description of each site and the way children were recruited can be found below.
+A total of `r sum(as.numeric(demtab$N))` children between `r round(min(data$ageinyears), 2)` and `r round(max(data$ageinyears), 2)` provided data for the study. Children lived in `r n_distinct(data$community)` different communities, located in `r n_distinct(data$country)` different countries. Table \@ref(tab:demtable) gives the sample size per community together with some basic demographic information. Additional children were recruited but did not contribute data to the study. The recruitment strategy varied from community to community and we therefore cannot provide detailed information about the number of children that were excluded. All children who contributed at least four valid data points were included in the final sample. We did not exclude any participants for performance reasons. A detailed description of each site and the way children were recruited can be found below.
 
 ```{r}
-page <- data%>%
-  group_by(community,continent)%>%
-  distinct(subjid, .keep_all = T)%>%
-  mutate(dens = approxfun(density(ageinyears))(ageinyears))%>%
-  ggplot(aes(y = community, x = ageinyears))+
-  facet_grid(continent~., scales = "free", space = "free_y")+
-  geom_density_ridges(
-    jittered_points = TRUE,
-    position = position_points_jitter(width = 0, height = 0),
-    point_shape = '|',  point_alpha = 0.5, alpha = 0.7,
-  )+
-  labs(x = "Age (in years)", y= "")+
-  theme_few()+
-  theme(strip.background = element_blank(),strip.text.y = element_blank())
-
-pred_agg_i <- data%>%
-  mutate(older_children = children - 1 - younger_children)%>%
-  group_by(community, subjid)%>%
-  summarise(screen = mean(screen, na.rm = T),
-            touchscreen = mean(touchscreen, na.rm = T), 
-            older_children = mean(older_children, na.rm = T), 
-            household = mean(household, na.rm = T))
-
-pred_agg_g <- data%>%
-  mutate(older_children = children - 1 - younger_children)%>%
-  group_by(community, continent)%>%
-  summarise(screen = mean(screen, na.rm = T),
-            touchscreen = mean(touchscreen, na.rm = T), 
-            older_children = mean(older_children, na.rm = T), 
-            younger_children = mean(younger_children, na.rm = T), 
-            children = mean(children, na.rm = T), 
-            household = mean(household, na.rm = T))%>%
-  pivot_longer(names_to = "dem", values_to = "value", cols = c(screen, touchscreen, older_children,children, younger_children, household))
-
-ppred <- pred_agg_g%>%
-  filter(dem == "screen" | dem == "touchscreen")%>%
-  ggplot(aes(y = community, x = dem, fill = value))+
-  geom_point(pch = 22, size = 10, stroke = 0)+
-  facet_grid(continent~., scales = "free", space = "free_y")+
-  labs(x = "", y= "")+
-  scale_fill_viridis_c(name = "Prevalence")+
-  theme_few()+
-  scale_x_discrete(guide = guide_axis(n.dodge = 2))+
-  theme(axis.text.y = element_blank(), axis.ticks.y = element_blank(), strip.text.y.right = element_text(angle = 0))
+# page <- data%>%
+#   group_by(community,continent)%>%
+#   distinct(subjid, .keep_all = T)%>%
+#   mutate(dens = approxfun(density(ageinyears))(ageinyears))%>%
+#   ggplot(aes(y = community, x = ageinyears))+
+#   facet_grid(continent~., scales = "free", space = "free_y")+
+#   geom_density_ridges(
+#     jittered_points = TRUE,
+#     position = position_points_jitter(width = 0, height = 0),
+#     point_shape = '|',  point_alpha = 0.5, alpha = 0.7,
+#   )+
+#   labs(x = "Age (in years)", y= "")+
+#   theme_few()+
+#   theme(strip.background = element_blank(),strip.text.y = element_blank())
+# 
+# pred_agg_i <- data%>%
+#   mutate(older_children = children - 1 - younger_children)%>%
+#   group_by(community, subjid)%>%
+#   summarise(screen = mean(screen, na.rm = T),
+#             touchscreen = mean(touchscreen, na.rm = T), 
+#             older_children = mean(older_children, na.rm = T), 
+#             household = mean(household, na.rm = T))
+# 
+# pred_agg_g <- data%>%
+#   mutate(older_children = children - 1 - younger_children)%>%
+#   group_by(community, continent)%>%
+#   summarise(screen = mean(screen, na.rm = T),
+#             touchscreen = mean(touchscreen, na.rm = T), 
+#             older_children = mean(older_children, na.rm = T), 
+#             younger_children = mean(younger_children, na.rm = T), 
+#             children = mean(children, na.rm = T), 
+#             household = mean(household, na.rm = T))%>%
+#   pivot_longer(names_to = "dem", values_to = "value", cols = c(screen, touchscreen, older_children,children, younger_children, household))
+# 
+# ppred <- pred_agg_g%>%
+#   filter(dem == "screen" | dem == "touchscreen")%>%
+#   ggplot(aes(y = community, x = dem, fill = value))+
+#   geom_point(pch = 22, size = 10, stroke = 0)+
+#   facet_grid(continent~., scales = "free", space = "free_y")+
+#   labs(x = "", y= "")+
+#   scale_fill_viridis_c(name = "Prevalence")+
+#   theme_few()+
+#   scale_x_discrete(guide = guide_axis(n.dodge = 2))+
+#   theme(axis.text.y = element_blank(), axis.ticks.y = element_blank(), strip.text.y.right = element_text(angle = 0))
 ```
 
-```{r figpred1, include = T, fig.align = "center", fig.cap = "Age distribution (left) and prevalence of different types of technology by community. Left: dots show individual data points. Right: color shows the proportion of children with access to screens or touchscreens."}
-techpred <- plot_grid(page, ppred, align = "h", rel_widths = c(1, 0.5))
-
-ggsave(plot = techpred, "../visuals/techpred.png", height = 10, width = 10, scale = 1)
+```{r figpred1, include = T, fig.align = "center", fig.cap = "Age distribution (left) and prevalence of different types of technology by community. Left: dots show individual data points. Right: color shows the proportion of children with access to screens or touchscreens.", out.width="100%"}
+# techpred <- plot_grid(page, ppred, rel_widths = c(1, 0.5),align = "h")
+# 
+# ggsave(plot = techpred, "../visuals/techpred.png",  height = 7, width = 10, scale = 1)
 
 knitr::include_graphics("../visuals/techpred.png")
 
@@ -458,35 +458,35 @@ https://ifstudies.org/blog/state-of-contradiction-progressive-family-culture-tra
 
 ```{r figpred2, include = T, fig.align = "center", fig.cap = "Household demographics by community.  Vertical lines show individual data points with minimal horizontal jitter to avoid overplotting.", out.width="100%"}
 
-dempred <- data%>%
-  group_by(community,continent)%>%
-  mutate(older_children = children - 1 - younger_children)%>%
-  distinct(subjid, .keep_all = T)%>%
-  select(subjid, community, continent, older_children,children, younger_children, household)%>%
-  pivot_longer(names_to = "dem", values_to = "value", cols = c(older_children,children, younger_children, household))%>%
-  mutate(dem = recode(dem,
-                      older_children = "older children",
-                            younger_children = "younger children"),
-         dem = factor(dem, levels = c("household", "children", "older children", "younger children")))%>%
-  ggplot(aes(y = community, x = value))+
-  facet_grid(continent~dem, scales = "free", space = "free_y")+
-  geom_density_ridges(
-    jittered_points = TRUE,
-    position = position_points_jitter(width = 0.25, height = 0),
-    point_shape = '|',  point_alpha = 1, alpha = 0.7,
-  )+
- # geom_density_ridges(
- #    col = "white",
- #    jittered_points = TRUE, quantile_lines = TRUE, scale = 0.9, alpha = 0.7,
- #    vline_size = 1, vline_color = "red",
- #    point_size = 0.4, point_alpha = 1,
- #    position = position_raincloud(adjust_vlines = TRUE)
- #  )
-  labs(x = "No. of individuals", y= "")+
-  #geom_jitter(alpha = .1, width = 0.1, height = 0.1)+
-  theme_few()
-
-ggsave(plot = dempred, "../visuals/dempred.png", height = 8, width = 14, scale = 1.1)
+# dempred <- data%>%
+#   group_by(community,continent)%>%
+#   mutate(older_children = children - 1 - younger_children)%>%
+#   distinct(subjid, .keep_all = T)%>%
+#   select(subjid, community, continent, older_children,children, younger_children, household)%>%
+#   pivot_longer(names_to = "dem", values_to = "value", cols = c(older_children,children, younger_children, household))%>%
+#   mutate(dem = recode(dem,
+#                       older_children = "older children",
+#                             younger_children = "younger children"),
+#          dem = factor(dem, levels = c("household", "children", "older children", "younger children")))%>%
+#   ggplot(aes(y = community, x = value))+
+#   facet_grid(continent~dem, scales = "free", space = "free_y")+
+#   geom_density_ridges(
+#     jittered_points = TRUE,
+#     position = position_points_jitter(width = 0.25, height = 0),
+#     point_shape = '|',  point_alpha = 1, alpha = 0.7,
+#   )+
+#  # geom_density_ridges(
+#  #    col = "white",
+#  #    jittered_points = TRUE, quantile_lines = TRUE, scale = 0.9, alpha = 0.7,
+#  #    vline_size = 1, vline_color = "red",
+#  #    point_size = 0.4, point_alpha = 1,
+#  #    position = position_raincloud(adjust_vlines = TRUE)
+#  #  )
+#   labs(x = "No. of individuals", y= "")+
+#   #geom_jitter(alpha = .1, width = 0.1, height = 0.1)+
+#   theme_few()
+# 
+# ggsave(plot = dempred, "../visuals/dempred.png", height = 8, width = 14, scale = 1.1)
 
 knitr::include_graphics("../visuals/dempred.png")
 ```
@@ -501,11 +501,11 @@ The task was implemented as a browser-based interactive picture book using `HTML
 
 Figure \@ref(fig:task) shows a screenshot from the task. The task was introduced verbally by the assistant as the balloon game in which the participant would play with other children to find a balloon. On each trial, participants saw an agent located in a window in the center of the screen. A balloon fell down from its starting position just below the agent. The agent's gaze followed the trajectory of the balloon. That is, the pupils and the iris were programmed to align with the center of the balloon. Once the balloon had landed on the ground, the agent was instructed to locate it, that is, to touch the location on the screen where they thought the balloon was. On each trial, we recorded the exact x-coordinate of the participant's touch.
 
-```{r figagents, include = T, fig.align = "center", fig.cap = "Screenshot from the task. The scene depicts the choice phase in a test trial. Participants had to use the gaze of the agent to locate the balloon and click on the hedge where they thought the balloon was.", out.width="80%"}
+```{r figtask, include = T, fig.align = "center", fig.cap = "Screenshot from the task. The scene depicts the choice phase in a test trial. Participants had to use the gaze of the agent to locate the balloon and click on the hedge where they thought the balloon was.", out.width="80%"}
 knitr::include_graphics("../visuals/task.png")
 ``` 
 
-There were two types of familiarization trials. In fam1 trials, the balloon fell down and landed in plain sight. Participants simply had to touch the visible balloon. In fam2 trials, the trajectory of the balloon was visible but it landed behind a small barrier (usually a hedge - see Figure XXB). Thus, participants needed to touch the hedge where they saw the balloon land. Next came test trials. Here, the barrier moved up and covered the balloons trajectory. That is, participants only saw the agents eyes move, but not the balloon. They had to infer the location of the balloon based on the agent's gaze direction. During fam1, fam2 and the first test trial, children heard voice overs commenting what happened on the screen. Critically, the agent was described as wanting to help the child and to always look at the balloon (see section [script](#appendix-script) for the English wording). 
+There were two types of familiarization trials. In fam1 trials, the balloon fell down and landed in plain sight. Participants simply had to touch the visible balloon. In fam2 trials, the trajectory of the balloon was visible but it landed behind a small barrier (usually a hedge - see Figure \@ref(fig:task)). Thus, participants needed to touch the hedge where they saw the balloon land. Next came test trials. Here, the barrier moved up and covered the balloons trajectory. That is, participants only saw the agents eyes move, but not the balloon. They had to infer the location of the balloon based on the agent's gaze direction. During fam1, fam2 and the first test trial, children heard voice overs commenting what happened on the screen. Critically, the agent was described as wanting to help the child and to always look at the balloon (see section [script](#appendix-script) for the English wording). 
 
 Children completed one fam1 trial, two fam2 trials and 16 test trials. We excluded the first test trial from the analysis because of the voice-over. Thus, 15 test trials were used in the analysis below. 
 
@@ -538,6 +538,560 @@ The parents of children who participated in the task were asked to fill out a sh
 The questions were translated to parents native language by a native speaker. In The number of older children living in the same household was computed by subtracting one (the child taking the test) and the number of younger children from the total number of children. Whenever parents were not able to read or write (most relevant for Chimfunshi, BaYaka, Bandongo, Khwe, Ha||om), research assistants asked the question and recorded the answer. 
 
 # Analysis
+
+We analysed the data in three steps. First, we tested whether there was substantial cross-cultural variation in performance. Second, we looked for signatures in the data that informed the hypothesis that children processed gaze in the same way across cultural settings. Finally, we related performance in the task (on an individual level) to aspects of everyday experience, in particular the exposure to screen-based technology and social interaction (approximated by household composition). 
+
+We used Bayesian Regression models fit in `R` [] using the package `brms` [@burkner2019bayesian] for all analyses except the cognitive models, which were implemented in the probabilistic programming language `webppl` [@dippl]. For regression models, we used the default priors built in to `brms`. The dependent variable in all regression models was imprecision, that is, the absolute distance between the true location of the balloon (to x-coordinate of its center) and the location where the participant touched the screen. We used a Log-normal distribution to model the data because the natural lower bound for imprecision is zero and the data was right skewed with a long tail to the right. Numeric predictors that entered the models were scaled to have a mean of zero and a standard deviation of 1. For each model we ran four chains with 6000 iterations, removing the first 2000 for burn-in. All models had converging chains (Rhat values < 1.01). Details specific to each analysis can be found below. The analysis code can be found in the online repository associated with the study (link).  
+
+We pre-registered an analysis plan at https://osf.io/tdsvc. The analyses reported below follow the same logical as the pre-registered analyses but they differ substantially in detail. The main difference lies in the random effects structure we used in the models. In the pre-registration, we did not include random slopes for target centrality (i.e. the distance of the location where the balloon landed from the center of the screen), neither within subject nor within cultural setting. Instead, we included random slopes for trial within subject. We decided to change this and remove random slopes for trial but include them for target centrality. The reasons were as follows: trail effects in the sense of learning across trials were unlikely because participants did not receive differential feedback. Furthermore, in multiple studies with the same task since the registration we never found any trial effects [@prein2023tango; @prein2023variation]. We therefore removed trial from the models completely to reduce model complexity. On the other hand, we included random slopes for target centrality to be able to look at cross-cultural variation. The cognitive model was not mentioned in the pre-registration because it is a more recent development [see @prein2023variation].
+
+## Cross-cultural variation
+
+As a first step, we investigated cross-cultural variation in performance. As stated in the pre-registration, this can be problematic when including random intercepts for participant and cultural setting at the same time. Participants are fully nested within cultural setting. If there was an effect of cultural setting, we would expect participant random intercepts to cluster by cultural setting. This clustering would appear whether or not cultural setting would be included in the model as a random effect or not -- the only difference would be if the participant random intercepts are estimated as a deviation from a grand intercept or a culture-specific one. Standard metrics such as `WAIC` or `LOO` would penalize the model with additional intercept for cultural setting for having additional parameters that do not help to improve predictive accuracy.
+
+To get around this problem, we used a cross-validation procedure [see e.g., @stengelin2023children]. For each cultural setting we randomly sampled a data set that was 5/6 the size of the full data set (training data). Then we fit the model to this training data and used the estimated model parameters to predict the remaining 1/6 of the data (testing data). We then compared the model predictions from the different models by computing the mean difference between the true and predicted imprecision, over all trials in the testing data set.  This approach gets around the problem mentioned in above because the model predicts a new dataset for which the individual random intercepts are unknown. Clustering by culture could therefore only be predicted by a model that included culture as a predictor. We repeated the cross-validation procedure 100 times and  counted which model performed best most often. 
+
+We compared the following models (`brms` notation): 
+
+`null`:
+* `imprecision ~ target_centrality + (target_centrality | participant)`
+
+`age`:
+* `imprecision ~ age + target_centrality + (target_centrality | participant)`
+
+`culture`:
+* `imprecision ~ target_centrality + (target_centrality | participant) + (target_centrality | culture)`
+
+`culture_age`: 
+* `imprecision ~ age + target_centrality + (target_centrality | participant) + (age + target_centrality | culture)`
+
+```{r}
+mdata <- data%>%
+  ungroup()%>%
+  mutate(older_children = children - 1 - younger_children)%>%
+  mutate(ageinyears = scale(ageinyears),
+         targetcentralityx = scale(targetcentralityx),
+         trialnr = scale(trialnr),
+         touchscreen = factor(touchscreen),
+         screen = factor(screen),
+         click = abs(clickdistfromtargetcenterx))%>%
+  group_by(community)%>%
+  mutate(children = scale(children),
+         household = scale(household),
+         younger_children = scale(younger_children),
+         older_children = scale(older_children))
+```
+
+
+
+```{r}
+# bm_null <- brm(click ~ targetcentralityx + (trialnr + targetcentralityx|subjid),
+#                               data   = mdata, 
+#                               family = Gamma(link = "log"),
+#                               warmup = 2000, 
+#                               iter   = 6000, 
+#                               chains = 4, 
+#                               cores  = 4,
+#                               threads = threading(8),
+#              control = list(adapt_delta = 0.95),
+#              backend = "cmdstanr")
+# 
+# bm_cult <- brm(click ~ targetcentralityx + ageinyears + (trialnr + targetcentralityx|subjid)+ (1 |community),
+#                               data   = mdata, 
+#                               family = Gamma(link = "log"),
+#                               warmup = 2000, 
+#                               iter   = 6000, 
+#                               chains = 4, 
+#                               cores  = 4,
+#                               threads = threading(8),
+#              control = list(adapt_delta = 0.95),
+#              backend = "cmdstanr")
+# 
+# bm_cult_age <- brm(click ~ targetcentralityx + ageinyears + (trialnr + targetcentralityx|subjid)+ (ageinyears + targetcentralityx |community),
+#                               data   = mdata, 
+#                               family = Gamma(link = "log"),
+#                               warmup = 2000, 
+#                               iter   = 6000, 
+#                               chains = 4, 
+#                               cores  = 4,
+#                               threads = threading(8),
+#              control = list(adapt_delta = 0.95),
+#              backend = "cmdstanr")
+
+```
+
+```{r}
+# six_fold_cross_validation <- function(data, m1, m2, m3, repeats) {
+# 
+#   
+#   N_ids = n_distinct(data$subjid)
+# #Prepare results DF
+#   results <- tibble(m1_score=numeric(), m2_score=numeric() , m3_score=numeric(), m3_beats_m2=logical(), m3_beats_m1=logical(), m2_beats_m1=logical(), m1 = character(), m2 = character(), m3 = character())
+#  
+# 
+# #Repeat the whole shebang several times
+#   for(i in 1:repeats) {
+# 
+#   # Split dataset into 6 bins
+#   bin_data <- data%>%group_by(community) %>% mutate(bin = rep(1:6, length.out = n()))
+# 
+# for(j in 1:6) {
+#     # Use bin j as "hold out" data
+#     testing_ids <- bin_data%>%filter(bin == j)%>%pull(subjid)
+#     training_ids <- bin_data%>%filter(bin != j)%>%pull(subjid)
+#     # Safety check - is partition complete and disjoint?
+#     stopifnot(length(testing_ids) + length(training_ids) == N_ids)
+#     stopifnot(length(intersect(testing_ids, training_ids)) == 0)
+# # Create two separate dataframes
+#     testing_data <- filter(data, subjid %in% testing_ids)
+#     training_data <- filter(data, subjid %in% training_ids)
+# 
+#     # Train models
+#     up_m1 <- update(m1, newdata=training_data, cores=4,backend = "cmdstanr")
+#     up_m2 <- update(m2, newdata=training_data, cores=4,backend = "cmdstanr")
+#     up_m3 <- update(m3, newdata=training_data, cores=4,backend = "cmdstanr")
+# 
+#     # Sample predictions
+#     preds_m1 <- posterior_predict(up_m1, newdata=testing_data, allow_new_levels=TRUE, sample_new_levels="gaussian")
+#     preds_m2 <- posterior_predict(up_m2, newdata=testing_data, allow_new_levels=TRUE, sample_new_levels="gaussian")
+#     preds_m3 <- posterior_predict(up_m3, newdata=testing_data, allow_new_levels=TRUE, sample_new_levels="gaussian")
+# 
+#     # Evaluate predictive accuracy
+#   score_m1 <- mean(sqrt(colMeans((testing_data$mean_click - t(preds_m1))**2)))
+#   score_m2 <- mean(sqrt(colMeans((testing_data$mean_click - t(preds_m2))**2)))
+#   score_m3 <- mean(sqrt(colMeans((testing_data$mean_click - t(preds_m3))**2)))
+# 
+#   m1_name <-  as.character(substitute(m1))
+#   m2_name <-  as.character(substitute(m2))
+#   m3_name <-  as.character(substitute(m3))
+#   
+#     # Record results
+#     results <- add_row(results,
+#                        m1_score = score_m1, 
+#                        m2_score = score_m2, 
+#                        m3_score = score_m3, 
+#                        m3_beats_m2 = m3_score < m2_score,
+#                        m3_beats_m1 = m3_score < m1_score,
+#                        m2_beats_m1 = m2_score < m1_score, 
+#                        m1  = m1_name, 
+#                        m2 = m2_name, 
+#                        m3 = m3_name)
+#  }
+#   }
+#   return(results)
+# }
+```
+
+```{r}
+#cv_cult <- six_fold_cross_validation(scdata, bm_base, bm_cult, bm_cult_age, 100)
+```
+
+
+## Processing signatures
+
+In the second analysis focused on signatures in the data that suggest that children in all cultural settings use similar cognitive processes to infer the location of the balloon. The first -- weaker -- signature was simply an increase in performance with age. The second -- stronger -- signature was a strong effect of target centrality. That is, the further away from the center the balloon lands, the more imprecise should participants be. This second signature is derived from the model by the cognitive model introduced in @prein2023variation. It predicts that trials in which the agent looks further away from the center (i.e. to the left or right side of the screen) result in higher levels of imprecision compared to trials in which the agent looks closer to the middle. 
+
+This prediction is best understood by considering a similar phenomenon: pointing a torch light to a flat surface. The width of the light beam represents each individual's level of uncertainty in vector estimation and is represented in the model as a normal distribution around the true gaze vector with a participant specific standard deviation. On each trial, the model assumes that the participant samples a vector from this distribution to infer the location of the balloon. The smaller the standard deviation -- -- the narrower the light beam --, the more precise on average the participant is. Now, when the torch is directed straight down, the light beam is concentrated in a relatively small area. When the torch is rotated to the side, the the light from one half of the cone must travel further than the light from the other half to reach the surface. As a consequence, the light is spread over a wider area. This is true no matter how wide the cone (how large the standard deviation) is. 
+
+
+```{r}
+# draws <- bind_rows(
+# as_draws_df(bm_cult_x_age)%>%
+#   select(contains("children"))%>%
+#   select(contains("children"))%>%
+#   select(-contains("sd"))%>%
+#   select(-contains("cor"))%>%
+#   pivot_longer(cols = contains("children]"), names_to = "community", values_to = "value")%>%
+#   mutate(post = value + b_older_children, 
+#          community = str_remove(community, "r_community"),
+#          community = str_remove(community, ",older_children]"),
+#          community = str_remove(community, "\\["))%>%
+#   select(community, post)%>%
+#   mutate(type = "older_children"), 
+# 
+# as_draws_df(bm_cult_x_age)%>%
+#   select(contains("touchscreen"))%>%
+#   select(contains("touchscreen"))%>%
+#   select(-contains("sd"))%>%
+#   select(-contains("cor"))%>%
+#   pivot_longer(cols = contains("touchscreen1]"), names_to = "community", values_to = "value")%>%
+#   mutate(post = value + b_touchscreen1, 
+#          community = str_remove(community, "r_community"),
+#          community = str_remove(community, ",touchscreen1]"),
+#          community = str_remove(community, "\\["))%>%
+#   select(community, post)%>%
+#   mutate(type = "touchscreen"),
+# 
+# as_draws_df(bm_cult_x_age)%>%
+#   select(contains("ageinyears"))%>%
+#   select(contains("ageinyears"))%>%
+#   select(-contains("sd"))%>%
+#   select(-contains("cor"))%>%
+#   pivot_longer(cols = contains("ageinyears]"), names_to = "community", values_to = "value")%>%
+#   mutate(post = value + b_ageinyears, 
+#          community = str_remove(community, "r_community"),
+#          community = str_remove(community, ",ageinyears]"),
+#          community = str_remove(community, "\\["))%>%
+#   select(community, post)%>%
+#   mutate(type = "ageinyears"),
+# 
+# as_draws_df(bm_cult_x_age)%>%
+#   select(contains("targetcentralityx"))%>%
+#   select(contains("targetcentralityx"))%>%
+#   select(-contains("sd"))%>%
+#   select(-contains("cor"))%>%
+#   select(-contains("subjid"))%>%
+#   pivot_longer(cols = contains("targetcentralityx]"), names_to = "community", values_to = "value")%>%
+#   mutate(post = value + b_targetcentralityx, 
+#          community = str_remove(community, "r_community"),
+#          community = str_remove(community, ",targetcentralityx]"),
+#          community = str_remove(community, "\\["))%>%
+#   select(community, post)%>%
+#   mutate(type = "targetcentrality")
+# 
+# )
+# 
+# pdraws <- draws%>%
+#   mutate(continent = ifelse(
+#     community %in% c("leipzig", "plymouth"), "Europe", 
+#     ifelse(
+#       community %in% c("akure", "hai||om", "khwe", "chimfunshi", "bandongo", "bayaka", "windhoek", "uganda"), "Africa",
+#       ifelse(community %in% c("stanford", "mexico", "buenos_aires"), "America",
+#              ifelse(community %in% c("india", "beijing", "turkey"), "Asia", "Oceania"))
+#     )
+#   ))%>%
+#   mutate(continent = factor(continent, levels = c("America", "Africa", "Europe", "Asia", "Oceania"), ordered = T))%>%
+#   mutate(community = recode(community,
+#                             akure = "Akure (Nigeria)",
+#                             leipzig = "Leipzig (Germany)",
+#                             `hai||om` = "Hai||om (Namibia)",
+#                             khwe = "Khwe (Namibia)",
+#                             windhoek = "Windhoek (Namibia)",
+#                             stanford = "Stanford (USA)",
+#                             chimfunshi = "Chimfunshi (Sambia)",
+#                             mexico = "Ocuilan (Mexico)",
+#                             plymouth = "Plymouth (UK)",
+#                             beijing = "Beijing (China)", 
+#                             india = "Pune (India)",
+#                             buenos_aires = "Buenos Aires (Argentina)",
+#                             auckland = "Auckland (New Zealand)",
+#                             turkey = "Malatya (Turkey)",
+#                             bandongo = "Bandongo (Rep. Congo)",
+#                             bayaka = "Bayaka (Rep. Congo)", 
+#                             uganda = "Nyabyeya (Uganda)"))
+# 
+# saveRDS(pdraws, "../saves/pdraws.rds")
+```
+
+```{r figpreds, include = T, fig.align = "center", fig.cap = "Posterior distributions of model estimates for the poredictor variables by cultural setting.", out.width="100%"}
+
+# pdraws <- readRDS("../saves/pdraws.rds")%>%
+#   mutate(type = recode(type,
+#                        older_children = "Older children",
+#                        ageinyears = "Age",
+#                        targetcentrality = "Target centrality",
+#                        touchscreen = "Touchscreen"),
+#          type = factor(type, levels = c("Age","Target centrality", "Touchscreen", "Older children")))
+# 
+# 
+# 
+# ppred <- ggplot(pdraws, aes(x= post, y = community))+
+#   #geom_density_ridges(rel_min_height = 0.005, col = "black", alpha = .75, fill = NA)+
+#   geom_density_ridges(rel_min_height = 0.001, col = "white", alpha = .75, fill = "grey")+
+#   geom_vline(xintercept = 0, lty = 3)+
+#   facet_grid(continent~type, scales = "free", space = "free_y")+
+#   #stat_pointinterval(size = 0.1)+
+#   #xlim(-0.15, 0.1)+
+#   labs(x = "Posterior model estimate", y= "")+
+#   theme_few()+
+#   theme( strip.text.y.right = element_text(angle = 0))
+# 
+# 
+# ggsave(plot = ppred, "../visuals/pred.png", height = 6, width = 12, scale = 1)
+
+knitr::include_graphics("../visuals/pred.png")
+
+```
+
+
+To test these predictions, we inspected the parameter estimates for age and target centrality in the "winning" `culture_age` model described in the previous sections. We found strong main effects of age ($\beta$ = ) and target centrality ($\beta$ =). Figure \@ref(fig:figpreds) visualizes the posterior distributions for each cultural setting and shows that -- despite variation in strength -- there was a strong effect of age and target centrality in all cultural settings. 
+
+Another way to look at these signatures is to visualize the group-level developmental trajectories and the aggregated performance at different areas of the screen. Figure \@ref(fig:figdev)A shows that children got more precise with age in all cultural settings. Figure \@ref(fig:figdev)B shows the expected u-shaped pattern: the closer the balloon lands to the center of the screen (bins 5 and 6) the more precise children are in all cultural settings.
+
+```{r}
+# mdata <- data%>%
+#   mutate(click = abs(clickdistfromtargetcenterx))%>%
+#   group_by(subjid, continent,community, ageinyears)%>%
+#   summarise(mean_click = mean(click))%>%
+#   ungroup()%>%
+#   mutate(ageinyears = ageinyears - min(ageinyears))
+# 
+# bm_dev <- brm(mean_click ~ ageinyears + (ageinyears |community), 
+#                               data   = mdata, 
+#                               family = lognormal(),
+#                               warmup = 2000, 
+#                               iter   = 4000, 
+#                               chains = 4, 
+#                               cores  = 4,
+#              control = list(adapt_delta = 0.95))
+# 
+# 
+# ndata <- mdata%>%
+#   distinct(continent, community, ageinyears)
+# 
+# 
+# post <- fitted(bm_dev, newdata = ndata, re_formula =~(ageinyears|community))%>%
+#   as_tibble() %>%
+#   bind_cols(ndata)%>%
+#   mutate(ageinyears = ageinyears + min(data$ageinyears))
+```
+
+```{r}
+# tc_agg_data<- data%>%
+#   mutate(targetposition = factor(targetposition, levels = c(1:10)))%>%
+#   group_by(continent, community, targetposition)%>%
+#   tidyboot_mean(col= abs(clickdistfromtargetcenterx))
+# 
+# 
+# tam <- tc_agg_data%>%
+#   filter(continent == "America")%>%
+#   ggplot(., aes(x = targetposition, y = mean, col = community))+
+#   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
+#   labs(x = "", y = "")+
+#   scale_color_colorblind(name = "", guide = "none")+
+#   facet_grid(continent~.)+
+#   ylim(0,1000)+
+#   theme_few()
+# 
+# taf <- tc_agg_data%>%
+#   filter(continent == "Africa")%>%
+#   ggplot(., aes(x = targetposition, y = mean, col = community))+
+#   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
+#   labs(x = "", y = "")+
+#   scale_color_colorblind(name = "", guide = "none")+
+#   facet_grid(continent~.)+
+#   ylim(0,1000)+
+#   theme_few()
+# 
+# teu <- tc_agg_data%>%
+#   filter(continent == "Europe")%>%
+#   ggplot(., aes(x = targetposition, y = mean, col = community))+
+#   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
+#   labs(x = "", y = "")+
+#   scale_color_colorblind(name = "", guide = "none")+
+#   facet_grid(continent~.)+
+#   ylim(0,1000)+
+#   theme_few()
+# 
+# tas <- tc_agg_data%>%
+#   filter(continent == "Asia")%>%
+#   ggplot(., aes(x = targetposition, y = mean, col = community))+
+#   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
+#   labs(x = "", y = "")+
+#   scale_color_colorblind(name = "", guide = "none")+
+#   facet_grid(continent~.)+
+#   ylim(0,1000)+
+#   theme_few()
+# 
+# toc <- tc_agg_data%>%
+#   filter(continent == "Oceania")%>%
+#   ggplot(., aes(x = targetposition, y = mean, col = community))+
+#   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
+#   labs(x = "Target position (binned)", y = "")+
+#   scale_color_colorblind(name = "", guide = "none")+
+#   facet_grid(continent~.)+
+#   ylim(0,1000)+
+#   theme_few()
+
+```
+
+
+```{r}
+# am <- ggplot()+
+#   geom_point(data = mdata%>%filter(continent == "America"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
+#   geom_smooth(data = post%>%filter(continent == "America"), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
+#   theme_few()+
+#   scale_fill_colorblind(name = "")+
+#   scale_color_colorblind(name = "")+
+#   labs(x = "", y="Imprecision")+
+#   scale_x_continuous(limits = c(2,10))+
+#   scale_y_continuous(limits = c(0,1000))+
+#   facet_grid(continent~.)+
+#   theme(strip.text = element_blank(), legend.justification = c(0,1))
+# 
+# af <- ggplot()+
+#   geom_point(data = mdata%>%filter(continent == "Africa"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
+#   geom_smooth(data = post%>%filter(continent == "Africa"), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
+#   theme_few()+
+#   scale_fill_colorblind(name = "")+
+#   scale_color_colorblind(name = "")+
+#   labs(x = "", y="")+
+#     scale_x_continuous(limits = c(2,10))+
+#   scale_y_continuous(limits = c(0,1000))+
+#   facet_grid(continent~.)+
+#   theme(strip.text = element_blank(), legend.justification = c(0,1))
+# 
+# eu <- ggplot()+
+#   geom_point(data = mdata%>%filter(continent == "Europe"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
+#   geom_smooth(data = post%>%filter(continent == "Europe"), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
+#   theme_few()+
+#   scale_fill_colorblind(name = "")+
+#   scale_color_colorblind(name = "")+
+#   labs(x = "", y="")+
+#     scale_x_continuous(limits = c(2,10))+
+#   scale_y_continuous(limits = c(0,1000))+
+#   facet_grid(continent~.)+
+#   theme(strip.text = element_blank(), legend.justification = c(0,1))
+# 
+# as <- ggplot()+
+#   geom_point(data = mdata%>%filter(continent == "Asia"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
+#   geom_smooth(data = post%>%filter(continent == "Asia"), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
+#   theme_few()+
+#   scale_fill_colorblind(name = "")+
+#   scale_color_colorblind(name = "")+
+#   labs(x = "", y="")+
+#     scale_x_continuous(limits = c(2,10))+
+#   scale_y_continuous(limits = c(0,1000))+
+#   facet_grid(continent~.)+
+#   theme(strip.text = element_blank(), legend.justification = c(0,1))
+# 
+# oc <- ggplot()+
+#   geom_point(data = mdata%>%filter(continent == "Oceania"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
+#   geom_smooth(data = post%>%filter(continent == "Oceania"), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
+#   theme_few()+
+#   scale_fill_colorblind(name = "")+
+#   scale_color_colorblind(name = "")+
+#   labs(x = "Age", y="")+
+#     scale_x_continuous(limits = c(2,10))+
+#   scale_y_continuous(limits = c(0,1000))+
+#   facet_grid(continent~.)+
+#   theme(strip.text = element_blank(), legend.justification = c(0,1))
+```
+
+```{r figdev, include = T, fig.align = "center", fig.cap = "Agents used in the task. Some agents were used for multiple cultural settings", out.width="100%"}
+# # plot_grid(
+# #   plot_grid(am, tam, nrow = 1, align = "h", rel_widths = c(2,1)),
+# #   plot_grid(af, taf, nrow = 1, align = "h", rel_widths = c(2,1)),
+# #   plot_grid(eu, teu, nrow = 1, align = "h", rel_widths = c(2,1)),
+# #   plot_grid(as, tas, nrow = 1, align = "h", rel_widths = c(2,1)),
+# #   plot_grid(oc, toc, nrow = 1, align = "h", rel_widths = c(2,1)),
+# #   align = "v",
+# #   ncol = 1
+# #   )
+# 
+# 
+# pvis_pred <- plot_grid(
+#   plot_grid(am, af, eu, as,oc, ncol = 1, align = "v"),
+#   plot_grid(tam, taf, teu, tas,toc, ncol = 1, align = "v"),
+#   nrow = 1,
+#   labels = c("A","B"),
+#   rel_widths = c(1.75,1)
+# )
+# 
+# ggsave(plot = pvis_pred, "../visuals/pvis_pred.png", height = 12, width = 8, scale = 1.2)
+
+knitr::include_graphics("../visuals/pvis_pred.png")
+
+```
+
+
+### Cognitive model
+
+The u-shaped pattern reported above may also arise if participants did not process the agent's gaze at all but only selected the middle of the screen. In such a scenario, the further away the balloon lands from the center, the further away it is from the center and the participant's click. This would also result in a u-shaped pattern and a strong effect of target centrality. It would not, however, predict a developmental improvement in performance. Nevertheless, we wanted to quantify the evidence in favor of the vector-based gaze estimation model compared to this alternative center-bias model. We also added a random guessing model to the comparison according to which participants also ignored the agents gaze but simply touched random locations on the screen.
+
+The vector-based gaze estimation model has been described in detail in @prein2023variation. In brief, the it inversely models the process generating clicks based on observed eye movements. Formally, the model is defined as:
+
+\begin{equation}
+    P(\theta | x_c, \alpha_l, \alpha_r) \propto P(x_c | \alpha_l, \alpha_r, \theta)P(\theta)
+\end{equation}
+
+
+Here, $\theta$ represents an individual's cognitive ability to locate the focus of the agent's attention, $x_c$ represents the clicked coordinate, and $\alpha_l$ and $\alpha_r$ correspond to the left and right pupil angles (each defined as the angle between a line connecting the center of the eye to the pupil and a line extended vertically downward from the center of the eye).
+
+The basic assumption in this model is that participants click on the screen location where they think the agent is looking. The true eye angles ($\alpha_l$ and $\alpha_r$) are not directly observable and are estimated with noise, yielding $\hat{\alpha_l}$ and $\hat{\alpha_r}$. 
+
+Each click $x_c$ implies a "matched pair" of estimated pupil angles $\hat{\alpha_l}$ and $\hat{\alpha_r}$, with the constraint that the lines extended along those two angles meet at the precise location of where the target is believed to be. As a consequence, we can rewrite the likelihood function of the model as:
+
+\begin{equation}
+P(x_c | \alpha_l, \alpha_r, \theta) \propto P(\hat{\alpha_l}, \hat{\alpha_r} | \alpha_l, \alpha_r, \theta) P(x_c)
+\end{equation}
+
+$P(x_c)$ is a prior over potential target locations. Because the target was last visible in the screen and because the agent was located in the center, we assumed that participants have an a priori expectation that the target will land close to the middle. We estimated the strength of this center bias (i.e., the standard deviation of a Normal distribution around the screen center) based on the data: $P(x_c) \sim \mathcal{N}(960, \sigma^p)$.
+
+The primary inferential task for participants is therefore to estimate the pupil angles ($\hat{\alpha_l}$ and $\hat{\alpha_r}$), i.e., to sample from the term $P(\hat{\alpha_l}, \hat{\alpha_r} | \alpha_l, \alpha_r, \theta)$. Here, we assumed that the pair of estimated pupil angles were sampled from a probability distribution which is the product of two Normal distributions of equal variance, $\sigma_v$, centered on the true pupil angles:
+
+\begin{equation}
+P(\hat{\alpha_l}, \hat{\alpha_r} | \alpha_l, \alpha_r, \theta) \propto \phi(\hat{\alpha}_l ; \alpha_l, \sigma_v)\phi(\hat{\alpha}_r ; \alpha_r, \sigma_v),
+\end{equation}
+
+Here, $\sigma_v$ plays a crucial role in determining the accuracy with which participants estimate pupil angles. Smaller values of $\sigma_v$ result in a narrow distribution around the pupil angle, making clicks far away from the target less likely. Conversely, larger values for $\sigma_v$ lead to a wider distribution, making clicks far away from the target more likely. To circle back to the analogy introduced above, $\sigma_v$ corresponds to the width of the light beam. Thus, the goal of the model was to estimate participant-specific values for $\sigma_v$: $\sigma_{v_i}$. These participant specific values were sampled from a normal distribution centered around the value we expected for a child given their age ($age_i$): $\sigma_{v_i} \sim e^{\mathcal{N}(\sigma_{v_{age}}, \sigma^{\sigma_{v_{age}}}})$. (Values were exponentiated to always be positive). $\sigma_{v_{age}}$ in turn was defined via a simple regression model: $\sigma_{v_{age}} = \beta_0^{\sigma_{v_{age}}} + age_i \cdot \beta_1^{\sigma_{v_{age}}}$. Where $\beta_0^{\sigma_{v_{age}}}$ and $\beta_1^{\sigma_{v_{age}}}$ represent the population-level intercept and slope that together describe a curve that represents the average developmental pattern. 
+
+To summarize, the model assumes that participant's clicks are generated by a process that relies on noisy estimates of the agent's gaze direction. The precision, with which the gaze direction is estimated, varies between participants and increases with development.
+
+The two alternative models assume that participants ignore the agent's gaze completely, instead they are assumed to follow simple heuristics. According to the center bias model they always try to click in the center of the screen: $P(x_c) \sim \mathcal{N}(960, 160)$. (960 is the x-coordinate of the center and 160 is the width of the balloon). According to the random guessing model, they randomly click coordinates on the screen: $P(x_c) \sim \mathcal{U}(0, 1920)$. 
+
+All models were run separately for each cultural setting. The code to run the models can be found in the associated online repository. We also refer to this source for information on the prior distributions for all model parameters.  
+
+We compared models based on the marginal likelihood of the data for each model, which represents the likelihood of the data while averaging over the prior distribution on parameters. The pair-wise ratio of marginal likelihoods for two models is known as the Bayes Factor. Bayes Factors are a quantitative measure of the predictive quality of a model, taking into account the possible values of the model parameters weighted by their prior probabilities. The incorporation of the prior distribution over parameters in the averaging process implicitly considers model complexity: models with more parameters typically exhibit broader prior distributions over parameter values and broader prior distribution can attenuate the potential gains in predictive accuracy that a model with more parameters might otherwise achieve [@lee2014bayesian].
+
+Table \@ref(tab:bftable) shows the Bayes Factors in favor of the vector-based gaze estimation model for each cultural setting. The evidence in favor of the gaze model compared to the two alternative models was clear (all BF > 1 000 000 000 000 000). This result clearly rules out that the u-shaped pattern in the data was the result of participants always clicking the center instead of following gaze. 
+
+```{r bftable, echo=F}
+bf <- readRDS("../model/output/bf_comparison.rds")%>%
+  mutate_if(is.numeric, format, digits = 2, nsmall = 2)
+  
+
+knitr::kable(bf,
+             col.names = c("Community", "log(BF~gaze,center~)", "log(BF~gaze,guess~)"),
+             caption = "Log Bayes Factors in favor of the gaze model compared to two alternative models.", 
+             )
+```
+
+## Experiential predictors 
+
+```{r}
+exclude <- data%>%
+  filter(children == younger_children, trialnr == 1)%>%
+  pull(subjid)
+
+bm_pred_null <- brm(click ~ targetcentralityx + ageinyears + (targetcentralityx|subjid)+ (ageinyears + targetcentralityx |community),
+                              data   = mdata%>%filter(!subjid %in% exclude)%>%na.omit(), 
+                              family = Gamma(link = "log"),
+                              warmup = 2000, 
+                              iter   = 6000, 
+                              chains = 4, 
+                              cores  = 4,
+                              #threads = threading(8),
+             control = list(adapt_delta = 0.95),
+             backend = "cmdstanr")%>%
+  add_criterion(., c("waic","loo"))
+
+saveRDS(bm_trial_base, "../saves/bm_trial_base.rds")
+
+bm_pred_full <- brm(click ~ targetcentralityx + ageinyears + touchscreen + older_children + (targetcentralityx|subjid)+ (ageinyears + touchscreen + older_children + targetcentralityx |community),
+                              data   = mdata%>%filter(!subjid %in% exclude)%>%na.omit(), 
+                              family = Gamma(link = "log"),
+                              warmup = 2000, 
+                              iter   = 6000, 
+                              chains = 4, 
+                              cores  = 4,
+                              #threads = threading(8),
+             control = list(adapt_delta = 0.95),
+             backend = "cmdstanr")%>%
+  add_criterion(., c("waic","loo"))
+
+saveRDS(bm_trial_pred, "../saves/bm_trial_pred.rds")
+
+
+loo_compare(bm_trial_base,
+            bm_trial_pred
+            )%>%as_tibble(rownames = "model")
+```
+
+
+For the final analysis, 
+
+excluded all children for whom the answers to the questionnaire did not make sense (i.e. the number of younger children was equal to the total number of children; n = )
 
 # Appendix
 
