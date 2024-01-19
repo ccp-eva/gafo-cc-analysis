@@ -1109,23 +1109,23 @@ pdraws <- draws%>%
   ))%>%
   mutate(continent = factor(continent, levels = c("America", "Africa", "Europe", "Asia", "Oceania"), ordered = T))%>%
   mutate(community = recode(community,
-                            akure = "akure (nigeria)",
-                            leipzig = "leipzig (germany)",
-                            `hai||om` = "hai||om (namibia)",
-                            khwe = "khwe (namibia)",
-                            windhoek = "windhoek (namibia)",
-                            stanford = "stanford (usa)",
-                            chimfunshi = "chimfunshi (sambia)",
-                            mexico = "ocuilan (mexico)",
-                            plymouth = "plymouth (uk)",
-                            beijing = "beijing (china)", 
-                            india = "pune (india)",
-                            buenos_aires = "buenos aires (argentina)",
-                            auckland = "auckland (new zealand)",
-                            turkey = "malatya (turkey)",
-                            bandongo = "bandongo (rep. congo)",
-                            bayaka = "bayaka (rep. congo)", 
-                            uganda = "nyabyeya (uganda)"))
+                            akure = "Akure (Nigeria)",
+                            leipzig = "Leipzig (Germany)",
+                            `hai||om` = "Hai||om (Namibia)",
+                            khwe = "Khwe (Namibia)",
+                            windhoek = "Windhoek (Namibia)",
+                            stanford = "Stanford (USA)",
+                            chimfunshi = "Chimfunshi (Sambia)",
+                            mexico = "Ocuilan (Mexico)",
+                            plymouth = "Plymouth (UK)",
+                            beijing = "Beijing (China)", 
+                            india = "Pune (India)",
+                            buenos_aires = "Buenos Aires (Argentina)",
+                            auckland = "Auckland (New Zealand)",
+                            turkey = "Malatya (Turkey)",
+                            bandongo = "Bandongo (Rep. Congo)",
+                            bayaka = "Bayaka (Rep. Congo)", 
+                            uganda = "Nyabyeya (Uganda)"))
 
 saveRDS(pdraws, "../saves/pdraws.rds")
 
