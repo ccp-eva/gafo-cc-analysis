@@ -732,7 +732,8 @@ tidy_demographics_mex <- raw_demographics_mex %>%
     ageinyears = as.numeric(difftime(test_date,birth_date, units = "days")/365.25),
   )  %>%
   select(-c(name, lastname, test_date, birth_date, comment))%>%
-  filter(!is.na(ageinyears))
+  filter(!is.na(ageinyears))%>%
+  mutate(household = household + children)
 
 ```
 
