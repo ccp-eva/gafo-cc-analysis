@@ -114,63 +114,63 @@ knitr::kable(demtab,
              )
 ```
 
-A total of `r sum(as.numeric(demtab$N))` children between `r round(min(data$ageinyears), 2)` and `r round(max(data$ageinyears), 2)` provided data for the study. Children lived in `r n_distinct(data$community)` different communities, located in `r n_distinct(data$country)` different countries. Table \@ref(tab:demtable) gives the sample size per community together with some basic demographic information. Additional children were recruited but did not contribute data to the study. The recruitment strategy varied from community to community and we therefore cannot provide detailed information about the number of children that were excluded. All children who contributed at least four valid data points were included in the final sample. We did not exclude any participants for performance reasons. A detailed description of each site and the way children were recruited can be found below.
-
 ```{r}
-# page <- data%>%
-#   group_by(community,continent)%>%
-#   distinct(subjid, .keep_all = T)%>%
-#   mutate(dens = approxfun(density(ageinyears))(ageinyears))%>%
-#   ggplot(aes(y = community, x = ageinyears))+
-#   facet_grid(continent~., scales = "free", space = "free_y")+
-#   geom_density_ridges(
-#     jittered_points = TRUE,
-#     position = position_points_jitter(width = 0, height = 0),
-#     point_shape = '|',  point_alpha = 0.5, alpha = 0.7,
-#   )+
-#   labs(x = "Age (in years)", y= "")+
-#   theme_few()+
-#   theme(strip.background = element_blank(),strip.text.y = element_blank())
-# 
-# pred_agg_i <- data%>%
-#   mutate(older_children = children - 1 - younger_children)%>%
-#   group_by(community, subjid)%>%
-#   summarise(screen = mean(screen, na.rm = T),
-#             touchscreen = mean(touchscreen, na.rm = T), 
-#             older_children = mean(older_children, na.rm = T), 
-#             household = mean(household, na.rm = T))
-# 
-# pred_agg_g <- data%>%
-#   mutate(older_children = children - 1 - younger_children)%>%
-#   group_by(community, continent)%>%
-#   summarise(screen = mean(screen, na.rm = T),
-#             touchscreen = mean(touchscreen, na.rm = T), 
-#             older_children = mean(older_children, na.rm = T), 
-#             younger_children = mean(younger_children, na.rm = T), 
-#             children = mean(children, na.rm = T), 
-#             household = mean(household, na.rm = T))%>%
-#   pivot_longer(names_to = "dem", values_to = "value", cols = c(screen, touchscreen, older_children,children, younger_children, household))
-# 
-# ppred <- pred_agg_g%>%
-#   filter(dem == "screen" | dem == "touchscreen")%>%
-#   ggplot(aes(y = community, x = dem, fill = value))+
-#   geom_point(pch = 22, size = 10, stroke = 0)+
-#   facet_grid(continent~., scales = "free", space = "free_y")+
-#   labs(x = "", y= "")+
-#   scale_fill_viridis_c(name = "Prevalence")+
-#   theme_few()+
-#   scale_x_discrete(guide = guide_axis(n.dodge = 2))+
-#   theme(axis.text.y = element_blank(), axis.ticks.y = element_blank(), strip.text.y.right = element_text(angle = 0))
+page <- data%>%
+  group_by(community,continent)%>%
+  distinct(subjid, .keep_all = T)%>%
+  mutate(dens = approxfun(density(ageinyears))(ageinyears))%>%
+  ggplot(aes(y = community, x = ageinyears))+
+  facet_grid(continent~., scales = "free", space = "free_y")+
+  geom_density_ridges(
+    jittered_points = TRUE,
+    position = position_points_jitter(width = 0, height = 0),
+    point_shape = '|',  point_alpha = 0.5, alpha = 0.7,
+  )+
+  labs(x = "Age (in years)", y= "")+
+  theme_few()+
+  theme(strip.background = element_blank(),strip.text.y = element_blank())
+
+pred_agg_i <- data%>%
+  mutate(older_children = children - 1 - younger_children)%>%
+  group_by(community, subjid)%>%
+  summarise(screen = mean(screen, na.rm = T),
+            touchscreen = mean(touchscreen, na.rm = T),
+            older_children = mean(older_children, na.rm = T),
+            household = mean(household, na.rm = T))
+
+pred_agg_g <- data%>%
+  mutate(older_children = children - 1 - younger_children)%>%
+  group_by(community, continent)%>%
+  summarise(screen = mean(screen, na.rm = T),
+            touchscreen = mean(touchscreen, na.rm = T),
+            older_children = mean(older_children, na.rm = T),
+            younger_children = mean(younger_children, na.rm = T),
+            children = mean(children, na.rm = T),
+            household = mean(household, na.rm = T))%>%
+  pivot_longer(names_to = "dem", values_to = "value", cols = c(screen, touchscreen, older_children,children, younger_children, household))
+
+ppred <- pred_agg_g%>%
+  filter(dem == "screen" | dem == "touchscreen")%>%
+  ggplot(aes(y = community, x = dem, fill = value))+
+  geom_point(pch = 22, size = 10, stroke = 0)+
+  facet_grid(continent~., scales = "free", space = "free_y")+
+  labs(x = "", y= "")+
+  scale_fill_viridis_c(name = "Prevalence")+
+  theme_few()+
+  scale_x_discrete(guide = guide_axis(n.dodge = 2))+
+  theme(axis.text.y = element_blank(), axis.ticks.y = element_blank(), strip.text.y.right = element_text(angle = 0))
 ```
 
-```{r figpred1, include = T, fig.align = "center", fig.cap = "Age distribution (left) and prevalence of different types of technology by community. Left: dots show individual data points. Right: color shows the proportion of children with access to screens or touchscreens.", out.width="100%"}
-# techpred <- plot_grid(page, ppred, rel_widths = c(1, 0.5),align = "h")
-# 
-# ggsave(plot = techpred, "../visuals/techpred.png",  height = 7, width = 10, scale = 1)
+```{r figpred1, include = T, fig.align = "center", fig.cap = "A) Age distribution and B) prevalence of different types of technology by community. Left: dots show individual data points. Right: color shows the proportion of children with access to screens or touchscreens.", out.width="100%"}
+techpred <- plot_grid(page, ppred, rel_widths = c(1, 0.5),align = "h", labels = c("A", "B"))
+
+ggsave(plot = techpred, "../visuals/techpred.png",  height = 7, width = 10, scale = 1)
 
 knitr::include_graphics("../visuals/techpred.png")
 
 ```
+
+A total of `r sum(as.numeric(demtab$N))` children between `r round(min(data$ageinyears), 2)` and `r round(max(data$ageinyears), 2)` provided data for the study. Children lived in `r n_distinct(data$community)` different communities, located in `r n_distinct(data$country)` different countries. Table \@ref(tab:demtable) gives the sample size per community together with some basic demographic information. Figure \@ref(fig:figpred1)A shows the age distribution in each setting. Additional children were recruited but did not contribute data to the study. The recruitment strategy varied from community to community and we therefore cannot provide detailed information about the number of children that were excluded. All children who contributed at least four valid data points were included in the final sample. We did not exclude any participants for performance reasons. A detailed description of each site and the way children were recruited can be found below.
 
 ## Site descriptions
 
@@ -231,7 +231,7 @@ Beijing is one of the birthplaces of Chinese Civilization and one of the five an
 
 From the early 1950s to the reform and opening up, Beijing aimed to build a modernized industrial base, and the secondary industry became the dominant industry in economic development. In 1954, the proportion of the secondary industry was 44.1%, exceeding the tertiary industry for the first time, and in 1978, the proportion reached 71%. Since the 1980s, Beijing has vigorously developed the tertiary industry, and the proportion of the tertiary industry once again exceeded that of the secondary industry in 1994, and the proportion of the tertiary industry exceeded 60% in 1998, 70% in 2005, and 80% in 2016, reaching 84% in 2022, making it the city's economic "leader". According to the statistical communiqué on the National Economy and Social Development of Beijing in 2022 the top three sectors in terms of absolute volume of GDP are finance (19.7%), information transmission, software and information technology services (17.9%) and industry (12.1%).
 
-Beijing has various types of residential areas, ranging from traditional courtyard houses (siheyuan) in hutongs (narrow alleyways) to modern apartment buildings, gated residential complexes and detached houses. Household composition varies, ranging from single individuals and couples to families with children and multi-generational households. Notably, it is a strong tradition for grandparents to be involved in grandchildren care and household tasks. In big cities, such as Beijing, the involvement of grandparents in grandchild care is especially helpful since it relieves the high-pressure of a two-career family. BTW, China fully implemented the “two-child-per-family” policy in 2016, there are usually one or two children per family now in Beijing.
+Beijing has various types of residential areas, ranging from traditional courtyard houses (siheyuan) in hutongs (narrow alleyways) to modern apartment buildings, gated residential complexes and detached houses. Household composition varies, ranging from single individuals and couples to families with children and multi-generational households. Notably, it is a strong tradition for grandparents to be involved in grandchildren care and household tasks. In big cities, such as Beijing, the involvement of grandparents in grandchild care is especially helpful since it relieves the high-pressure of a two-career family. Since China fully implemented the “two-child-per-family” policy in 2016, there are now usually one or two children per family in Beijing.
 
 Parental socialization goals in Beijing (as well as in other cities) align with broader Chinese Confucianism cultural norms and typically emphasize the following seven developmental goals for children: Gaining knowledge, internalizing social norms, being modest about success and ashamed of failure, displaying self-restraint and filial piety, and maintaining harmonious relationships with others.  Education and learning are seen as very important aspects of children’s lives. For primary school children in Beijing, parents (also the education system) especially emphasize on academic achievement. Moreover, with China’s growing exposure to western values, autonomy has been promoted by current educationalists during the last decade, and is especially emphasized in developed cities such as Beijing. As to parental education levels, according to the data of 2020 population census, the average years of schooling for permanent population in Beijing aged 15 and above is 12.64 years, and among whom 48% have university degree (15 years of education and above). So, the percentage for the parents holding a university degree should be much higher than 48%.
 
@@ -450,12 +450,6 @@ https://ifstudies.org/blog/state-of-contradiction-progressive-family-culture-tra
 * ...
 
 
-
-
-
-
-
-
 ```{r figpred2, include = T, fig.align = "center", fig.cap = "Household demographics by community.  Vertical lines show individual data points with minimal horizontal jitter to avoid overplotting.", out.width="100%"}
 
 # dempred <- data%>%
@@ -549,18 +543,15 @@ We pre-registered an analysis plan at https://osf.io/tdsvc. The analyses reporte
 
 As a first step, we investigated cross-cultural variation in performance. As stated in the pre-registration, this can be problematic when including random intercepts for participant and cultural setting at the same time. Participants are fully nested within cultural setting. If there was an effect of cultural setting, we would expect participant random intercepts to cluster by cultural setting. This clustering would appear whether or not cultural setting would be included in the model as a random effect or not -- the only difference would be if the participant random intercepts are estimated as a deviation from a grand intercept or a culture-specific one. Standard metrics such as `WAIC` or `LOO` would penalize the model with additional intercept for cultural setting for having additional parameters that do not help to improve predictive accuracy.
 
-To get around this problem, we used a cross-validation procedure [see e.g., @stengelin2023children]. For each cultural setting we randomly sampled a data set that was 5/6 the size of the full data set (training data). Then we fit the model to this training data and used the estimated model parameters to predict the remaining 1/6 of the data (testing data). We then compared the model predictions from the different models by computing the mean difference between the true and predicted imprecision, over all trials in the testing data set.  This approach gets around the problem mentioned in above because the model predicts a new dataset for which the individual random intercepts are unknown. Clustering by culture could therefore only be predicted by a model that included culture as a predictor. We repeated the cross-validation procedure 100 times and  counted which model performed best most often. 
+To get around this problem, we used a cross-validation procedure [see e.g., @stengelin2023children]. For each cultural setting we randomly sampled a data set that was 5/6 the size of the full data set (training data). Then we fit the model to this training data and used the estimated model parameters to predict the remaining 1/6 of the data (testing data). We then compared the model predictions from the different models by computing the mean difference between the true and predicted imprecision, over all trials in the testing data set. This approach gets around the problem mentioned in above because the model predicts a new dataset for which the individual random intercepts are unknown. Clustering by culture could therefore only be predicted by a model that included culture as a predictor. We repeated the cross-validation procedure 100 times and counted which model performed best most often. 
 
 We compared the following models (`brms` notation): 
 
 `null`:
-* `imprecision ~ target_centrality + (target_centrality | participant)`
-
-`age`:
 * `imprecision ~ age + target_centrality + (target_centrality | participant)`
 
 `culture`:
-* `imprecision ~ target_centrality + (target_centrality | participant) + (target_centrality | culture)`
+* `imprecision ~ age + target_centrality + (target_centrality | participant) + (target_centrality | culture)`
 
 `culture_age`: 
 * `imprecision ~ age + target_centrality + (target_centrality | participant) + (age + target_centrality | culture)`
@@ -585,106 +576,149 @@ mdata <- data%>%
 
 
 ```{r}
-# bm_null <- brm(click ~ targetcentralityx + (trialnr + targetcentralityx|subjid),
-#                               data   = mdata, 
-#                               family = Gamma(link = "log"),
-#                               warmup = 2000, 
-#                               iter   = 6000, 
-#                               chains = 4, 
-#                               cores  = 4,
-#                               threads = threading(8),
-#              control = list(adapt_delta = 0.95),
-#              backend = "cmdstanr")
-# 
-# bm_cult <- brm(click ~ targetcentralityx + ageinyears + (trialnr + targetcentralityx|subjid)+ (1 |community),
-#                               data   = mdata, 
-#                               family = Gamma(link = "log"),
-#                               warmup = 2000, 
-#                               iter   = 6000, 
-#                               chains = 4, 
-#                               cores  = 4,
-#                               threads = threading(8),
-#              control = list(adapt_delta = 0.95),
-#              backend = "cmdstanr")
-# 
-# bm_cult_age <- brm(click ~ targetcentralityx + ageinyears + (trialnr + targetcentralityx|subjid)+ (ageinyears + targetcentralityx |community),
-#                               data   = mdata, 
-#                               family = Gamma(link = "log"),
-#                               warmup = 2000, 
-#                               iter   = 6000, 
-#                               chains = 4, 
-#                               cores  = 4,
-#                               threads = threading(8),
-#              control = list(adapt_delta = 0.95),
-#              backend = "cmdstanr")
+bm_null <- brm(click ~ ageinyears + targetcentralityx + (trialnr + targetcentralityx|subjid),
+                              data   = mdata,
+                              family = lognormal(),
+                              warmup = 2000,
+                              iter   = 6000,
+                              chains = 4,
+                              cores  = 4,
+                              threads = threading(8),
+             control = list(adapt_delta = 0.95),
+             backend = "cmdstanr")
+
+saveRDS(bm_null, "../saves/bm_cv_null.rds")
+
+bm_cult <- brm(click ~ ageinyears + targetcentralityx + (trialnr + targetcentralityx|subjid)+ (1 |community),
+                              data   = mdata,
+                              family = lognormal(),
+                              warmup = 2000,
+                              iter   = 6000,
+                              chains = 4,
+                              cores  = 4,
+                              threads = threading(8),
+             control = list(adapt_delta = 0.95),
+             backend = "cmdstanr")
+
+saveRDS(bm_cult, "../saves/bm_cv_cult.rds")
+
+bm_cult_age <- brm(click ~ ageinyears + targetcentralityx + (trialnr + targetcentralityx|subjid)+ (ageinyears + targetcentralityx |community),
+                              data   = mdata,
+                              family = lognormal(),
+                              warmup = 2000,
+                              iter   = 6000,
+                              chains = 4,
+                              cores  = 4,
+                              threads = threading(8),
+             control = list(adapt_delta = 0.95),
+             backend = "cmdstanr")
+
+saveRDS(bm_cult_age, "../saves/bm_cv_cult_age.rds")
 
 ```
 
 ```{r}
-# six_fold_cross_validation <- function(data, m1, m2, m3, repeats) {
-# 
-#   
-#   N_ids = n_distinct(data$subjid)
-# #Prepare results DF
-#   results <- tibble(m1_score=numeric(), m2_score=numeric() , m3_score=numeric(), m3_beats_m2=logical(), m3_beats_m1=logical(), m2_beats_m1=logical(), m1 = character(), m2 = character(), m3 = character())
-#  
-# 
-# #Repeat the whole shebang several times
-#   for(i in 1:repeats) {
-# 
-#   # Split dataset into 6 bins
-#   bin_data <- data%>%group_by(community) %>% mutate(bin = rep(1:6, length.out = n()))
-# 
-# for(j in 1:6) {
-#     # Use bin j as "hold out" data
-#     testing_ids <- bin_data%>%filter(bin == j)%>%pull(subjid)
-#     training_ids <- bin_data%>%filter(bin != j)%>%pull(subjid)
-#     # Safety check - is partition complete and disjoint?
-#     stopifnot(length(testing_ids) + length(training_ids) == N_ids)
-#     stopifnot(length(intersect(testing_ids, training_ids)) == 0)
-# # Create two separate dataframes
-#     testing_data <- filter(data, subjid %in% testing_ids)
-#     training_data <- filter(data, subjid %in% training_ids)
-# 
-#     # Train models
-#     up_m1 <- update(m1, newdata=training_data, cores=4,backend = "cmdstanr")
-#     up_m2 <- update(m2, newdata=training_data, cores=4,backend = "cmdstanr")
-#     up_m3 <- update(m3, newdata=training_data, cores=4,backend = "cmdstanr")
-# 
-#     # Sample predictions
-#     preds_m1 <- posterior_predict(up_m1, newdata=testing_data, allow_new_levels=TRUE, sample_new_levels="gaussian")
-#     preds_m2 <- posterior_predict(up_m2, newdata=testing_data, allow_new_levels=TRUE, sample_new_levels="gaussian")
-#     preds_m3 <- posterior_predict(up_m3, newdata=testing_data, allow_new_levels=TRUE, sample_new_levels="gaussian")
-# 
-#     # Evaluate predictive accuracy
-#   score_m1 <- mean(sqrt(colMeans((testing_data$mean_click - t(preds_m1))**2)))
-#   score_m2 <- mean(sqrt(colMeans((testing_data$mean_click - t(preds_m2))**2)))
-#   score_m3 <- mean(sqrt(colMeans((testing_data$mean_click - t(preds_m3))**2)))
-# 
-#   m1_name <-  as.character(substitute(m1))
-#   m2_name <-  as.character(substitute(m2))
-#   m3_name <-  as.character(substitute(m3))
-#   
-#     # Record results
-#     results <- add_row(results,
-#                        m1_score = score_m1, 
-#                        m2_score = score_m2, 
-#                        m3_score = score_m3, 
-#                        m3_beats_m2 = m3_score < m2_score,
-#                        m3_beats_m1 = m3_score < m1_score,
-#                        m2_beats_m1 = m2_score < m1_score, 
-#                        m1  = m1_name, 
-#                        m2 = m2_name, 
-#                        m3 = m3_name)
-#  }
-#   }
-#   return(results)
-# }
+six_fold_cross_validation <- function(data, m1, m2, m3, m4, repeats) {
+
+
+  N_ids = n_distinct(data$subjid)
+#Prepare results DF
+  results <- tibble(
+    m1_score=numeric(), 
+    m2_score=numeric(), 
+    m3_score=numeric(), 
+    #m4_score=numeric(), 
+    
+    #m4_beats_m3=logical(), 
+    #m4_beats_m2=logical(), 
+    #m4_beats_m1=logical(), 
+    m3_beats_m2=logical(), 
+    m3_beats_m1=logical(), 
+    m2_beats_m1=logical(), 
+    
+    m1 = character(), 
+    m2 = character(), 
+    m3 = character(),
+    #m4 = character()
+    )
+
+
+#Repeat the whole shebang several times
+  for(i in 1:repeats) {
+
+  # Split dataset into 6 bins
+  bin_data <- data%>%distinct(community, subjid)%>%group_by(community) %>% mutate(bin = rep(1:6, length.out = n()))
+
+for(j in 1:6) {
+    # Use bin j as "hold out" data
+    testing_ids <- bin_data%>%filter(bin == j)%>%pull(subjid)
+    training_ids <- bin_data%>%filter(bin != j)%>%pull(subjid)
+    # Safety check - is partition complete and disjoint?
+    stopifnot(length(testing_ids) + length(training_ids) == N_ids)
+    stopifnot(length(intersect(testing_ids, training_ids)) == 0)
+# Create two separate dataframes
+    testing_data <- filter(data, subjid %in% testing_ids)
+    training_data <- filter(data, subjid %in% training_ids)
+
+    # Train models
+    up_m1 <- update(m1, newdata=training_data, cores=4,backend = "cmdstanr", threads = threading(8))
+    up_m2 <- update(m2, newdata=training_data, cores=4,backend = "cmdstanr", threads = threading(8))
+    up_m3 <- update(m3, newdata=training_data, cores=4,backend = "cmdstanr", threads = threading(8))
+    #up_m4 <- update(m4, newdata=training_data, cores=4,backend = "cmdstanr", threads = threading(8))
+
+    # Sample predictions
+    preds_m1 <- posterior_predict(up_m1, newdata=testing_data, allow_new_levels=TRUE, sample_new_levels="gaussian")
+    preds_m2 <- posterior_predict(up_m2, newdata=testing_data, allow_new_levels=TRUE, sample_new_levels="gaussian")
+    preds_m3 <- posterior_predict(up_m3, newdata=testing_data, allow_new_levels=TRUE, sample_new_levels="gaussian")
+    #preds_m4 <- posterior_predict(up_m4, newdata=testing_data, allow_new_levels=TRUE, sample_new_levels="gaussian")
+
+    # Evaluate predictive accuracy
+  score_m1 <- mean(sqrt(colMeans((testing_data$click - t(preds_m1))**2)))
+  score_m2 <- mean(sqrt(colMeans((testing_data$click - t(preds_m2))**2)))
+  score_m3 <- mean(sqrt(colMeans((testing_data$click - t(preds_m3))**2)))
+  #score_m4 <- mean(sqrt(colMeans((testing_data$click - t(preds_m4))**2)))
+
+  m1_name <-  as.character(substitute(m1))
+  m2_name <-  as.character(substitute(m2))
+  m3_name <-  as.character(substitute(m3))
+  #m4_name <-  as.character(substitute(m4))
+
+    # Record results
+    results <- add_row(results,
+                       
+                       repeats = i, 
+                       bin = j,
+                       
+                       m1_score = score_m1,
+                       m2_score = score_m2,
+                       m3_score = score_m3,
+                       #m4_score = score_m4,
+                       
+                       # m4_beats_m3 = m4_score < m3_score,
+                       # m4_beats_m2 = m4_score < m2_score,
+                       # m4_beats_m2 = m4_score < m1_score,
+                       m3_beats_m2 = m3_score < m2_score,
+                       m3_beats_m1 = m3_score < m1_score,
+                       m2_beats_m1 = m2_score < m1_score,
+                       
+                       m1  = m1_name,
+                       m2 = m2_name,
+                       m3 = m3_name,
+                       #m4 = m4_name
+                       )
+ }
+  }
+  return(results)
+}
 ```
 
 ```{r}
-#cv_cult <- six_fold_cross_validation(scdata, bm_base, bm_cult, bm_cult_age, 100)
+cv_cult <- six_fold_cross_validation(scdata, bm_base, bm_cult, bm_cult_age, 1)
 ```
+
+We pre-registered the inclusion of additional models which did not include age as a predictor. To reduce computational demands and given that we did not implement this approach to determine the effect of age, we decided to leave these models out so that all models included age as a predictor. The main questions were, therefore, whether there were systematic absolute (model `culture`) or also developmental (model `culture_age`) differences between cultural settings.
+
+The results showed that the `culture_age` model made, by far, the best predictions and outperformed the `culture` model in `r mean(cv_cult$m3_beats_m2)*100`% and the `null` model in `r mean(cv_cult$m3_beats_m1)*100`% of cases. Furthermore, the `culture` model outperformed the `null` model in `r mean(cv_cult$m2_beats_m1)*100` % of cases. This suggests that there were substantial absolute and developmental differences between cultural settings (see Figure \@ref(fig:figdev)A). 
 
 
 ## Processing signatures
@@ -695,119 +729,75 @@ This prediction is best understood by considering a similar phenomenon: pointing
 
 
 ```{r}
-# draws <- bind_rows(
-# as_draws_df(bm_cult_x_age)%>%
-#   select(contains("children"))%>%
-#   select(contains("children"))%>%
-#   select(-contains("sd"))%>%
-#   select(-contains("cor"))%>%
-#   pivot_longer(cols = contains("children]"), names_to = "community", values_to = "value")%>%
-#   mutate(post = value + b_older_children, 
-#          community = str_remove(community, "r_community"),
-#          community = str_remove(community, ",older_children]"),
-#          community = str_remove(community, "\\["))%>%
-#   select(community, post)%>%
-#   mutate(type = "older_children"), 
-# 
-# as_draws_df(bm_cult_x_age)%>%
-#   select(contains("touchscreen"))%>%
-#   select(contains("touchscreen"))%>%
-#   select(-contains("sd"))%>%
-#   select(-contains("cor"))%>%
-#   pivot_longer(cols = contains("touchscreen1]"), names_to = "community", values_to = "value")%>%
-#   mutate(post = value + b_touchscreen1, 
-#          community = str_remove(community, "r_community"),
-#          community = str_remove(community, ",touchscreen1]"),
-#          community = str_remove(community, "\\["))%>%
-#   select(community, post)%>%
-#   mutate(type = "touchscreen"),
-# 
-# as_draws_df(bm_cult_x_age)%>%
-#   select(contains("ageinyears"))%>%
-#   select(contains("ageinyears"))%>%
-#   select(-contains("sd"))%>%
-#   select(-contains("cor"))%>%
-#   pivot_longer(cols = contains("ageinyears]"), names_to = "community", values_to = "value")%>%
-#   mutate(post = value + b_ageinyears, 
-#          community = str_remove(community, "r_community"),
-#          community = str_remove(community, ",ageinyears]"),
-#          community = str_remove(community, "\\["))%>%
-#   select(community, post)%>%
-#   mutate(type = "ageinyears"),
-# 
-# as_draws_df(bm_cult_x_age)%>%
-#   select(contains("targetcentralityx"))%>%
-#   select(contains("targetcentralityx"))%>%
-#   select(-contains("sd"))%>%
-#   select(-contains("cor"))%>%
-#   select(-contains("subjid"))%>%
-#   pivot_longer(cols = contains("targetcentralityx]"), names_to = "community", values_to = "value")%>%
-#   mutate(post = value + b_targetcentralityx, 
-#          community = str_remove(community, "r_community"),
-#          community = str_remove(community, ",targetcentralityx]"),
-#          community = str_remove(community, "\\["))%>%
-#   select(community, post)%>%
-#   mutate(type = "targetcentrality")
-# 
-# )
-# 
-# pdraws <- draws%>%
-#   mutate(continent = ifelse(
-#     community %in% c("leipzig", "plymouth"), "Europe", 
-#     ifelse(
-#       community %in% c("akure", "hai||om", "khwe", "chimfunshi", "bandongo", "bayaka", "windhoek", "uganda"), "Africa",
-#       ifelse(community %in% c("stanford", "mexico", "buenos_aires"), "America",
-#              ifelse(community %in% c("india", "beijing", "turkey"), "Asia", "Oceania"))
-#     )
-#   ))%>%
-#   mutate(continent = factor(continent, levels = c("America", "Africa", "Europe", "Asia", "Oceania"), ordered = T))%>%
-#   mutate(community = recode(community,
-#                             akure = "Akure (Nigeria)",
-#                             leipzig = "Leipzig (Germany)",
-#                             `hai||om` = "Hai||om (Namibia)",
-#                             khwe = "Khwe (Namibia)",
-#                             windhoek = "Windhoek (Namibia)",
-#                             stanford = "Stanford (USA)",
-#                             chimfunshi = "Chimfunshi (Sambia)",
-#                             mexico = "Ocuilan (Mexico)",
-#                             plymouth = "Plymouth (UK)",
-#                             beijing = "Beijing (China)", 
-#                             india = "Pune (India)",
-#                             buenos_aires = "Buenos Aires (Argentina)",
-#                             auckland = "Auckland (New Zealand)",
-#                             turkey = "Malatya (Turkey)",
-#                             bandongo = "Bandongo (Rep. Congo)",
-#                             bayaka = "Bayaka (Rep. Congo)", 
-#                             uganda = "Nyabyeya (Uganda)"))
-# 
-# saveRDS(pdraws, "../saves/pdraws.rds")
+draws <- bind_rows(
+as_draws_df(bm_cult_age)%>%
+  select(contains("ageinyears"))%>%
+  select(contains("ageinyears"))%>%
+  select(-contains("sd"))%>%
+  select(-contains("cor"))%>%
+  pivot_longer(cols = contains("ageinyears]"), names_to = "community", values_to = "value")%>%
+  mutate(post = value + b_ageinyears,
+         community = str_remove(community, "r_community"),
+         community = str_remove(community, ",ageinyears]"),
+         community = str_remove(community, "\\["))%>%
+  select(community, post)%>%
+  mutate(type = "ageinyears"),
+
+as_draws_df(bm_cult_age)%>%
+  select(contains("targetcentralityx"))%>%
+  select(contains("targetcentralityx"))%>%
+  select(-contains("sd"))%>%
+  select(-contains("cor"))%>%
+  select(-contains("subjid"))%>%
+  pivot_longer(cols = contains("targetcentralityx]"), names_to = "community", values_to = "value")%>%
+  mutate(post = value + b_targetcentralityx,
+         community = str_remove(community, "r_community"),
+         community = str_remove(community, ",targetcentralityx]"),
+         community = str_remove(community, "\\["))%>%
+  select(community, post)%>%
+  mutate(type = "targetcentrality")
+)%>%
+  mutate(community = str_replace(community, "\\.", " "))
+
+pdraws <- draws%>%
+  mutate(continent = ifelse(
+    community %in% c("leipzig", "plymouth"), "Europe",
+    ifelse(
+      community %in% c("akure", "hai||om", "khwe", "chimfunshi", "bandongo", "bayaka", "windhoek", "uganda"), "Africa",
+      ifelse(community %in% c("stanford", "mexico", "buenos_aires"), "America",
+             ifelse(community %in% c("india", "beijing", "turkey"), "Asia", "Oceania"))
+    )
+  ))%>%
+  mutate(continent = factor(continent, levels = c("America", "Africa", "Europe", "Asia", "Oceania"), ordered = T))
+
+saveRDS(pdraws, "../saves/pdraws.rds")
 ```
 
 ```{r figpreds, include = T, fig.align = "center", fig.cap = "Posterior distributions of model estimates for the poredictor variables by cultural setting.", out.width="100%"}
 
-# pdraws <- readRDS("../saves/pdraws.rds")%>%
-#   mutate(type = recode(type,
-#                        older_children = "Older children",
-#                        ageinyears = "Age",
-#                        targetcentrality = "Target centrality",
-#                        touchscreen = "Touchscreen"),
-#          type = factor(type, levels = c("Age","Target centrality", "Touchscreen", "Older children")))
-# 
-# 
-# 
-# ppred <- ggplot(pdraws, aes(x= post, y = community))+
-#   #geom_density_ridges(rel_min_height = 0.005, col = "black", alpha = .75, fill = NA)+
-#   geom_density_ridges(rel_min_height = 0.001, col = "white", alpha = .75, fill = "grey")+
-#   geom_vline(xintercept = 0, lty = 3)+
-#   facet_grid(continent~type, scales = "free", space = "free_y")+
-#   #stat_pointinterval(size = 0.1)+
-#   #xlim(-0.15, 0.1)+
-#   labs(x = "Posterior model estimate", y= "")+
-#   theme_few()+
-#   theme( strip.text.y.right = element_text(angle = 0))
-# 
-# 
-# ggsave(plot = ppred, "../visuals/pred.png", height = 6, width = 12, scale = 1)
+pdraws <- readRDS("../saves/pdraws.rds")%>%
+  mutate(type = recode(type,
+                       older_children = "Older children",
+                       ageinyears = "Age",
+                       targetcentrality = "Target centrality",
+                       touchscreen = "Touchscreen"),
+         type = factor(type, levels = c("Age","Target centrality", "Touchscreen", "Older children")))
+
+
+
+ppred <- ggplot(pdraws, aes(x= post, y = community))+
+  #geom_density_ridges(rel_min_height = 0.005, col = "black", alpha = .75, fill = NA)+
+  geom_density_ridges(rel_min_height = 0.001, col = "white", alpha = .75, fill = "grey")+
+  geom_vline(xintercept = 0, lty = 3)+
+  facet_grid(continent~type, scales = "free", space = "free_y")+
+  #stat_pointinterval(size = 0.1)+
+  #xlim(-0.15, 0.1)+
+  labs(x = "Posterior model estimate", y= "")+
+  theme_few()+
+  theme( strip.text.y.right = element_text(angle = 0))
+
+
+ggsave(plot = ppred, "../visuals/pred.png", height = 6, width = 12, scale = 1)
 
 knitr::include_graphics("../visuals/pred.png")
 
@@ -968,7 +958,7 @@ Another way to look at these signatures is to visualize the group-level developm
 #   theme(strip.text = element_blank(), legend.justification = c(0,1))
 ```
 
-```{r figdev, include = T, fig.align = "center", fig.cap = "Agents used in the task. Some agents were used for multiple cultural settings", out.width="100%"}
+```{r figdev, include = T, fig.align = "center", fig.cap = "A) Developmental trajectories by cultural settings. Transparent dots show aggregated data for each individual. The color dentoes the different cultural settings. The developmental trajectories are predicted based on a model of the data aggregated for each participant. B) Performance by screen section and cultural setting. Each bin covers 1/10th of the screen. Points show means and eroor bars 95\\% confidence intervals for the data within that bin aggregated across participants.", out.width="100%"}
 # # plot_grid(
 # #   plot_grid(am, tam, nrow = 1, align = "h", rel_widths = c(2,1)),
 # #   plot_grid(af, taf, nrow = 1, align = "h", rel_widths = c(2,1)),
@@ -1049,49 +1039,201 @@ knitr::kable(bf,
 
 ## Experiential predictors 
 
+
 ```{r}
 exclude <- data%>%
-  filter(children == younger_children, trialnr == 1)%>%
+  filter(household <= children | children == younger_children, trialnr == 1)%>%
   pull(subjid)
 
-bm_pred_null <- brm(click ~ targetcentralityx + ageinyears + (targetcentralityx|subjid)+ (ageinyears + targetcentralityx |community),
-                              data   = mdata%>%filter(!subjid %in% exclude)%>%na.omit(), 
-                              family = Gamma(link = "log"),
+scdata <- mdata%>%
+  filter(!subjid %in% exclude)%>%
+  group_by(subjid, community, ageinyears, touchscreen, household, children, younger_children)%>%
+  summarise(mean_click = mean(click))%>%
+  mutate(older_children = children - 1 - younger_children)%>%
+  ungroup()%>%
+  group_by(community)%>%
+  mutate(
+         household = scale(household), 
+         children = scale(children), 
+         older_children = scale(older_children),
+         younger_children = scale(younger_children)
+         )%>%
+  na.omit()
+
+bm_pred_null <- brm(mean_click ~ ageinyears + (ageinyears |community), 
+                              data   = scdata, 
+                              family = lognormal(),
                               warmup = 2000, 
-                              iter   = 6000, 
+                              iter   = 4000, 
                               chains = 4, 
                               cores  = 4,
-                              #threads = threading(8),
              control = list(adapt_delta = 0.95),
-             backend = "cmdstanr")%>%
+             backend = "cmdstanr",
+             threads = threading(2)
+             )%>%
   add_criterion(., c("waic","loo"))
 
-saveRDS(bm_trial_base, "../saves/bm_trial_base.rds")
-
-bm_pred_full <- brm(click ~ targetcentralityx + ageinyears + touchscreen + older_children + (targetcentralityx|subjid)+ (ageinyears + touchscreen + older_children + targetcentralityx |community),
-                              data   = mdata%>%filter(!subjid %in% exclude)%>%na.omit(), 
-                              family = Gamma(link = "log"),
+bm_pred_tc <- brm(mean_click ~ ageinyears + touchscreen + (ageinyears |community), 
+                              data   = scdata, 
+                              family = lognormal(),
                               warmup = 2000, 
-                              iter   = 6000, 
+                              iter   = 4000, 
                               chains = 4, 
                               cores  = 4,
-                              #threads = threading(8),
              control = list(adapt_delta = 0.95),
-             backend = "cmdstanr")%>%
+             backend = "cmdstanr",
+             threads = threading(2))%>%
   add_criterion(., c("waic","loo"))
 
-saveRDS(bm_trial_pred, "../saves/bm_trial_pred.rds")
+bm_pred_tc_hh <- brm(mean_click ~ ageinyears + touchscreen + household + (ageinyears |community), 
+                              data   = scdata, 
+                              family = lognormal(),
+                              warmup = 2000, 
+                              iter   = 4000, 
+                              chains = 4, 
+                              cores  = 4,
+             control = list(adapt_delta = 0.95),
+             backend = "cmdstanr",
+             threads = threading(2)
+             )%>%
+  add_criterion(., c("waic","loo"))
 
 
-loo_compare(bm_trial_base,
-            bm_trial_pred
-            )%>%as_tibble(rownames = "model")
+bm_pred_tc_c <- brm(mean_click ~ ageinyears + touchscreen + children + (ageinyears |community), 
+                              data   = scdata, 
+                              family = lognormal(),
+                              warmup = 2000, 
+                              iter   = 4000, 
+                              chains = 4, 
+                              cores  = 4,
+             control = list(adapt_delta = 0.95),
+             backend = "cmdstanr",
+             threads = threading(2)
+             )%>%
+  add_criterion(., c("waic","loo"))
+
+bm_pred_tc_yc <- brm(mean_click ~ ageinyears + touchscreen + younger_children + (ageinyears |community), 
+                              data   = scdata, 
+                              family = lognormal(),
+                              warmup = 2000, 
+                              iter   = 4000, 
+                              chains = 4, 
+                              cores  = 4,
+             control = list(adapt_delta = 0.95),
+             backend = "cmdstanr",
+             threads = threading(2)
+             )%>%
+  add_criterion(., c("waic","loo"))
+
+bm_pred_tc_oc <- brm(mean_click ~ ageinyears + touchscreen + older_children + (ageinyears |community), 
+                              data   = scdata, 
+                              family = lognormal(),
+                              warmup = 2000, 
+                              iter   = 4000, 
+                              chains = 4, 
+                              cores  = 4,
+             control = list(adapt_delta = 0.95),
+             backend = "cmdstanr",
+             threads = threading(2)
+             )%>%
+  add_criterion(., c("waic","loo"))
+
+bm_pred_tc_oc_rand <- brm(mean_click ~ ageinyears + touchscreen + older_children + (touchscreen + older_children + ageinyears |community), 
+                              data   = scdata, 
+                              family = lognormal(),
+                              warmup = 2000, 
+                              iter   = 4000, 
+                              chains = 4, 
+                              cores  = 4,
+             control = list(adapt_delta = 0.95),
+             backend = "cmdstanr",
+             threads = threading(2)
+             )%>%
+  add_criterion(., c("waic","loo"))
 ```
 
 
-For the final analysis, 
+```{r}
+model_comp <- loo_compare(bm_pred_null, bm_pred_tc, bm_pred_tc_hh, bm_pred_tc_oc,bm_pred_tc_yc, bm_pred_tc_c, bm_pred_tc_oc_rand,
+            criterion = "waic"
+            )%>%
+  as_tibble(rownames = "model")%>%
+  left_join(model_weights(bm_pred_null, bm_pred_tc, bm_pred_tc_hh, bm_pred_tc_oc,bm_pred_tc_yc, bm_pred_tc_c, bm_pred_tc_oc_rand, criterion = "waic")%>%
+              as_tibble(rownames = "model")
+  )%>%
+  mutate_if(is.numeric, round, 2)
 
-excluded all children for whom the answers to the questionnaire did not make sense (i.e. the number of younger children was equal to the total number of children; n = )
+saveRDS(model_comp, "../saves/model_comp.rds")
+
+model_comp <- readRDS("../saves/model_comp.rds")
+
+```
+
+
+The final analysis focused on whether we could predict performance in the task by aspects of everyday experience. For the ease of model fitting, we aggregated the data for each participant so that models predicted the average imprecision across trials^[@prein2023variation showed that the performance mean is nearly perfectly correlated with $\sigma_v$. When re-running the winning model on the trial-by-trial data, the results were qualitatively and quantitatively identical.]. The aspects we could focus on were limited to the questions we asked in the questionnaire. That is, we analysed the effects of exposure to technology and household composition. 
+
+We asked about children's exposure to screens as well as touchscreens. These two variables were largely redundant (see Figure Figure \@ref(fig:figpred1)B) and so we included only one of them in the model. We chose the availability of a touchscreen as a predictor because the task itself was presented on a touchscreen. We expected (and pre-registered) that children with exposure to touchscreens would perform better. 
+
+For household composition, we asked for the total number of people in the household, the number of children and the number of younger children. Based on this, we also computed the number of older children living in the household. We did not pre-register this, but decided to also include this variable because prior work on advanced forms of social cognition has suggested that the presence of older siblings is slightly more predictive of development compared to other aspects of household composition [e.g., @lewis1996social; @ruffman1998older; but see @peterson2003opening]. We think that gaze following improves though practice during social interaction. Particularly supportive, we believe, are situations in which it is difficult to infer the goals and intentions of another person based on other information sources (e.g., language or context). In such situations, children have to pay closer attention to the interaction partner and use their gaze to make such inferences. We are well aware that the numbers in the questionnaire are very far removed from these forms of social interaction. Thus, at best, they are a very coarse approximation. As a consequence, we do not expect there to be a very strong link between the two. We sincerely hope that future work will be able to directly assess children's social interactions. We standardized each predictor *within* each culture before fitting the models. Thus, the interpretation of the coefficient is the gain in precision for living e.g., in a larger household relative to other children from the same cultural settings.
+
+We compared models in a Bayesian model comparison. Models were compared based on the difference in expected log pointwise predictive density (ELPD) computed via the widely applicable information criterion (`WAIC`) and the standard error of that difference (SE). As pre-registered, we fit a separate model for each aspect of household composition. We compared the following models. 
+
+`null`:
+* `mean_imprecision ~ age + (age | culture)`
+
+`touchscreen`:
+* `mean_imprecision ~ touchscreen + age + (age | culture)`
+
+`household`:
+* `mean_imprecision ~ household + touchscreen + age + (age | culture)`
+
+`children`:
+* `mean_imprecision ~ children + touchscreen + age + (age | culture)`
+
+`younger_children`:
+* `mean_imprecision ~ younger_children + touchscreen + age + (age | culture)`
+
+`older_children`:
+* `mean_imprecision ~ older_children + touchscreen + age + (age | culture)`
+
+```{r predcomptable, echo=F}
+pred_mocel_comp <- readRDS("../saves/model_comp.rds")%>%
+  mutate_if(is.numeric, format, digits = 2, nsmall = 2)%>%
+  select(model, elpd_diff, se_diff, waic, se_waic, value)%>%
+  mutate(model = recode(model, 
+                        bm_pred_null = "null",
+                        bm_pred_tc_oc = "older_children",
+                        bm_pred_tc = "touchscreen",
+                        bm_pred_tc_hh = "household",
+                        bm_pred_tc_c = "children",
+                        bm_pred_tc_yc = "younger_children",
+                        bm_pred_tc_oc_rand = "older_children (by culture)"))
+  
+
+knitr::kable(pred_mocel_comp,
+             col.names = c("Model", "WAIC", "SE","diffWAIC", "diffSE", "Weight"),
+             caption = "Model comparison based on WAIC for experiential predictor models.", 
+             )
+```
+
+
+Table \@ref(tab:predcomptable) shows that the model predicting average imprecision by the expose of touchscreens and the number of older children living in the household performed best. However, the difference between the models, in particular those with different demographic predictors, was very small, suggesting that household composition contributed only little to explaining differences between individuals. Thus, we caution against an overly strong interpretation of the results. To test whether there was variation across cultural settings in the importance of these predictors, we added a model to the comparison that allowed these predictors to vary by cultural setting: 
+
+`older_children (by culture)`:
+* `mean_imprecision ~ older_children + touchscreen + age + (older_children + touchscreen + age | culture)`
+
+```{r}
+pred_est <- fixef(bm_pred_tc_oc)%>%
+  as_tibble(rownames = "term")%>%
+  mutate_if(is.numeric,round, 2)
+
+saveRDS(pred_est, "../saves/pred_est.rds")
+
+pred_est <- readRDS("../saves/pred_est.rds")
+```
+
+
+Table \@ref(tab:predcomptable) shows that this model preformed relatively poor, suggesting that there was little variation across cultural settings in how the predictors influenced performance. When inspecting the estimates within the winning model, we saw that children with exposure to touchscreens performed better compared to children without exposure ($\beta$ = `r pred_est%>%filter(term == "touchscreen1")%>%pull(Estimate)`, SE = `r pred_est%>%filter(term == "touchscreen1")%>%pull(Est.Error)`, 95% CrI = `r pred_est%>%filter(term == "touchscreen1")%>%pull(Q2.5)` - `r pred_est%>%filter(term == "touchscreen1")%>%pull(Q97.5)`). Children with more older children living in the same household also tended to perform better ($\beta$ = `r pred_est%>%filter(term == "older_children")%>%pull(Estimate)`, SE = `r pred_est%>%filter(term == "older_children")%>%pull(Est.Error)`, 95% CrI = `r pred_est%>%filter(term == "older_children")%>%pull(Q2.5)` - `r pred_est%>%filter(term == "older_children")%>%pull(Q97.5)`).
 
 # Appendix
 

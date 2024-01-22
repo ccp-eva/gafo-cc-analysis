@@ -565,8 +565,7 @@ as_draws_df(bm_dem_hh_rand)%>%
 
 ```{r}
 scdata <- mdata%>%
-  filter(touchscreen != 2
-         )%>%
+  filter(!subjid %in% exclude)%>%
   group_by(subjid, community, ageinyears, touchscreen, household, children, younger_children)%>%
   summarise(mean_click = mean(click))%>%
   mutate(older_children = children - 1 - younger_children)%>%
@@ -577,12 +576,8 @@ scdata <- mdata%>%
          children = scale(children), 
          older_children = scale(older_children),
          younger_children = scale(younger_children)
-        
-         #mean_click = scale(mean_click)
          )%>%
-  na.omit()%>%
-  filter(touchscreen != 2)%>%
-  mutate(touchscreen = droplevels(touchscreen))
+  na.omit()
 
 ```
 
@@ -595,11 +590,12 @@ bm_base <- brm(mean_click ~ ageinyears + (ageinyears |community),
                               chains = 4, 
                               cores  = 4,
              control = list(adapt_delta = 0.95),
-             #backend = "cmdstanr"
+             backend = "cmdstanr",
+             threads = threading(2)
              )%>%
   add_criterion(., c("waic","loo"))
 
-bm_full_fix <- brm(mean_click ~ ageinyears + touchscreen + household + younger_children + children + (ageinyears |community), 
+bm_tc <- brm(mean_click ~ ageinyears + touchscreen + (ageinyears |community), 
                               data   = scdata, 
                               family = lognormal(),
                               warmup = 2000, 
@@ -607,10 +603,11 @@ bm_full_fix <- brm(mean_click ~ ageinyears + touchscreen + household + younger_c
                               chains = 4, 
                               cores  = 4,
              control = list(adapt_delta = 0.95),
-             backend = "cmdstanr")%>%
+             backend = "cmdstanr",
+             threads = threading(2))%>%
   add_criterion(., c("waic","loo"))
 
-bm_fullc_fix <- brm(mean_click ~ ageinyears + touchscreen + younger_children + older_children + (ageinyears |community), 
+bm_tc_hh <- brm(mean_click ~ ageinyears + touchscreen + household + (ageinyears |community), 
                               data   = scdata, 
                               family = lognormal(),
                               warmup = 2000, 
@@ -618,24 +615,13 @@ bm_fullc_fix <- brm(mean_click ~ ageinyears + touchscreen + younger_children + o
                               chains = 4, 
                               cores  = 4,
              control = list(adapt_delta = 0.95),
-             #backend = "cmdstanr"
-             )%>%
-  add_criterion(., c("waic","loo"))
-
-bm_full_rand <- brm(mean_click ~ ageinyears + touchscreen + household + younger_children + older_children + (touchscreen + household + younger_children + older_children + ageinyears |community), 
-                              data   = scdata, 
-                              family = lognormal(),
-                              warmup = 2000, 
-                              iter   = 4000, 
-                              chains = 4, 
-                              cores  = 4,
-             control = list(adapt_delta = 0.95),
-             #backend = "cmdstanr"
+             backend = "cmdstanr",
+             threads = threading(2)
              )%>%
   add_criterion(., c("waic","loo"))
 
 
-bm_hhts_fix <- brm(mean_click ~ ageinyears + touchscreen + household + (ageinyears |community), 
+bm_tc_c <- brm(mean_click ~ ageinyears + touchscreen + children + (ageinyears |community), 
                               data   = scdata, 
                               family = lognormal(),
                               warmup = 2000, 
@@ -643,68 +629,12 @@ bm_hhts_fix <- brm(mean_click ~ ageinyears + touchscreen + household + (ageinyea
                               chains = 4, 
                               cores  = 4,
              control = list(adapt_delta = 0.95),
-             backend = "cmdstanr")%>%
-  add_criterion(., c("waic","loo"))
-
-bm_hhts_rand <- brm(mean_click ~ ageinyears + touchscreen + household + (touchscreen + household  + ageinyears |community), 
-                              data   = scdata, 
-                              family = lognormal(),
-                              warmup = 2000, 
-                              iter   = 4000, 
-                              chains = 4, 
-                              cores  = 4,
-             control = list(adapt_delta = 0.95),
-             backend = "cmdstanr")%>%
-  add_criterion(., c("waic","loo"))
-
-bm_hhts_rand_2 <- brm(mean_click ~ ageinyears + touchscreen + household + (household  + ageinyears |community), 
-                              data   = scdata, 
-                              family = lognormal(),
-                              warmup = 2000, 
-                              iter   = 4000, 
-                              chains = 4, 
-                              cores  = 4,
-             control = list(adapt_delta = 0.95),
-             backend = "cmdstanr")%>%
-  add_criterion(., c("waic","loo"))
-
-bm_cts_fix <- brm(mean_click ~ ageinyears + touchscreen + children + (ageinyears |community), 
-                              data   = scdata, 
-                              family = lognormal(),
-                              warmup = 2000, 
-                              iter   = 4000, 
-                              chains = 4, 
-                              cores  = 4,
-             control = list(adapt_delta = 0.95),
-             backend = "cmdstanr")%>%
-  add_criterion(., c("waic","loo"))
-
-bm_cts_fix_int <- brm(mean_click ~ ageinyears * children + touchscreen  + (ageinyears |community), 
-                              data   = scdata, 
-                              family = lognormal(),
-                              warmup = 2000, 
-                              iter   = 4000, 
-                              chains = 4, 
-                              cores  = 4,
-             control = list(adapt_delta = 0.95),
-             backend = "cmdstanr")%>%
-  add_criterion(., c("waic","loo"))
-
-
-
-bm_cts_rand <- brm(mean_click ~ ageinyears + children + touchscreen + (ageinyears + children + touchscreen |community), 
-                              data   = scdata, 
-                              family = lognormal(),
-                              warmup = 2000, 
-                              iter   = 4000, 
-                              chains = 4, 
-                              cores  = 4,
-             control = list(adapt_delta = 0.95),
-             #backend = "cmdstanr"
+             backend = "cmdstanr",
+             threads = threading(2)
              )%>%
   add_criterion(., c("waic","loo"))
 
-bm_cts_rand_int <- brm(mean_click ~ ageinyears * children + touchscreen + (ageinyears * children + touchscreen |community), 
+bm_tc_yc <- brm(mean_click ~ ageinyears + touchscreen + younger_children + (ageinyears |community), 
                               data   = scdata, 
                               family = lognormal(),
                               warmup = 2000, 
@@ -712,24 +642,12 @@ bm_cts_rand_int <- brm(mean_click ~ ageinyears * children + touchscreen + (agein
                               chains = 4, 
                               cores  = 4,
              control = list(adapt_delta = 0.95),
-             backend = "cmdstanr")%>%
-  add_criterion(., c("waic","loo"))
-
-
-
-bm_ycts_fix <- brm(mean_click ~ ageinyears + touchscreen + younger_children + (ageinyears |community), 
-                              data   = scdata, 
-                              family = lognormal(),
-                              warmup = 2000, 
-                              iter   = 4000, 
-                              chains = 4, 
-                              cores  = 4,
-             control = list(adapt_delta = 0.95),
-             #backend = "cmdstanr"
+             backend = "cmdstanr",
+             threads = threading(2)
              )%>%
   add_criterion(., c("waic","loo"))
 
-bm_octs_fix <- brm(mean_click ~ ageinyears + touchscreen + older_children + (ageinyears |community), 
+bm_tc_oc <- brm(mean_click ~ ageinyears + touchscreen + older_children + (ageinyears |community), 
                               data   = scdata, 
                               family = lognormal(),
                               warmup = 2000, 
@@ -737,12 +655,12 @@ bm_octs_fix <- brm(mean_click ~ ageinyears + touchscreen + older_children + (age
                               chains = 4, 
                               cores  = 4,
              control = list(adapt_delta = 0.95),
-            # backend = "cmdstanr"
+             backend = "cmdstanr",
+             threads = threading(2)
              )%>%
   add_criterion(., c("waic","loo"))
 
-
-bm_octs_fix_int <- brm(mean_click ~  touchscreen + ageinyears * older_children + (ageinyears |community), 
+bm_tc_oc_rand <- brm(mean_click ~ ageinyears + touchscreen + older_children + (touchscreen + older_children + ageinyears |community), 
                               data   = scdata, 
                               family = lognormal(),
                               warmup = 2000, 
@@ -750,31 +668,8 @@ bm_octs_fix_int <- brm(mean_click ~  touchscreen + ageinyears * older_children +
                               chains = 4, 
                               cores  = 4,
              control = list(adapt_delta = 0.95),
-            # backend = "cmdstanr"
-             )%>%
-  add_criterion(., c("waic","loo"))
-
-bm_octs_rand <- brm(mean_click ~ ageinyears + touchscreen + older_children + (ageinyears + touchscreen + older_children |community), 
-                              data   = scdata, 
-                              family = lognormal(),
-                              warmup = 2000, 
-                              iter   = 4000, 
-                              chains = 4, 
-                              cores  = 4,
-             control = list(adapt_delta = 0.95),
-             #backend = "cmdstanr"
-             )%>%
-  add_criterion(., c("waic","loo"))
-
-bm_octs_rand_int <- brm(mean_click ~ touchscreen + ageinyears*older_children + (ageinyears * older_children |community), 
-                              data   = scdata, 
-                              family = lognormal(),
-                              warmup = 2000, 
-                              iter   = 4000, 
-                              chains = 4, 
-                              cores  = 4,
-             control = list(adapt_delta = 0.95),
-             #backend = "cmdstanr"
+             backend = "cmdstanr",
+             threads = threading(2)
              )%>%
   add_criterion(., c("waic","loo"))
 ```
@@ -782,44 +677,23 @@ bm_octs_rand_int <- brm(mean_click ~ touchscreen + ageinyears*older_children + (
 
 ```{r}
 loo_compare(bm_base,
-            #bm_full_fix, 
-            bm_full_rand,
-            bm_fullc_fix,
-            #bm_cts_fix,
-            #bm_ycts_fix,
-            bm_octs_fix,
-            bm_octs_fix_int,
-            bm_octs_rand_int,
-            bm_octs_rand#,
-            #bm_full_rand
-            #bm_hhts_fix#,
-            #bm_cts_fix_int,
-            #bm_cts_rand_int,
-            #bm_cts_rand#,
-            #bm_hhts_rand_2, 
-            #bm_hhts_rand
+            bm_tc,
+            bm_tc_hh,
+            bm_tc_oc,
+            bm_tc_yc,
+            bm_tc_c,
+            bm_tc_oc_rand,
+            criterion = "waic"
             )%>%as_tibble(rownames = "model")
 
 model_weights(bm_base,
-            #bm_full_fix, 
-            bm_full_rand,
-            bm_fullc_fix,
-            #bm_cts_fix,
-            #bm_ycts_fix,
-            bm_octs_fix,
-            #bm_octs_fix_int,
-            #bm_octs_rand_int,
-            bm_octs_rand,
-            #bm_full_rand
-            #bm_hhts_fix#,
-            #bm_cts_fix_int,
-            #bm_cts_rand_int,
-            #bm_cts_rand#,
-            #bm_hhts_rand_2, 
-            #bm_hhts_rand,
-            criterion = "loo")%>%as_tibble(rownames = "model")
-
-fixef(bm_octs_fix)
+            bm_tc,
+            bm_tc_hh,
+            bm_tc_oc,
+            bm_tc_yc,
+            bm_tc_c,
+            bm_tc_oc_rand,
+            criterion = "waic")%>%as_tibble(rownames = "model")
 ```
 ```{r}
 ndata <- scdata%>%
