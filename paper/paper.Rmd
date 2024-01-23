@@ -141,14 +141,14 @@ tba1 <- data %>%
   mutate(continent = replace(continent, duplicated(continent), " ")) %>%
   ungroup %>%
   mutate(country = replace(country, duplicated(country), " "))%>%
-  mutate(language = c("Spanish (Rioplatense)", "Spanish (Mexican)", "English (American)", "Hai||om", "Khwedam", "English (Nigerian)", "English (Nigerian)", "BaYaka", "Lingala", "Bemba", "Swahili", "German", "English (British)", "Mandarin", "English (Indian) / Marathi", "Turkish", "English (New Zealand)"))%>%
-  select(continent, country, community, N, age, language, touchscreen)
+  mutate(language = c("Spanish (Rioplatense)", "Spanish (Mexican)", "English (American)", "Hai||om", "Khwedam", "English (Nigerian)", "English (Nigerian)", "BaYaka", "Lingala", "Bemba", "Swahili", "German", "English (British)", "Mandarin", "English (Indian) / Marathi", "Turkish", "English (New Zealand)"),
+           market_integration = c("high", "medium", "high", "low", "low", "high", "high", "low", "low", "medium", "medium", "high", "high", "high", "high", "high", "high"))%>%
+  select(continent, country, community, N, age, language, market_integration, touchscreen)
 
 
 kableExtra::kable(tba1,
-             col.names = linebreak(c("Continent", "Country", "Community", "N(male)", "Age (range)", "Language", "Touchscreen")),
+             col.names = linebreak(c("Continent", "Country", "Community", "N(male)", "Age (range)", "Language", "Market integration","Touchscreen")),
              caption = "Participant demographics.", 
-             #ote = "Column age shows mean and range in paranthesis.", digits = 2, align = "l"
              format="latex", booktabs=TRUE
              )%>% 
   kable_styling(latex_options="scale_down")
@@ -156,7 +156,13 @@ kableExtra::kable(tba1,
 
 We used an animated picture book tablet task in which participants were asked to locate a hidden object based on observing an agent's gaze. Children watched a balloon disappear behind a hedge. An agent followed the trajectory of the balloon with their eyes. The key dependent variable was the precision with which children located the agent's focus of attention, that is, the deviation between where the agent looked (where the object was) and where the child thought the agent looked. We adapted visuals and audio instructions specifically to each of the 17 communities (Fig. 1). Previous work demonstrated excellent individual-level measurement properties for this task [@prein2023tango]. Thus, in addition to group-level trends, we were able to investigate individual-level variation. 
 
-As the first step, we investigated developmental gains. Across all 17 communities, we found a substantial increase in average levels of precision with age (range: $\beta_{min}$ = , 95% CrI () to $\beta_{max}$ = ()). There were marked differences between communities: urban communities around the globe showed higher levels of precision compared to rural communities. We return to this result below. However, differences between communities were small compared to differences between individuals: communities did not form homogeneous clusters but largely overlapping distributions in that some individuals from communities with a lower average level of precision (e.g. ) performed better compared to some individuals from a setting with a very high average level of precision. Furthermore, in all communities, some 4-year-olds outperformed children two years older than them.
+As the first step, we investigated developmental gains. Across all 17 communities, we found a substantial increase in average levels of precision with age (range: $\beta_{min}$ = , 95% CrI () to $\beta_{max}$ = ()). There were marked differences between communities: highly market-integrated communities around the globe showed higher levels of precision compared to less market-integrated communities. However, we think that these results are better explained by exposure to technology than market integration. We discuss them in more detail below. Differences between communities were small compared to differences between individuals: communities did not form homogeneous clusters but largely overlapping distributions in that some individuals from communities with a lower average level of precision performed better compared to some individuals from a setting with a very high average level of precision. Furthermore, in all communities, some 4-year-olds outperformed children two years older than them (see Fig. \@ref(fig:fig2)A).
+
+```{r fig2, include = T, fig.align = "center", fig.cap = "A) Developmental trajectories by cultural settings. Transparent dots show aggregated data for each individual. The color dentoes the different cultural settings. The developmental trajectories are predicted based on a model of the data aggregated for each participant. B) Performance by screen section and cultural setting. Each bin covers 1/10th of the screen. Points show means and eroor bars 95\\% confidence intervals for the data within that bin aggregated across participants.", out.width="75%"}
+
+knitr::include_graphics("../visuals/pvis_pred.png")
+
+```
 
 Consistent developmental gains alone cannot inform us about the cognitive processes children use when locating the agent's focus of attention. Recent computational work modeled gaze following as social vector estimation [@prein2023variation]. When observing the eyes, onlookers estimate a vector from the center of the eye through the pupil. The focus of attention is the location wherever the estimated vectors from both eyes hit a surface (Fig. XX). The estimation process is not perfect, but each individual has a systematic level of uncertainty, which is conceptualized as the cause of individual differences. Importantly, this process model predicts a clear performance signature in our cross-cultural gaze following task: Trials in which the agent looks further away from the center (i.e. to the left or right side of the screen) should result in lower levels of precision, compared to trials in which the agent looks closer to the middle. This prediction is best understood by considering a similar phenomenon: pointing a torch light to a flat surface. The width of the light beam represents each individual's level of uncertainty in vector estimation. When the torch is directed straight down, the light beam is concentrated in a relatively small area. When the torch is rotated to the side, the light from one half of the cone must travel further than the light from the other half to reach the surface. As a consequence, the light is spread over a wider area. 
 
