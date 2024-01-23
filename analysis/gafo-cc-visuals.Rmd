@@ -325,6 +325,7 @@ ndata <- ddata%>%
   distinct(continent, community, ageinyears)
 
 
+
 post <- fitted(bm_base, newdata = ndata, re_formula =~(ageinyears|community))%>%
   as_tibble() %>%
   bind_cols(ndata)%>%

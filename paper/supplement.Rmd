@@ -24,12 +24,16 @@ header-includes:
 library(tidyverse)
 library(ggpubr)
 library(ggthemes)
+library(ggpubr)
 library(tidyboot)
+library(tidybayes)
 library(maps)
 library(brms)
 library(cowplot)
 library(ggridges)
 library(papaja)
+library(coda)
+library(ggrepel)
 
 estimate_mode <- function(s) {
   d <- density(s)
@@ -616,7 +620,10 @@ bm_cult_age <- brm(click ~ ageinyears + targetcentralityx + (trialnr + targetcen
 
 saveRDS(bm_cult_age, "../saves/bm_cv_cult_age.rds")
 
+fixef(bm_cult_age)%>%as_tibble(rownames = "term")%>%mutate_if(is.numeric, round, 2)%>%saveRDS(.,"../saves/cult_age_fix.rds")
+
 ```
+
 
 ```{r}
 six_fold_cross_validation <- function(data, m1, m2, m3, m4, repeats) {
@@ -758,37 +765,42 @@ as_draws_df(bm_cult_age)%>%
   select(community, post)%>%
   mutate(type = "targetcentrality")
 )%>%
-  mutate(community = str_replace(community, "\\.", " "))
+  mutate(community = str_replace(community, "\\.", " "),
+         community= str_remove(site,"\\."))
 
 pdraws <- draws%>%
-  mutate(continent = ifelse(
-    community %in% c("leipzig", "plymouth"), "Europe",
-    ifelse(
-      community %in% c("akure", "hai||om", "khwe", "chimfunshi", "bandongo", "bayaka", "windhoek", "uganda"), "Africa",
-      ifelse(community %in% c("stanford", "mexico", "buenos_aires"), "America",
-             ifelse(community %in% c("india", "beijing", "turkey"), "Asia", "Oceania"))
-    )
-  ))%>%
+  mutate(community = recode(community, 
+                            "Auckland (NewZealand)" = "Auckland (New Zealand)",
+                            "BaYaka (Rep.Congo)" = "BaYaka (Rep. Congo)",
+                            "Bandongo (Rep.Congo)" = "Bandongo (Rep. Congo)",
+                            "Buenos Aires(Argentina)" = "Buenos Aires (Argentina)"))%>%
+  left_join(data%>%distinct(community, continent))%>%
   mutate(continent = factor(continent, levels = c("America", "Africa", "Europe", "Asia", "Oceania"), ordered = T))
 
 saveRDS(pdraws, "../saves/pdraws.rds")
+
+post_agg <- pdraws%>%
+  group_by(community, type)%>%
+  summarise(mean = mean(post),
+            lci = hdi_lower(post),
+            uci = hdi_upper(post))
+
+saveRDS(post_agg, "../saves/post_agg.rds")
 ```
 
 ```{r figpreds, include = T, fig.align = "center", fig.cap = "Posterior distributions of model estimates for the poredictor variables by cultural setting.", out.width="100%"}
 
 pdraws <- readRDS("../saves/pdraws.rds")%>%
   mutate(type = recode(type,
-                       older_children = "Older children",
                        ageinyears = "Age",
-                       targetcentrality = "Target centrality",
-                       touchscreen = "Touchscreen"),
-         type = factor(type, levels = c("Age","Target centrality", "Touchscreen", "Older children")))
+                       targetcentrality = "Target centrality"),
+         type = factor(type, levels = c("Age","Target centrality")))
 
 
 
 ppred <- ggplot(pdraws, aes(x= post, y = community))+
-  #geom_density_ridges(rel_min_height = 0.005, col = "black", alpha = .75, fill = NA)+
-  geom_density_ridges(rel_min_height = 0.001, col = "white", alpha = .75, fill = "grey")+
+
+  geom_density_ridges(col = "white", alpha = .75, fill = "grey")+
   geom_vline(xintercept = 0, lty = 3)+
   facet_grid(continent~type, scales = "free", space = "free_y")+
   #stat_pointinterval(size = 0.1)+
@@ -1168,6 +1180,23 @@ saveRDS(model_comp, "../saves/model_comp.rds")
 
 model_comp <- readRDS("../saves/model_comp.rds")
 
+```
+
+```{r}
+ptc_com <- ranef(bm_pred_null)$community[, ,1]%>%as_tibble(rownames = "community")%>%
+  left_join(data%>%group_by(community)%>%summarise(touchscreen = mean(touchscreen, na.rm = T)))
+
+saveRDS(ptc_com, "../saves/ptc_com.rds")
+
+ptc_com <- readRDS("../saves/ptc_com.rds")
+
+ggplot(ptc_com,aes(x = touchscreen, y = Estimate))+
+  stat_cor(aes(x = touchscreen, y = Estimate,label = paste(..r.label..)),inherit.aes = F,r.accuracy = 0.01, cor.coef.name = "r",label.y = 0.85)+
+  geom_point(alpha = .75, pch = 1)+
+  geom_smooth(method = "lm", col = "firebrick", alpha = .25)+
+  labs(x = "Touchscreen exposure", y = "Relative performance (age corrected)")+
+  geom_text_repel(aes(label = community), size = 3, min.segment.length = 0, segment.curvature = -0.1)+
+  theme_few()
 ```
 
 
