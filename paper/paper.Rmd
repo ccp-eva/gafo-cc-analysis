@@ -1,10 +1,10 @@
 ---
 title             : "Unity in diversity: Children from 17 communities process gaze in similar ways"
-shorttitle        : "Title"
+shorttitle        : "Gaze-following across 17 communities"
 
 author: 
-  - name          : "First Author"
-    affiliation   : "1"
+  - name          : "Manuel Bohn"
+    affiliation   : "1,2"
     corresponding : yes    # Define only one corresponding author
     address       : "Postal address"
     email         : "my@email.com"
@@ -12,17 +12,30 @@ author:
       - "Conceptualization"
       - "Writing - Original Draft Preparation"
       - "Writing - Review & Editing"
-  - name          : "Ernst-August Doelle"
+  - name          : "Julia Prein"
     affiliation   : "1,2"
     role:
+      - "Conceptualization"
+      - "Methodology"
       - "Writing - Review & Editing"
-      - "Supervision"
+  - name          : "..."
+    affiliation   : "..."
+    role:
+      - "Conceptualization"
+      - "Methodology"
+      - "Writing - Review & Editing"
+  - name          : "Daniel B. M. Haun"
+    affiliation   : "2"
+    role:
+      - "Conceptualization"
+      - "Writing - Review & Editing"
+      
 
 affiliation:
   - id            : "1"
-    institution   : "Wilhelm-Wundt-University"
+    institution   : "Institute of Psychology in Education, Leuphana University Lüneburg"
   - id            : "2"
-    institution   : "Konstanz Business School"
+    institution   : "Department of Comparative Cultural Psychology, Max Planck Institute for Evolutionary Anthropology"
 
 authornote: |
   Add complete departmental affiliations for each author here. Each new line herein must be indented, like this line.
@@ -54,18 +67,92 @@ output            : papaja::apa6_pdf
 
 ```{r setup, include = FALSE}
 library("papaja")
-r_refs("r-references.bib")
+library(tidyverse)
+library(knitr)
+library(kableExtra)
 ```
 
 ```{r analysis-preferences}
 # Seed for random number generation
 set.seed(42)
-knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
+knitr::opts_chunk$set(cache.extra = knitr::rand_seed, message = F, warning = F)
+options(knitr.kable.NA = '')
 ```
+
+```{r data}
+data <- read_csv("../data/gafo-cc-clean-data.csv")%>%
+  mutate(continent = ifelse(
+    community %in% c("leipzig", "plymouth"), "Europe", 
+    ifelse(
+      community %in% c("akure", "hai||om", "khwe", "chimfunshi", "bandongo", "bayaka", "windhoek", "uganda"), "Africa",
+      ifelse(community %in% c("stanford", "mexico", "buenos_aires"), "America",
+             ifelse(community %in% c("india", "beijing", "turkey"), "Asia", "Oceania"))
+    )
+  ))%>%
+  mutate(continent = factor(continent, levels = c("America", "Africa", "Europe", "Asia", "Oceania"), ordered = T))%>%
+  mutate(community = recode(community,
+                            akure = "Akure (Nigeria)",
+                            leipzig = "Leipzig (Germany)",
+                            `hai||om` = "Hai||om (Namibia)",
+                            khwe = "Khwe (Namibia)",
+                            windhoek = "Windhoek (Namibia)",
+                            stanford = "Stanford (USA)",
+                            chimfunshi = "Chimfunshi (Sambia)",
+                            mexico = "Ocuilan (Mexico)",
+                            plymouth = "Plymouth (UK)",
+                            beijing = "Beijing (China)", 
+                            india = "Pune (India)",
+                            buenos_aires = "Buenos Aires (Argentina)",
+                            auckland = "Auckland (New Zealand)",
+                            turkey = "Malatya (Turkey)",
+                            bandongo = "Bandongo (Rep. Congo)",
+                            bayaka = "BaYaka (Rep. Congo)", 
+                            uganda = "Nyabyeya (Uganda)"))
+```
+
 
 Social cognition is a defining aspect of the human species [@tomasello2005understanding; @laland2021understanding; @wellman2014making]. It is supposed to enable unique forms of communication and cooperation that underlie cumulative cultural evolution and the formation of complex societies [@henrich2016secret; @tomasello2003makes; @legare2019development]. The eyes are the proverbial window to the mind and the starting point for a majority of social reasoning processes [@shepherd2010following]. Gaze is used to infer the focus of visual attention, which is a critical aspect of coordinated activities, including communication and cooperation [@tomasello2007reliance; @scaife1975capacity]. The ability to follow gaze emerges early in childhood [@tang2023slow; @gredeback2010development; @byers2021development] and individual differences in children's gaze following ability predict later life outcomes, most notably, later communicative abilities [@brooks2005development; @carpenter1998social]. Underlying this narrative is the wide-held assumption that gaze following is fundamental to human social cognition and, therefore, works and develops in the same way across human societies despite substantial variation in developmental contexts. This claim, however, lacks a solid empirical foundation. 
 
-We conducted a large-scale cross-cultural study on the development of gaze-following abilities to study potentially universal processing signatures and their development. Previous developmental studies focused on the onset of gaze following in infancy [@hernik2019infant; @callaghan2011early]. The XXXX participants (age ) in the study lived in 17 different communities spread over five continents. The countries from which data was contributed to the study represented 46% of the world's population. Communities covered a broad spectrum of geographical locations, social and political systems, languages, and subsistence styles [Fig. 1]. 
+We conducted a large-scale cross-cultural study on the development of gaze-following abilities to study potentially universal processing signatures and their development. Previous developmental studies focused on the onset of gaze following in infancy [@hernik2019infant; @callaghan2011early]. The XXXX participants (age ) in the study lived in 17 different communities spread over five continents. The countries from which data was contributed to the study represented 46% of the world's population. Communities covered a broad spectrum of geographical locations, social and political systems, languages, and subsistence styles (Fig. \@ref(fig:fig1)). 
+
+```{r fig1, include = T, fig.align = "center", fig.cap = "(B) Screenshot from the task. The scene depicts the choice phase in a test trial. Participants had to use the gaze of the agent to locate the balloon and click on the hedge where they thought the balloon was. Agents, audio recordings and backgrounds were adpated to each cultural setting.", out.width="100%"}
+knitr::include_graphics("../visuals/fig1.png")
+``` 
+
+```{r tab1, echo=F}
+tba1 <- data %>%
+  separate(community, into = c("community", "country"), sep = " \\(")%>%
+  mutate(country = str_remove(country, "\\("),
+         country = str_remove(country, "\\)"))%>%
+  distinct(subjid, .keep_all = T)%>%
+  group_by(community, country, continent)%>%
+  summarise(N = n_distinct(subjid), 
+            m = sum(sex == "m", na.rm = T), 
+            mean_age = mean(ageinyears),
+            min_age = min(ageinyears), 
+            max_age = max(ageinyears), 
+            touchscreen = mean(touchscreen, na.rm = T))%>%
+  mutate_if(is.numeric, format, digits = 2, nsmall = 2)%>%
+  mutate(age = paste0(mean_age, " (", min_age, " - ", max_age, ")"))%>%
+  mutate(N = paste0(N, " (", m,")"))%>%
+  select(-c(mean_age, min_age, max_age))%>%
+  arrange(continent, country)%>%
+  group_by(continent) %>%
+  mutate(continent = replace(continent, duplicated(continent), " ")) %>%
+  ungroup %>%
+  mutate(country = replace(country, duplicated(country), " "))%>%
+  mutate(language = c("Spanish (Rioplatense)", "Spanish (Mexican)", "English (American)", "Hai||om", "Khwedam", "English (Nigerian)", "English (Nigerian)", "BaYaka", "Lingala", "Bemba", "Swahili", "German", "English (British)", "Mandarin", "English (Indian) / Marathi", "Turkish", "English (New Zealand)"))%>%
+  select(continent, country, community, N, age, language, touchscreen)
+
+
+kableExtra::kable(tba1,
+             col.names = linebreak(c("Continent", "Country", "Community", "N(male)", "Age (range)", "Language", "Touchscreen")),
+             caption = "Participant demographics.", 
+             #ote = "Column age shows mean and range in paranthesis.", digits = 2, align = "l"
+             format="latex", booktabs=TRUE
+             )%>% 
+  kable_styling(latex_options="scale_down")
+```
 
 We used an animated picture book tablet task in which participants were asked to locate a hidden object based on observing an agent's gaze. Children watched a balloon disappear behind a hedge. An agent followed the trajectory of the balloon with their eyes. The key dependent variable was the precision with which children located the agent's focus of attention, that is, the deviation between where the agent looked (where the object was) and where the child thought the agent looked. We adapted visuals and audio instructions specifically to each of the 17 communities (Fig. 1). Previous work demonstrated excellent individual-level measurement properties for this task [@prein2023tango]. Thus, in addition to group-level trends, we were able to investigate individual-level variation. 
 
