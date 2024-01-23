@@ -274,7 +274,7 @@ The country has about 18 Million inhabitants. The population consists mostly of 
 
 Zambia is mainly a Christian country (Protestant, Romanic Catholic, Jehovah’s Witnesses and some fundamentalists churches) but due to the Asian community, Hindus and Muslim are represented as well. The northeast and northwest part of Zambia is still strongly influenced by cultural traditions of the Congo basin. Zambian people still value traditional norms within their families, villages and clans. Such norms, ideals and morals are for example  mutual respect and reciprocity. 
 
-The main sectors of the economy in Zambia is agriculture and copper mining and smelting especially in the northern Copperbelt region. Despite these large copper deposits, Zambia is one of the poorest countries in the world. Three quarters of the poor live in rural areas. As in other African countries there is a strong trend of movement from rural arears to urban centers whereby men migrate more often and women remain behind in villages. The housing style in rural areas vary a lot by ethnic group. Overall, mud and thatch, brick, or other materials are used for construction. 
+The main sectors of the economy in Zambia is agriculture and copper mining and smelting especially in the northern Copperbelt region. Despite these large copper deposits, Zambia is one of the poorest countries in the world. Three quarters of the poor live in rural areas. As in other African countries there is a strong trend of movement from rural areas to urban centers whereby men migrate more often and women remain behind in villages. The housing style in rural areas vary a lot by ethnic group. Overall, mud and thatch, brick, or other materials are used for construction. 
 
 People working at Chimfunshi wildlife orphanage are living in compounds. These are little settlements made of stone houses with corrugated iron roofs, a well to access clean water, solar systems for electricity and often little gardens to grow crops and/or keeping farm animals (e.g. chickens). 
 
@@ -359,6 +359,7 @@ The studied villages are culturally very diverse and house ethnic groups such as
 During the Second World War, many Polish refugees were brought to Uganda and located in Bunyoro on the fringes of Budongo Forest at Nyabyeya. When the refugees were evacuated after World War II ended, the forestry college was transferred into the facilities the Polish refugees had left behind. It now serves as an educational institute conducting training in Forestry, Agroforestry, Biomass Energy Technologies, and beekeeping.
 
 The community predominantly practices subsistence farming, cultivating crops like maize, cassava, sweet potatoes, and beans. Wealthier families sometimes keep goats, pigs, chickens, or ducks. Additionally, sugarcane and coffee cultivation contribute significantly to the local economy, with the Kinyara Sugar Company playing a pivotal role in sugarcane harvesting.
+
 Living conditions in the community are characterized by extended families residing together, with an average of 10 people under one roof. While temporary round mud huts are common, permanent houses are found in the trading center of Nyabyeya. Most people in the community live by hand to mouth, and parents (especially women) work hard to provide the basics for their household members.
 
 Parental socialization goals vary, with limited guidance for children in some instances, leading to very independent lives at a young age. Cultural practices include the belief in producing many children as a sign of respect, with specific tribes attaching wealth to the number of daughters. Twins are highly honored, and rituals are performed to welcome them. Often, young children take care of their siblings and carry them around on their backs. Children start working early, for example, by helping their parents with farming or cow herding. Often, families cannot afford school materials for their children and struggle to provide regular food. Early marriages and teenage pregnancies often result in girls leaving school earlier. 
@@ -375,7 +376,7 @@ Participating families were recruited by the local research assistants, for exam
 
 ### Ocuilan (Mexico) - Location 
 
-Ocuilan is a municipality located in the centre south of Mexico with a population of 36,223 inhabitants, distributed in 48 towns in an area of 344.84 km2  inside the Mexican State. (Ocuilan, n.d.) Geographically Ocuilan has an altitude of between 1000 to 2,600 m situated 80 km south of Mexico City. (INEGI,2010) 
+Ocuilan is a municipality located in the centre south of Mexico with a population of 36,223 inhabitants, distributed in 48 towns in an area of 344.84 km2  inside the Mexican State (Ocuilan, n.d.). Geographically Ocuilan has an altitude of between 1000 to 2,600 m situated 80 km south of Mexico City. (INEGI,2010) 
 
 The communities in Ocuilan are distributed on a mountain range called Trans-Mexican volcanic Belt surrounded by valleys and mountains, the climate is semi-humid with summer rains, and average temperatures vary between 8C and 22C throughout the year. The higher elevations have mixed pine forests with more tropical vegetation in the lowlands. The distribution of the land is 31.91% agriculture, 0.48% urban zone and the rest forest. (INEGI,2010) 
 
@@ -809,176 +810,176 @@ To test these predictions, we inspected the parameter estimates for age and targ
 Another way to look at these signatures is to visualize the group-level developmental trajectories and the aggregated performance at different areas of the screen. Figure \@ref(fig:figdev)A shows that children got more precise with age in all cultural settings. Figure \@ref(fig:figdev)B shows the expected u-shaped pattern: the closer the balloon lands to the center of the screen (bins 5 and 6) the more precise children are in all cultural settings.
 
 ```{r}
-# mdata <- data%>%
-#   mutate(click = abs(clickdistfromtargetcenterx))%>%
-#   group_by(subjid, continent,community, ageinyears)%>%
-#   summarise(mean_click = mean(click))%>%
-#   ungroup()%>%
-#   mutate(ageinyears = ageinyears - min(ageinyears))
-# 
-# bm_dev <- brm(mean_click ~ ageinyears + (ageinyears |community), 
-#                               data   = mdata, 
-#                               family = lognormal(),
-#                               warmup = 2000, 
-#                               iter   = 4000, 
-#                               chains = 4, 
-#                               cores  = 4,
-#              control = list(adapt_delta = 0.95))
-# 
-# 
-# ndata <- mdata%>%
-#   distinct(continent, community, ageinyears)
-# 
-# 
-# post <- fitted(bm_dev, newdata = ndata, re_formula =~(ageinyears|community))%>%
-#   as_tibble() %>%
-#   bind_cols(ndata)%>%
-#   mutate(ageinyears = ageinyears + min(data$ageinyears))
+mdata <- data%>%
+  mutate(click = abs(clickdistfromtargetcenterx))%>%
+  group_by(subjid, continent,community, ageinyears)%>%
+  summarise(mean_click = mean(click))%>%
+  ungroup()%>%
+  mutate(ageinyears = ageinyears - min(ageinyears))
+
+bm_dev <- brm(mean_click ~ ageinyears + (ageinyears |community),
+                              data   = mdata,
+                              family = lognormal(),
+                              warmup = 2000,
+                              iter   = 4000,
+                              chains = 4,
+                              cores  = 4,
+             control = list(adapt_delta = 0.95))
+
+
+ndata <- mdata%>%
+  distinct(continent, community, ageinyears)
+
+
+post <- fitted(bm_dev, newdata = ndata, re_formula =~(ageinyears|community))%>%
+  as_tibble() %>%
+  bind_cols(ndata)%>%
+  mutate(ageinyears = ageinyears + min(data$ageinyears))
 ```
 
 ```{r}
-# tc_agg_data<- data%>%
-#   mutate(targetposition = factor(targetposition, levels = c(1:10)))%>%
-#   group_by(continent, community, targetposition)%>%
-#   tidyboot_mean(col= abs(clickdistfromtargetcenterx))
-# 
-# 
-# tam <- tc_agg_data%>%
-#   filter(continent == "America")%>%
-#   ggplot(., aes(x = targetposition, y = mean, col = community))+
-#   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
-#   labs(x = "", y = "")+
-#   scale_color_colorblind(name = "", guide = "none")+
-#   facet_grid(continent~.)+
-#   ylim(0,1000)+
-#   theme_few()
-# 
-# taf <- tc_agg_data%>%
-#   filter(continent == "Africa")%>%
-#   ggplot(., aes(x = targetposition, y = mean, col = community))+
-#   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
-#   labs(x = "", y = "")+
-#   scale_color_colorblind(name = "", guide = "none")+
-#   facet_grid(continent~.)+
-#   ylim(0,1000)+
-#   theme_few()
-# 
-# teu <- tc_agg_data%>%
-#   filter(continent == "Europe")%>%
-#   ggplot(., aes(x = targetposition, y = mean, col = community))+
-#   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
-#   labs(x = "", y = "")+
-#   scale_color_colorblind(name = "", guide = "none")+
-#   facet_grid(continent~.)+
-#   ylim(0,1000)+
-#   theme_few()
-# 
-# tas <- tc_agg_data%>%
-#   filter(continent == "Asia")%>%
-#   ggplot(., aes(x = targetposition, y = mean, col = community))+
-#   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
-#   labs(x = "", y = "")+
-#   scale_color_colorblind(name = "", guide = "none")+
-#   facet_grid(continent~.)+
-#   ylim(0,1000)+
-#   theme_few()
-# 
-# toc <- tc_agg_data%>%
-#   filter(continent == "Oceania")%>%
-#   ggplot(., aes(x = targetposition, y = mean, col = community))+
-#   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
-#   labs(x = "Target position (binned)", y = "")+
-#   scale_color_colorblind(name = "", guide = "none")+
-#   facet_grid(continent~.)+
-#   ylim(0,1000)+
-#   theme_few()
+tc_agg_data<- data%>%
+  mutate(targetposition = factor(targetposition, levels = c(1:10)))%>%
+  group_by(continent, community, targetposition)%>%
+  tidyboot_mean(col= abs(clickdistfromtargetcenterx))
+
+
+tam <- tc_agg_data%>%
+  filter(continent == "America")%>%
+  ggplot(., aes(x = targetposition, y = mean, col = community))+
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
+  labs(x = "", y = "")+
+  scale_color_colorblind(name = "", guide = "none")+
+  facet_grid(continent~.)+
+  ylim(0,1000)+
+  theme_few()
+
+taf <- tc_agg_data%>%
+  filter(continent == "Africa")%>%
+  ggplot(., aes(x = targetposition, y = mean, col = community))+
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
+  labs(x = "", y = "")+
+  scale_color_colorblind(name = "", guide = "none")+
+  facet_grid(continent~.)+
+  ylim(0,1000)+
+  theme_few()
+
+teu <- tc_agg_data%>%
+  filter(continent == "Europe")%>%
+  ggplot(., aes(x = targetposition, y = mean, col = community))+
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
+  labs(x = "", y = "")+
+  scale_color_colorblind(name = "", guide = "none")+
+  facet_grid(continent~.)+
+  ylim(0,1000)+
+  theme_few()
+
+tas <- tc_agg_data%>%
+  filter(continent == "Asia")%>%
+  ggplot(., aes(x = targetposition, y = mean, col = community))+
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
+  labs(x = "", y = "")+
+  scale_color_colorblind(name = "", guide = "none")+
+  facet_grid(continent~.)+
+  ylim(0,1000)+
+  theme_few()
+
+toc <- tc_agg_data%>%
+  filter(continent == "Oceania")%>%
+  ggplot(., aes(x = targetposition, y = mean, col = community))+
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
+  labs(x = "Target position (binned)", y = "")+
+  scale_color_colorblind(name = "", guide = "none")+
+  facet_grid(continent~.)+
+  ylim(0,1000)+
+  theme_few()
 
 ```
 
 
 ```{r}
-# am <- ggplot()+
-#   geom_point(data = mdata%>%filter(continent == "America"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
-#   geom_smooth(data = post%>%filter(continent == "America"), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
-#   theme_few()+
-#   scale_fill_colorblind(name = "")+
-#   scale_color_colorblind(name = "")+
-#   labs(x = "", y="Imprecision")+
-#   scale_x_continuous(limits = c(2,10))+
-#   scale_y_continuous(limits = c(0,1000))+
-#   facet_grid(continent~.)+
-#   theme(strip.text = element_blank(), legend.justification = c(0,1))
-# 
-# af <- ggplot()+
-#   geom_point(data = mdata%>%filter(continent == "Africa"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
-#   geom_smooth(data = post%>%filter(continent == "Africa"), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
-#   theme_few()+
-#   scale_fill_colorblind(name = "")+
-#   scale_color_colorblind(name = "")+
-#   labs(x = "", y="")+
-#     scale_x_continuous(limits = c(2,10))+
-#   scale_y_continuous(limits = c(0,1000))+
-#   facet_grid(continent~.)+
-#   theme(strip.text = element_blank(), legend.justification = c(0,1))
-# 
-# eu <- ggplot()+
-#   geom_point(data = mdata%>%filter(continent == "Europe"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
-#   geom_smooth(data = post%>%filter(continent == "Europe"), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
-#   theme_few()+
-#   scale_fill_colorblind(name = "")+
-#   scale_color_colorblind(name = "")+
-#   labs(x = "", y="")+
-#     scale_x_continuous(limits = c(2,10))+
-#   scale_y_continuous(limits = c(0,1000))+
-#   facet_grid(continent~.)+
-#   theme(strip.text = element_blank(), legend.justification = c(0,1))
-# 
-# as <- ggplot()+
-#   geom_point(data = mdata%>%filter(continent == "Asia"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
-#   geom_smooth(data = post%>%filter(continent == "Asia"), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
-#   theme_few()+
-#   scale_fill_colorblind(name = "")+
-#   scale_color_colorblind(name = "")+
-#   labs(x = "", y="")+
-#     scale_x_continuous(limits = c(2,10))+
-#   scale_y_continuous(limits = c(0,1000))+
-#   facet_grid(continent~.)+
-#   theme(strip.text = element_blank(), legend.justification = c(0,1))
-# 
-# oc <- ggplot()+
-#   geom_point(data = mdata%>%filter(continent == "Oceania"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
-#   geom_smooth(data = post%>%filter(continent == "Oceania"), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
-#   theme_few()+
-#   scale_fill_colorblind(name = "")+
-#   scale_color_colorblind(name = "")+
-#   labs(x = "Age", y="")+
-#     scale_x_continuous(limits = c(2,10))+
-#   scale_y_continuous(limits = c(0,1000))+
-#   facet_grid(continent~.)+
-#   theme(strip.text = element_blank(), legend.justification = c(0,1))
+am <- ggplot()+
+  geom_point(data = mdata%>%filter(continent == "America"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
+  geom_smooth(data = post%>%filter(continent == "America"), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
+  theme_few()+
+  scale_fill_colorblind(name = "")+
+  scale_color_colorblind(name = "")+
+  labs(x = "", y="Imprecision")+
+  scale_x_continuous(limits = c(2,10))+
+  scale_y_continuous(limits = c(0,1000))+
+  facet_grid(continent~.)+
+  theme(strip.text = element_blank(), legend.justification = c(0,1))
+
+af <- ggplot()+
+  geom_point(data = mdata%>%filter(continent == "Africa"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
+  geom_smooth(data = post%>%filter(continent == "Africa"), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
+  theme_few()+
+  scale_fill_colorblind(name = "")+
+  scale_color_colorblind(name = "")+
+  labs(x = "", y="")+
+    scale_x_continuous(limits = c(2,10))+
+  scale_y_continuous(limits = c(0,1000))+
+  facet_grid(continent~.)+
+  theme(strip.text = element_blank(), legend.justification = c(0,1))
+
+eu <- ggplot()+
+  geom_point(data = mdata%>%filter(continent == "Europe"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
+  geom_smooth(data = post%>%filter(continent == "Europe"), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
+  theme_few()+
+  scale_fill_colorblind(name = "")+
+  scale_color_colorblind(name = "")+
+  labs(x = "", y="")+
+    scale_x_continuous(limits = c(2,10))+
+  scale_y_continuous(limits = c(0,1000))+
+  facet_grid(continent~.)+
+  theme(strip.text = element_blank(), legend.justification = c(0,1))
+
+as <- ggplot()+
+  geom_point(data = mdata%>%filter(continent == "Asia"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
+  geom_smooth(data = post%>%filter(continent == "Asia"), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
+  theme_few()+
+  scale_fill_colorblind(name = "")+
+  scale_color_colorblind(name = "")+
+  labs(x = "", y="")+
+    scale_x_continuous(limits = c(2,10))+
+  scale_y_continuous(limits = c(0,1000))+
+  facet_grid(continent~.)+
+  theme(strip.text = element_blank(), legend.justification = c(0,1))
+
+oc <- ggplot()+
+  geom_point(data = mdata%>%filter(continent == "Oceania"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
+  geom_smooth(data = post%>%filter(continent == "Oceania"), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
+  theme_few()+
+  scale_fill_colorblind(name = "")+
+  scale_color_colorblind(name = "")+
+  labs(x = "Age", y="")+
+    scale_x_continuous(limits = c(2,10))+
+  scale_y_continuous(limits = c(0,1000))+
+  facet_grid(continent~.)+
+  theme(strip.text = element_blank(), legend.justification = c(0,1))
 ```
 
 ```{r figdev, include = T, fig.align = "center", fig.cap = "A) Developmental trajectories by cultural settings. Transparent dots show aggregated data for each individual. The color dentoes the different cultural settings. The developmental trajectories are predicted based on a model of the data aggregated for each participant. B) Performance by screen section and cultural setting. Each bin covers 1/10th of the screen. Points show means and eroor bars 95\\% confidence intervals for the data within that bin aggregated across participants.", out.width="100%"}
-# # plot_grid(
-# #   plot_grid(am, tam, nrow = 1, align = "h", rel_widths = c(2,1)),
-# #   plot_grid(af, taf, nrow = 1, align = "h", rel_widths = c(2,1)),
-# #   plot_grid(eu, teu, nrow = 1, align = "h", rel_widths = c(2,1)),
-# #   plot_grid(as, tas, nrow = 1, align = "h", rel_widths = c(2,1)),
-# #   plot_grid(oc, toc, nrow = 1, align = "h", rel_widths = c(2,1)),
-# #   align = "v",
-# #   ncol = 1
-# #   )
-# 
-# 
-# pvis_pred <- plot_grid(
-#   plot_grid(am, af, eu, as,oc, ncol = 1, align = "v"),
-#   plot_grid(tam, taf, teu, tas,toc, ncol = 1, align = "v"),
-#   nrow = 1,
-#   labels = c("A","B"),
-#   rel_widths = c(1.75,1)
-# )
-# 
-# ggsave(plot = pvis_pred, "../visuals/pvis_pred.png", height = 12, width = 8, scale = 1.2)
+# plot_grid(
+#   plot_grid(am, tam, nrow = 1, align = "h", rel_widths = c(2,1)),
+#   plot_grid(af, taf, nrow = 1, align = "h", rel_widths = c(2,1)),
+#   plot_grid(eu, teu, nrow = 1, align = "h", rel_widths = c(2,1)),
+#   plot_grid(as, tas, nrow = 1, align = "h", rel_widths = c(2,1)),
+#   plot_grid(oc, toc, nrow = 1, align = "h", rel_widths = c(2,1)),
+#   align = "v",
+#   ncol = 1
+#   )
+
+
+pvis_pred <- plot_grid(
+  plot_grid(am, af, eu, as,oc, ncol = 1, align = "v"),
+  plot_grid(tam, taf, teu, tas,toc, ncol = 1, align = "v"),
+  nrow = 1,
+  labels = c("A","B"),
+  rel_widths = c(1.75,1)
+)
+
+ggsave(plot = pvis_pred, "../visuals/pvis_pred.png", height = 10, width = 7, scale = 1.5)
 
 knitr::include_graphics("../visuals/pvis_pred.png")
 
