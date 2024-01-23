@@ -27,23 +27,23 @@ data <- read_csv("../data/gafo-cc-clean-data.csv")%>%
   ))%>%
   mutate(continent = factor(continent, levels = c("America", "Africa", "Europe", "Asia", "Oceania"), ordered = T))%>%
   mutate(community = recode(community,
-                            akure = "akure (nigeria)",
-                            leipzig = "leipzig (germany)",
-                            `hai||om` = "hai||om (namibia)",
-                            khwe = "khwe (namibia)",
-                            windhoek = "windhoek (namibia)",
-                            stanford = "stanford (usa)",
-                            chimfunshi = "chimfunshi (sambia)",
-                            mexico = "ocuilan (mexico)",
-                            plymouth = "plymouth (uk)",
-                            beijing = "beijing (china)", 
-                            india = "pune (india)",
-                            buenos_aires = "buenos aires (argentina)",
-                            auckland = "auckland (new zealand)",
-                            turkey = "malatya (turkey)",
-                            bandongo = "bandongo (rep. congo)",
-                            bayaka = "bayaka (rep. congo)", 
-                            uganda = "nyabyeya (uganda)"))
+                            akure = "Akure (Nigeria)",
+                            leipzig = "Leipzig (Germany)",
+                            `hai||om` = "Hai||om (Namibia)",
+                            khwe = "Khwe (Namibia)",
+                            windhoek = "Windhoek (Namibia)",
+                            stanford = "Stanford (USA)",
+                            chimfunshi = "Chimfunshi (Sambia)",
+                            mexico = "Ocuilan (Mexico)",
+                            plymouth = "Plymouth (UK)",
+                            beijing = "Beijing (China)", 
+                            india = "Pune (India)",
+                            buenos_aires = "Buenos Aires (Argentina)",
+                            auckland = "Auckland (New Zealand)",
+                            turkey = "Malatya (Turkey)",
+                            bandongo = "Bandongo (Rep. Congo)",
+                            bayaka = "BaYaka (Rep. Congo)", 
+                            uganda = "Nyabyeya (Uganda)"))
 ```
 ```{r}
 # Population of the countries involved
@@ -681,15 +681,15 @@ remove_new <- function(aes) {
 ```{r}
 ggplot(data = selWorld, mapping = aes(x = long, y = lat, group = group)) + 
   coord_map("moll")+
-  geom_polygon(aes(fill = fill)) +
+  geom_polygon(aes(fill = fill), col = "white", linewidth = 0.05) +
   scale_fill_manual(breaks = c("out", "in"), values = c("grey", "#DBD56E"), guide = "none")+
   new_scale("fill") +
-  geom_point(pch = 21, data = data_map, aes(x = loc_long, y = loc_lat, fill = Participants), col = "black", inherit.aes = F, size = 2.5, stroke = 0.5)+
+  geom_point(pch = 21, data = data_map, aes(x = loc_long, y = loc_lat, fill = Participants), col = "black", inherit.aes = F, size = 4, stroke = 0.5)+
   #scale_fill_distiller(palette ="RdBu", direction = -1) + # or direction=1
   scale_fill_viridis_c(direction = -1, guide = guide_colourbar(direction = "horizontal", title.position = "top", title.hjust = 0.5), name = "Sample size")+
   plain+
-  theme(legend.position = c(0.15, 0.25), legend.background = element_blank())
+  theme(legend.position = c(0.2, 0.25), legend.background = element_blank())
 ```
 ```{r}
-ggsave("../visuals/map.png", width = 12, height = 6, bg = "white")
+ggsave("../visuals/map.png", width = 8, height = 4, bg = "white", scale = 1.3)
 ```
