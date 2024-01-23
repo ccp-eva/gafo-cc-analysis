@@ -920,7 +920,7 @@ am <- ggplot()+
   scale_x_continuous(limits = c(2,10))+
   scale_y_continuous(limits = c(0,1000))+
   facet_grid(continent~.)+
-  theme(strip.text = element_blank(), legend.justification = c(0,1))
+  theme(strip.text = element_blank(), legend.justification = c(0,1),legend.text=element_text(size=8))
 
 af <- ggplot()+
   geom_point(data = mdata%>%filter(continent == "Africa"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
@@ -932,7 +932,7 @@ af <- ggplot()+
     scale_x_continuous(limits = c(2,10))+
   scale_y_continuous(limits = c(0,1000))+
   facet_grid(continent~.)+
-  theme(strip.text = element_blank(), legend.justification = c(0,1))
+  theme(strip.text = element_blank(), legend.justification = c(0,1),legend.text=element_text(size=8))
 
 eu <- ggplot()+
   geom_point(data = mdata%>%filter(continent == "Europe"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
@@ -944,7 +944,7 @@ eu <- ggplot()+
     scale_x_continuous(limits = c(2,10))+
   scale_y_continuous(limits = c(0,1000))+
   facet_grid(continent~.)+
-  theme(strip.text = element_blank(), legend.justification = c(0,1))
+  theme(strip.text = element_blank(), legend.justification = c(0,1),legend.text=element_text(size=8))
 
 as <- ggplot()+
   geom_point(data = mdata%>%filter(continent == "Asia"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
@@ -956,7 +956,7 @@ as <- ggplot()+
     scale_x_continuous(limits = c(2,10))+
   scale_y_continuous(limits = c(0,1000))+
   facet_grid(continent~.)+
-  theme(strip.text = element_blank(), legend.justification = c(0,1))
+  theme(strip.text = element_blank(), legend.justification = c(0,1),legend.text=element_text(size=8))
 
 oc <- ggplot()+
   geom_point(data = mdata%>%filter(continent == "Oceania"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
@@ -968,7 +968,7 @@ oc <- ggplot()+
     scale_x_continuous(limits = c(2,10))+
   scale_y_continuous(limits = c(0,1000))+
   facet_grid(continent~.)+
-  theme(strip.text = element_blank(), legend.justification = c(0,1))
+  theme(strip.text = element_blank(), legend.justification = c(0,1),legend.text=element_text(size=8))
 ```
 
 ```{r figdev, include = T, fig.align = "center", fig.cap = "A) Developmental trajectories by cultural settings. Transparent dots show aggregated data for each individual. The color dentoes the different cultural settings. The developmental trajectories are predicted based on a model of the data aggregated for each participant. B) Performance by screen section and cultural setting. Each bin covers 1/10th of the screen. Points show means and eroor bars 95\\% confidence intervals for the data within that bin aggregated across participants.", out.width="100%"}
@@ -991,7 +991,7 @@ pvis_pred <- plot_grid(
   rel_widths = c(1.75,1)
 )
 
-ggsave(plot = pvis_pred, "../visuals/pvis_pred.png", height = 10, width = 7, scale = 1.5)
+ggsave(plot = pvis_pred, "../visuals/pvis_pred.png", height = 10, width = 6, scale = 1.5)
 
 knitr::include_graphics("../visuals/pvis_pred.png")
 
@@ -1182,24 +1182,6 @@ model_comp <- readRDS("../saves/model_comp.rds")
 
 ```
 
-```{r}
-ptc_com <- ranef(bm_pred_null)$community[, ,1]%>%as_tibble(rownames = "community")%>%
-  left_join(data%>%group_by(community)%>%summarise(touchscreen = mean(touchscreen, na.rm = T)))
-
-saveRDS(ptc_com, "../saves/ptc_com.rds")
-
-ptc_com <- readRDS("../saves/ptc_com.rds")
-
-ggplot(ptc_com,aes(x = touchscreen, y = Estimate))+
-  stat_cor(aes(x = touchscreen, y = Estimate,label = paste(..r.label..)),inherit.aes = F,r.accuracy = 0.01, cor.coef.name = "r",label.y = 0.85)+
-  geom_point(alpha = .75, pch = 1)+
-  geom_smooth(method = "lm", col = "firebrick", alpha = .25)+
-  labs(x = "Touchscreen exposure", y = "Relative performance (age corrected)")+
-  geom_text_repel(aes(label = community), size = 3, min.segment.length = 0, segment.curvature = -0.1)+
-  theme_few()
-```
-
-
 The final analysis focused on whether we could predict performance in the task by aspects of everyday experience. For the ease of model fitting, we aggregated the data for each participant so that models predicted the average imprecision across trials^[@prein2023variation showed that the performance mean is nearly perfectly correlated with $\sigma_v$. When re-running the winning model on the trial-by-trial data, the results were qualitatively and quantitatively identical.]. The aspects we could focus on were limited to the questions we asked in the questionnaire. That is, we analysed the effects of exposure to technology and household composition. 
 
 We asked about children's exposure to screens as well as touchscreens. These two variables were largely redundant (see Figure Figure \@ref(fig:figpred1)B) and so we included only one of them in the model. We chose the availability of a touchscreen as a predictor because the task itself was presented on a touchscreen. We expected (and pre-registered) that children with exposure to touchscreens would perform better. 
@@ -1264,6 +1246,26 @@ pred_est <- readRDS("../saves/pred_est.rds")
 
 
 Table \@ref(tab:predcomptable) shows that this model preformed relatively poor, suggesting that there was little variation across cultural settings in how the predictors influenced performance. When inspecting the estimates within the winning model, we saw that children with exposure to touchscreens performed better compared to children without exposure ($\beta$ = `r pred_est%>%filter(term == "touchscreen1")%>%pull(Estimate)`, SE = `r pred_est%>%filter(term == "touchscreen1")%>%pull(Est.Error)`, 95% CrI = `r pred_est%>%filter(term == "touchscreen1")%>%pull(Q2.5)` - `r pred_est%>%filter(term == "touchscreen1")%>%pull(Q97.5)`). Children with more older children living in the same household also tended to perform better ($\beta$ = `r pred_est%>%filter(term == "older_children")%>%pull(Estimate)`, SE = `r pred_est%>%filter(term == "older_children")%>%pull(Est.Error)`, 95% CrI = `r pred_est%>%filter(term == "older_children")%>%pull(Q2.5)` - `r pred_est%>%filter(term == "older_children")%>%pull(Q97.5)`).
+
+
+```{r}
+ptc_com <- ranef(bm_pred_null)$community[, ,1]%>%as_tibble(rownames = "community")%>%
+  left_join(data%>%group_by(community)%>%summarise(touchscreen = mean(touchscreen, na.rm = T)))
+
+saveRDS(ptc_com, "../saves/ptc_com.rds")
+
+ptc_com <- readRDS("../saves/ptc_com.rds")
+
+pcomtc <- ggplot(ptc_com,aes(x = touchscreen, y = Estimate))+
+  stat_cor(aes(x = touchscreen, y = Estimate,label = paste(..r.label..)),inherit.aes = F,r.accuracy = 0.01, cor.coef.name = "r",label.y = 0.85)+
+  geom_point(alpha = .75, pch = 1)+
+  geom_smooth(method = "lm", col = "firebrick", alpha = .25)+
+  labs(x = "Touchscreen exposure", y = "Relative imprecision (age corrected)")+
+  geom_text_repel(aes(label = community), size = 3, min.segment.length = 0, segment.curvature = -0.1)+
+  theme_few()
+
+ggsave(plot = pcomtc, "../visuals/pcomtc.png", height = 4, width = 5, scale = 1.5)
+```
 
 # Appendix
 
