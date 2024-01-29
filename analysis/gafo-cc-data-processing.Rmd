@@ -84,9 +84,19 @@ tidy_data_namibia <- raw_data_namibia %>%
   ) %>%
   mutate(subjID = toupper(subjID))%>%select(-touchScreen)#%>% select(subjID, population, trialType, trialNr, targetPosition, targetCentralityX, clickDistFromTargetCenterX)
 
-
-unique(tidy_data_namibia$subjID)
 ```
+
+```{r}
+# quality checks
+
+# range of click distance: min = 0; max = 1920
+range(abs(tidy_data_namibia$clickDistFromTargetCenterX)) # 
+
+# number of trials: everyone should have more than 4 trials.
+tidy_data_namibia%>%group_by(subjID)%>%filter(voiceover == F, trialType == "test")%>%summarise(n = n())%>%filter(n<5) 
+
+```
+
 
 ```{r demographics}
 raw_demographics_namibia <- bind_rows(
@@ -109,6 +119,7 @@ tidy_demographics_namibia <- raw_demographics_namibia %>%
   left_join(testdates)%>%
   mutate(
     ageInYears = as.numeric(difftime(test_date,BirthDate, units = "days")/365.25),
+    Children = ifelse(subjID == "W0000023", 2, Children)
   ) %>%
   select(-c(`First Name`, Name, BirthDate, TestDate,test_date, Comment))%>% 
   rename_all(tolower)%>%
@@ -117,27 +128,45 @@ tidy_demographics_namibia <- raw_demographics_namibia %>%
 ```
 
 ```{r}
+# quality checks
+
+# check for typos in subject names, is there a data file for every child in the demographics spreadsheet?
+tidy_demographics_namibia%>%
+  filter(!subjid %in% tidy_data_namibia$subjID)
+
+# range of ages: should not be below 2.5
+range(tidy_demographics_namibia$ageinyears) 
+
+# screen and touchscreen should only be 0 or 1 
+unique(tidy_demographics_namibia$screen) 
+unique(tidy_demographics_namibia$touchscreen) 
+
+# children should at least be 1 (the tested child) 
+tidy_demographics_namibia%>%filter(children < 1)
+# household should at least be 2 (the tested child and one adult) 
+tidy_demographics_namibia%>%filter(household < 2) 
+# household should be larger than children
+tidy_demographics_namibia%>%filter(children >= household) 
+# youngerchildren should be fewer than children
+tidy_demographics_namibia%>%filter(youngerchildren >= children) 
+
+
+exclude_namib <- tidy_demographics_namibia%>%filter(children >= household) %>% pull(subjid)
+
+```
+
+
+```{r}
 data_namibia <- tidy_demographics_namibia%>%
   left_join(tidy_data_namibia%>%rename_all(tolower),by = c("subjid"))%>%
+  filter(!subjid %in% exclude_namib)%>%
   distinct(subjid, trialnr, .keep_all = T)
 
 ```
 
 ```{r}
-data_namibia%>%
-  filter(community == "windhoek")%>%
-  mutate(age_group = substr(ageinyears, 1,1))%>%
-  #group_by(age_group)%>%
-  summarise(n = n_distinct(subjid))
-
-data_namibia%>%
-  filter(community == "windhoek")%>%
-  group_by(ageinyears)%>%
-  summarise(n= n_distinct(subjid))%>%
-  ggplot(aes(x = ageinyears, y = ""))+
-  geom_count(alpha = .5)+
-  xlim(2.5, 8)+
-  theme_bw()
+# did a child get lost on the way?
+n_distinct(tidy_demographics_namibia$subjid) == (n_distinct(data_namibia$subjid) + length(exclude_namib))
 ```
 
 
@@ -221,6 +250,16 @@ tidy_data_leipzig <- raw_data_leipzig %>%
 #unique(tidy_data_leipzig$subjID)
 ```
 
+```{r}
+# quality checks
+
+# range of click distance: min = 0; max = 1920
+range(abs(tidy_data_leipzig$clickDistFromTargetCenterX)) # 
+
+# number of trials: everyone should have more than 4 trials.
+tidy_data_leipzig%>%group_by(subjID)%>%filter(voiceover == F, trialType == "test")%>%summarise(n = n())%>%filter(n<5) 
+
+```
 
 ```{r demographics}
 raw_demographics_leipzig <- bind_rows(
@@ -241,9 +280,29 @@ tidy_demographics_leipzig <- raw_demographics_leipzig %>%
   filter(status == "keep")
 ```
 
+
 ```{r}
+# quality checks
+
+# check for typos in subject names
 tidy_demographics_leipzig%>%
   filter(!subjid %in% tidy_data_leipzig$subjID)
+
+# range of ages: should not be below 2.5
+range(tidy_demographics_leipzig$ageinyears) 
+
+# screen and touchscreen should only be 0 or 1 or NA
+unique(tidy_demographics_leipzig$screen) 
+unique(tidy_demographics_leipzig$touchscreen) 
+
+# children should at least be 1 (the tested child) 
+tidy_demographics_leipzig%>%filter(children < 1)
+# household should at least be 2 (the tested child and one adult) 
+tidy_demographics_leipzig%>%filter(household < 2) 
+# household should be larger than children
+tidy_demographics_leipzig%>%filter(children >= household) 
+# youngerchildren should be fewer than children
+tidy_demographics_leipzig%>%filter(younger_children >= children) 
 ```
 
 
@@ -251,33 +310,11 @@ tidy_demographics_leipzig%>%
 data_leipzig <- tidy_demographics_leipzig%>%
   left_join(tidy_data_leipzig%>%rename_all(tolower),by = c("subjid"))%>%
   distinct(subjid, trialnr, .keep_all = TRUE)
-
 ```
 
 ```{r}
-data_leipzig%>%
-  group_by(subjid)%>%
-  summarise(n())
-
-data_leipzig%>%
-  #group_by(subjid)%>%
-  summarise(n = n_distinct(subjid))
-  
-
-data_leipzig%>%
-  mutate(age_group = substr(ageinyears, 1, 1))%>%
-  select(subjid, sex, age_group, screen, touchscreen, household, children, younger_children)%>%
-  na.omit()%>%
-  group_by(age_group, sex)%>%
-  summarise(n = n_distinct(subjid))
-
-
-data_leipzig%>%
-  mutate(age_group = substr(ageinyears, 1, 1))%>%
-  select(subjid, sex, age_group, screen, touchscreen, household, children, younger_children)%>%
-  na.omit()%>%
-  group_by(age_group)%>%
-  summarise(n = n_distinct(subjid))
+# did a child get lost on the way?
+n_distinct(tidy_demographics_leipzig$subjid) <= (n_distinct(tidy_data_leipzig$subjID))
 ```
 
 # Nigeria
@@ -348,6 +385,17 @@ tidy_data_nigeria <- raw_data_nigeria %>%
   ) %>%select(-touchScreen)#%>% select(subjID, population, trialType, trialNr, targetPosition, targetCentralityX, clickDistFromTargetCenterX)
 ```
 
+```{r}
+# quality checks
+
+# range of click distance: min = 0; max = 1920
+range(abs(tidy_data_nigeria$clickDistFromTargetCenterX)) # 
+
+# number of trials: everyone should have more than 4 trials.
+tidy_data_nigeria%>%group_by(subjID)%>%filter(voiceover == F, trialType == "test")%>%summarise(n = n())%>%filter(n<5) 
+
+```
+
 ```{r demographics}
 raw_demographics_nigeria <- bind_rows(
   read_xlsx("../../../../../../Cloud/QuantEx/Gafo-cc/data/nigeria/gafo-cc-nigeria-participants.xlsx", sheet = 1)
@@ -366,14 +414,45 @@ tidy_demographics_nigeria <- raw_demographics_nigeria %>%
   filter(!is.na(ageinyears))
 ```
 
+```{r}
+# quality checks
 
+# check for typos in subject names
+tidy_demographics_nigeria%>%
+  filter(!subjid %in% tidy_data_nigeria$subjID)
+
+# range of ages: should not be below 2.5
+range(tidy_demographics_nigeria$ageinyears) 
+
+# screen and touchscreen should only be 0 or 1 or NA
+unique(tidy_demographics_nigeria$screen) 
+unique(tidy_demographics_nigeria$touchscreen) 
+
+# children should at least be 1 (the tested child) 
+tidy_demographics_nigeria%>%filter(children < 1)
+# household should at least be 2 (the tested child and one adult) 
+tidy_demographics_nigeria%>%filter(household < 2) 
+# household should be larger than children
+tidy_demographics_nigeria%>%filter(children >= household) 
+# younger children should be fewer than children
+tidy_demographics_nigeria%>%filter(younger_children >= children) 
+
+exclude_niger <- tidy_demographics_nigeria%>%filter(younger_children >= children) %>% pull(subjid)
+```
 
 ```{r}
 data_nigeria <- tidy_demographics_nigeria%>%
   left_join(tidy_data_nigeria%>%rename_all(tolower),by = c("subjid"))%>%
+  filter(!subjid %in% exclude_niger)%>%
   mutate(location = community,
          community = "akure")%>%
   distinct(subjid, trialnr, .keep_all = TRUE)
+```
+
+
+```{r}
+# did a child get lost on the way?
+n_distinct(tidy_demographics_nigeria$subjid) == (n_distinct(data_nigeria$subjid) + length(exclude_niger))
 ```
 
 # Zambia
@@ -444,8 +523,14 @@ tidy_data_zambia <- raw_data_zambia %>%
 ```
 
 ```{r}
-tidy_data_zambia%>%
-  summarise(n = n_distinct(subjID))
+# quality checks
+
+# range of click distance: min = 0; max = 1920
+range(abs(tidy_data_zambia$clickDistFromTargetCenterX)) # 
+
+# number of trials: everyone should have more than 4 trials.
+tidy_data_zambia%>%group_by(subjID)%>%filter(voiceover == F, trialType == "test")%>%summarise(n = n())%>%filter(n<5) 
+
 ```
 
 
@@ -471,16 +556,46 @@ tidy_demographics_zambia <- raw_demographics_zambia %>%
 ```
 
 ```{r}
+# quality checks
+
+# check for typos in subject names
+tidy_demographics_zambia%>%
+  filter(!subjid %in% tidy_data_zambia$subjID)
+
+# range of ages: should not be below 2.5
+range(tidy_demographics_zambia$ageinyears) 
+
+# screen and touchscreen should only be 0 or 1 or NA
+unique(tidy_demographics_zambia$screen) 
+unique(tidy_demographics_zambia$touchscreen) 
+
+# children should at least be 1 (the tested child) 
+tidy_demographics_zambia%>%filter(children < 1)
+# household should at least be 2 (the tested child and one adult) 
+tidy_demographics_zambia%>%filter(household < 2) 
+# household should be larger than children
+tidy_demographics_zambia%>%filter(children >= household) 
+# younger children should be fewer than children
+tidy_demographics_zambia%>%filter(younger_children >= children) 
+```
+
+```{r}
 data_zambia <- tidy_demographics_zambia%>%
   left_join(tidy_data_zambia%>%rename_all(tolower),by = c("subjid"))%>%
   mutate(community = "chimfunshi")%>%
   distinct(subjid, trialnr, .keep_all = TRUE)
 ```
 
+
+```{r}
+# did a child get lost on the way?
+n_distinct(tidy_demographics_zambia$subjid) <= (n_distinct(data_zambia$subjid))
+```
+
 # Stanford
 
 ```{r}
-data_stanford <- read.csv("../../raw_data/gafo-cc/stanford/tidy_data_extra.csv")%>%
+raw_data_stanford <- read.csv("../../raw_data/gafo-cc/stanford/tidy_data_extra.csv")%>%
   mutate(subjID = paste0("S",subjID),
          community = "stanford",
          screen = ifelse(screen == "yes", 1, 0),
@@ -494,17 +609,42 @@ data_stanford <- read.csv("../../raw_data/gafo-cc/stanford/tidy_data_extra.csv")
 ```
 
 ```{r}
-data_stanford%>%
-  mutate(age_group = substr(ageinyears, 1,1))%>%
-  group_by(age_group)%>%
-  summarise(n = n_distinct(subjid))
+# quality checks
+
+# range of click distance: min = 0; max = 1920
+range(abs(raw_data_stanford$clickdistfromtargetcenterx)) # 
+
+# number of trials: everyone should have more than 4 trials.
+raw_data_stanford%>%group_by(subjid)%>%filter(voiceover == F, trialtype == "test")%>%summarise(n = n())%>%filter(n<5) 
 
 ```
 
+```{r}
+# quality checks
 
+# range of ages: should not be below 2.5
+range(raw_data_stanford$ageinyears) 
 
+# screen and touchscreen should only be 0 or 1 or NA
+unique(raw_data_stanford$screen) 
+unique(raw_data_stanford$touchscreen) 
 
+# children should at least be 1 (the tested child) 
+raw_data_stanford%>%filter(children < 1)
+# household should at least be 2 (the tested child and one adult) 
+raw_data_stanford%>%filter(household < 2) 
+# household should be larger than children
+raw_data_stanford%>%filter(children >= household) 
+# youngerchildren should be fewer than children
+raw_data_stanford%>%filter(younger_children >= children) 
 
+exclude_stanf <- raw_data_stanford%>%filter(children >= household)%>%distinct(subjid)%>%pull(subjid)
+```
+
+```{r}
+data_stanford <- raw_data_stanford%>%
+  filter(!subjid %in% exclude_stanf)
+```
 
 # Plymouth
 
@@ -580,30 +720,24 @@ tidy_data_plymouth <- raw_data_plymouth %>%
   select(-touchScreen)%>%
   mutate_if(is.character, as.factor)%>% 
   distinct(subjID, trialNr, .keep_all = T)#%>%select(subjID, population, trialType, trialNr, targetPosition, targetCentralityX, clickDistFromTargetCenterX)
-
-
-unique(raw_data_plymouth$subjID)
 ```
 
 ```{r}
-tidy_data_plymouth%>%
-  filter(trialType == "test")%>%
-  group_by(subjID)%>%
-  summarise(n = n())
+# quality checks
 
-tidy_data_plymouth%>%
-  filter(trialType == "test")%>%
-  summarise(n = n_distinct(subjID))
+# range of click distance: min = 0; max = 1920
+range(abs(tidy_data_plymouth$clickDistFromTargetCenterX)) # 
 
-tidy_data_plymouth%>%
-  filter(subjID == "uksch002")
+# number of trials: everyone should have more than 4 trials.
+tidy_data_plymouth%>%group_by(subjID)%>%filter(voiceover == F, trialType == "test")%>%summarise(n = n())%>%filter(n<5) 
+
 ```
 
 ```{r demographics}
 raw_demographics_plymouth <- bind_rows(
   read_xlsx("../../raw_data/gafo-cc/plymouth/participants_information_updated_2023_May.xlsx", sheet = 1)
   )%>%
-  filter(tested == "yes")
+  filter(tested == "yes", subjid != "uksch057")
 
 test_date_plymouth <- tidy_data_plymouth%>%
   select(subjID, timestamp)%>%
@@ -626,22 +760,33 @@ tidy_demographics_plymouth <- raw_demographics_plymouth %>%
 ```
 
 ```{r}
+# quality checks
+
+# check for typos in subject names
+tidy_demographics_plymouth%>%
+  filter(!subjid %in% tidy_data_plymouth$subjID)
+
+# range of ages: should not be below 2.5
+range(tidy_demographics_plymouth$ageinyears) 
+
+# screen and touchscreen should only be 0 or 1 or NA
+unique(tidy_demographics_plymouth$screen) 
+unique(tidy_demographics_plymouth$touchscreen) 
+
+# children should at least be 1 (the tested child) 
+tidy_demographics_plymouth%>%filter(children < 1)
+# household should at least be 2 (the tested child and one adult) 
+tidy_demographics_plymouth%>%filter(household < 2) 
+# household should be larger than children
+tidy_demographics_plymouth%>%filter(children >= household) 
+# youngerchildren should be fewer than children
+tidy_demographics_plymouth%>%filter(younger_children >= children) 
+```
+
+```{r}
 data_plymouth <- tidy_demographics_plymouth%>%
   left_join(tidy_data_plymouth%>%rename_all(tolower),by = c("subjid"))%>%
   distinct(subjid, trialnr, .keep_all = TRUE)
-
-data_plymouth%>%
-  #mutate(age_group = substr(ageinyears, 1,1))%>%
-  #group_by(age)%>%
-  summarise(n = n_distinct(subjid))
-
-data_plymouth%>%
-  group_by(age)%>%
-  summarise(n())
-
-
- data_plymouth%>%
-   filter(is.na(durationanimationballoontotal))
 ```
 
 
@@ -712,17 +857,26 @@ tidy_data_mex <- raw_data_mex %>%
 ```
 
 ```{r}
-tidy_data_mex%>%
-  summarise(n = n_distinct(subjID))
-```
+# quality checks
 
+# range of click distance: min = 0; max = 1920
+range(abs(tidy_data_mex$clickDistFromTargetCenterX)) # 
+
+# number of trials: everyone should have more than 4 trials.
+tidy_data_mex%>%group_by(subjID)%>%filter(voiceover == F, trialType == "test")%>%summarise(n = n())%>%filter(n<5) 
+
+```
 
 ```{r demographics}
 raw_demographics_mex <- bind_rows(
   read_xlsx("../../../../../../Cloud/QuantEx/Gafo-cc/data/mexico/participants.xlsx", sheet = 1)
   )%>%
   filter(!is.na(lastname))%>%
-  mutate(birth_date = ifelse(birth_date == 29042017, 20170429, birth_date))
+  mutate(birth_date = ifelse(birth_date == 29042017, 20170429, birth_date), 
+         subjid = ifelse(subjid == "Mexva37", "Mexva037", subjid),
+         subjid = ifelse(subjid == "Mexva51", "Mexva051", subjid), 
+         children = ifelse(subjid == "Mexli040", children + 1, children),
+         children = ifelse(subjid == "Mexli064", children + 1, children))
 
 tidy_demographics_mex <- raw_demographics_mex %>% 
   mutate(
@@ -738,14 +892,36 @@ tidy_demographics_mex <- raw_demographics_mex %>%
 ```
 
 ```{r}
+# quality checks
+
+# check for typos in subject names
+tidy_demographics_mex%>%
+  filter(!subjid %in% tidy_data_mex$subjID)
+
+# range of ages: should not be below 2.5
+range(tidy_demographics_mex$ageinyears) 
+
+# screen and touchscreen should only be 0 or 1 or NA
+unique(tidy_demographics_mex$screen) 
+unique(tidy_demographics_mex$touchscreen) 
+
+# children should at least be 1 (the tested child) 
+tidy_demographics_mex%>%filter(children < 1)
+# household should at least be 2 (the tested child and one adult) 
+tidy_demographics_mex%>%filter(household < 2) 
+# household should be larger than children
+tidy_demographics_mex%>%filter(children >= household) 
+# youngerchildren should be fewer than children
+tidy_demographics_mex%>%filter(younger_children >= children) 
+```
+
+```{r}
 data_mex <- tidy_demographics_mex%>%
   left_join(tidy_data_mex%>%rename_all(tolower),by = c("subjid"))%>%
   mutate(community = "mexico")%>%
   distinct(subjid, trialnr, .keep_all = TRUE)
-
-data_mex%>%summarise(n = n_distinct(subjid))
-
 ```
+
 ```{r}
 # data_liz <- bind_rows(data_mex%>%
 #   filter(trialtype == "test", voiceover == F)%>%
@@ -860,17 +1036,17 @@ tidy_data_china <- raw_data_china %>%
   distinct(subjID, trialNr, .keep_all = T)%>%
    mutate_if(is.character, as.factor)#%>%select(subjID, population, trialType, trialNr, targetPosition, targetCentralityX, clickDistFromTargetCenterX)
 
+```
 
-#unique(tidy_data_leipzig$subjID)
+```{r}
+# quality checks
 
-tidy_data_china%>%
-  filter(subjID == "china077")
+# range of click distance: min = 0; max = 1920
+range(abs(tidy_data_china$clickDistFromTargetCenterX)) # 
 
-n_distinct(tidy_data_china$subjID)
+# number of trials: everyone should have more than 4 trials.
+tidy_data_china%>%group_by(subjID)%>%filter(voiceover == F, trialType == "test")%>%summarise(n = n())%>%filter(n<5) 
 
-tidy_data_china%>%
-  group_by(subjID)%>%
-  summarise(n())
 ```
 
 ```{r demographics}
@@ -890,26 +1066,37 @@ tidy_demographics_china <- raw_demographics_china %>%
   select(-status)%>%
   rename(subjid = id)
 
+```
+
+
+```{r}
+# quality checks
+
+# check for typos in subject names
 tidy_demographics_china%>%
-  arrange(ageinyears)
+  filter(!subjid %in% tidy_data_china$subjID)
+
+# range of ages: should not be below 2.5
+range(tidy_demographics_china$ageinyears) 
+
+# screen and touchscreen should only be 0 or 1 or NA
+unique(tidy_demographics_china$screen) 
+unique(tidy_demographics_china$touchscreen) 
+
+# children should at least be 1 (the tested child) 
+tidy_demographics_china%>%filter(children < 1)
+# household should at least be 2 (the tested child and one adult) 
+tidy_demographics_china%>%filter(household < 2) 
+# household should be larger than children
+tidy_demographics_china%>%filter(children >= household) 
+# youngerchildren should be fewer than children
+tidy_demographics_china%>%filter(younger_children >= children) 
 ```
 
 ```{r}
 data_china <- tidy_demographics_china%>%
   left_join(tidy_data_china%>%rename_all(tolower),by = c("subjid"))%>%
   distinct(subjid, trialnr, .keep_all = TRUE)
-
-data_china%>%
-  #mutate(age_group = substr(ageinyears, 1,1))%>%
-  #group_by(age_group)%>%
-  summarise(n = n_distinct(subjid))
-
-data_china%>%
-  group_by(subjid)%>%
-  summarise(n())
-
-
-  
 ```
 
 # Argentina
@@ -979,14 +1166,15 @@ tidy_data_arg <- raw_data_arg %>%
 ```
 
 ```{r}
-tidy_data_arg%>%
-  summarise(n = n_distinct(subjID))
+# quality checks
 
-tidy_data_arg%>%
-  group_by(subjID)%>%
-  summarise(n = n())
+# range of click distance: min = 0; max = 1920
+range(abs(tidy_data_arg$clickDistFromTargetCenterX)) # 
+
+# number of trials: everyone should have more than 4 trials.
+tidy_data_arg%>%group_by(subjID)%>%filter(voiceover == F, trialType == "test")%>%summarise(n = n())%>%filter(n<5) 
+
 ```
-
 
 ```{r demographics}
 raw_demographics_arg <- bind_rows(
@@ -1010,34 +1198,37 @@ tidy_demographics_arg <- raw_demographics_arg %>%
          children = as.numeric(children),
          younger_children = as.numeric(younger_children))
 
-tidy_demographics_arg%>%
-  filter(ageinyears < 2)
 ```
 
 ```{r}
-raw_demographics_arg%>%
-  filter(!id %in% tidy_data_arg$subjID)
+# quality checks
 
+# check for typos in subject names
+tidy_demographics_arg%>%
+  filter(!subjid %in% tidy_data_arg$subjID)
 
-tidy_data_arg%>%
-  filter(!subjID %in% raw_demographics_arg$id)
+# range of ages: should not be below 2.5
+range(tidy_demographics_arg$ageinyears) 
+
+# screen and touchscreen should only be 0 or 1 or NA
+unique(tidy_demographics_arg$screen) 
+unique(tidy_demographics_arg$touchscreen) 
+
+# children should at least be 1 (the tested child) 
+tidy_demographics_arg%>%filter(children < 1)
+# household should at least be 2 (the tested child and one adult) 
+tidy_demographics_arg%>%filter(household < 2) 
+# household should be larger than children
+tidy_demographics_arg%>%filter(children >= household) 
+# youngerchildren should be fewer than children
+tidy_demographics_arg%>%filter(younger_children >= children) 
 ```
-
-
 
 ```{r}
 data_arg <- tidy_demographics_arg%>%
   left_join(tidy_data_arg%>%rename_all(tolower),by = c("subjid"))%>%
   mutate(community = "buenos_aires")%>%
   distinct(subjid, trialnr, .keep_all = TRUE)
-
-data_arg%>%
-  group_by(community)%>%
-  summarise(n = n_distinct(subjid))
-
-data_arg%>%
-  group_by(subjid)%>%
-  summarise(n = n())
 ```
 
 # India
@@ -1107,18 +1298,18 @@ tidy_data_ind <- raw_data_ind %>%
 ```
 
 ```{r}
-tidy_data_ind%>%
-  summarise(n = n_distinct(subjID))
+# quality checks
 
-tidy_data_ind%>%
-  group_by(subjID)%>%
-  summarise(n = n())
+# range of click distance: min = 0; max = 1920
+range(abs(tidy_data_ind$clickDistFromTargetCenterX)) # 
 
+# number of trials: everyone should have more than 4 trials.
+tidy_data_ind%>%group_by(subjID)%>%filter(voiceover == F, trialType == "test")%>%summarise(n = n())%>%filter(n<5) 
 
 ```
 
 ```{r }
-raw_demographics_ind <- read_xlsx("../../../../../../Cloud/QuantEx/Gafo-cc/data/india/gafo-cc-india-participants.xlsx", sheet = 1)
+raw_demographics_ind <- read_xlsx("../../../../../../Cloud/QuantEx/Gafo-cc/data/india/Gafo_Corrected.xlsx", sheet = 1)
 
 tidy_demographics_ind <- raw_demographics_ind %>% 
   mutate(
@@ -1126,22 +1317,46 @@ tidy_demographics_ind <- raw_demographics_ind %>%
     birth_date = as.Date(as.character(birth_date), format = "%Y%m%d"),
     ageinyears = as.numeric(difftime(test_date,birth_date, units = "days")/365.25),
   )  %>%
-  select(-c(first_name, last_name, test_date, birth_date, comment))%>%
+  select(-c(test_date, birth_date, comment))%>%
   filter(!is.na(ageinyears))%>%
   rename(subjid = id)
 
 ```
 
 ```{r}
+# quality checks
+
+# check for typos in subject names
+tidy_demographics_ind%>%
+  filter(!subjid %in% tidy_data_ind$subjID)
+
+# range of ages: should not be below 2.5
+range(tidy_demographics_ind$ageinyears) 
+
+# screen and touchscreen should only be 0 or 1 or NA
+unique(tidy_demographics_ind$screen) 
+unique(tidy_demographics_ind$touchscreen) 
+
+# children should at least be 1 (the tested child) 
+tidy_demographics_ind%>%filter(children < 1)
+# household should at least be 2 (the tested child and one adult) 
+tidy_demographics_ind%>%filter(household < 2) 
+# household should be larger than children
+tidy_demographics_ind%>%filter(children >= household) 
+# youngerchildren should be fewer than children
+tidy_demographics_ind%>%filter(younger_children >= children) 
+
+exclude_ind <- c(tidy_demographics_ind%>%filter(children >= household) %>% pull(subjid),
+                 tidy_demographics_ind%>%filter(younger_children >= children)%>% pull(subjid))
+                 
+```
+
+```{r}
 data_ind <- tidy_demographics_ind%>%
+  filter(!subjid %in%exclude_ind)%>%
   left_join(tidy_data_ind%>%rename_all(tolower),by = c("subjid"))%>%
   mutate(community = "india")%>%
   distinct(subjid, trialnr, .keep_all = TRUE)
-
-data_ind%>%
-  group_by(subjid)%>%
-  summarise(n = n())
-
 ```
 
 # Auckland
@@ -1224,23 +1439,21 @@ unique(tidy_data_nz$subjID)
 ```
 
 ```{r}
-tidy_data_nz%>%
-  #filter(trialType == "test")%>%
-  group_by(subjID)%>%
-  summarise(n = n())
+# quality checks
 
-tidy_data_nz%>%
-  filter(trialType == "test")%>%
-  summarise(n = n_distinct(subjID))
+# range of click distance: min = 0; max = 1920
+range(abs(tidy_data_nz$clickDistFromTargetCenterX)) # 
 
-tidy_data_nz%>%
-  filter(subjID == "uksch002")
+# number of trials: everyone should have more than 4 trials.
+tidy_data_nz%>%group_by(subjID)%>%filter(voiceover == F, trialType == "test")%>%summarise(n = n())%>%filter(n<5) 
+
 ```
 
 ```{r demographics}
 raw_demographics_nz <- bind_rows(
   read_xlsx("../../../../../../Cloud/QuantEx/Gafo-cc/data/new_zealand/gafo-cc-new-zealand-participants.xlsx", sheet = 1)
-  )
+  )%>%
+  filter(id != "NZ000001")
 
 tidy_demographics_nz <- raw_demographics_nz %>% 
   mutate(
@@ -1256,19 +1469,33 @@ tidy_demographics_nz <- raw_demographics_nz %>%
 ```
 
 ```{r}
+# quality checks
+
+# check for typos in subject names
+tidy_demographics_nz%>%
+  filter(!subjid %in% tidy_data_nz$subjID)
+
+# range of ages: should not be below 2.5
+range(tidy_demographics_leipzig$ageinyears) 
+
+# screen and touchscreen should only be 0 or 1 or NA
+unique(tidy_demographics_leipzig$screen) 
+unique(tidy_demographics_leipzig$touchscreen) 
+
+# children should at least be 1 (the tested child) 
+tidy_demographics_leipzig%>%filter(children < 1)
+# household should at least be 2 (the tested child and one adult) 
+tidy_demographics_leipzig%>%filter(household < 2) 
+# household should be larger than children
+tidy_demographics_leipzig%>%filter(children >= household) 
+# youngerchildren should be fewer than children
+tidy_demographics_leipzig%>%filter(younger_children >= children) 
+```
+
+```{r}
 data_nz <- tidy_demographics_nz%>%
-  filter(subjid != "NZ000001")%>%
   left_join(tidy_data_nz%>%rename_all(tolower),by = c("subjid"))%>%
   distinct(subjid, trialnr, .keep_all = TRUE)
-
-data_nz%>%
-  #mutate(age_group = substr(ageinyears, 1,1))%>%
-  #group_by(age)%>%
-  summarise(n = n_distinct(subjid))
-
-# data_nz%>%
-#   group_by(age)%>%
-#   summarise(n())
 ```
 
 # Turkey
@@ -1346,14 +1573,14 @@ tidy_data_tur <- raw_data_tur %>%
 ```
 
 ```{r}
-tidy_data_tur%>%
-  summarise(n = n_distinct(subjID))
+# quality checks
 
-tidy_data_tur%>%
-  group_by(subjID)%>%
-  summarise(n = n())
+# range of click distance: min = 0; max = 1920
+range(abs(tidy_data_tur$clickDistFromTargetCenterX)) # 
 
-unique(tidy_data_tur$subjID)
+# number of trials: everyone should have more than 4 trials.
+tidy_data_tur%>%group_by(subjID)%>%filter(voiceover == F, trialType == "test")%>%summarise(n = n())%>%filter(n<5) 
+
 ```
 
 ```{r }
@@ -1372,6 +1599,30 @@ tidy_demographics_tur <- raw_demographics_tur %>%
 ```
 
 ```{r}
+# quality checks
+
+# check for typos in subject names
+tidy_demographics_tur%>%
+  filter(!subjid %in% tidy_data_tur$subjID)
+
+# range of ages: should not be below 2.5
+range(tidy_demographics_tur$ageinyears) 
+
+# screen and touchscreen should only be 0 or 1 or NA
+unique(tidy_demographics_tur$screen) 
+unique(tidy_demographics_tur$touchscreen) 
+
+# children should at least be 1 (the tested child) 
+tidy_demographics_tur%>%filter(children < 1)
+# household should at least be 2 (the tested child and one adult) 
+tidy_demographics_tur%>%filter(household < 2) 
+# household should be larger than children
+tidy_demographics_tur%>%filter(children >= household) 
+# youngerchildren should be fewer than children
+tidy_demographics_tur%>%filter(younger_children >= children) 
+```
+
+```{r}
 data_tur <- tidy_demographics_tur%>%
   left_join(tidy_data_tur%>%rename_all(tolower),by = c("subjid"))%>%
   mutate(community = "turkey")%>%
@@ -1380,16 +1631,6 @@ data_tur <- tidy_demographics_tur%>%
                      "EBRAR100" = "TUR00001",
                      "FATMA400" = "TUR00002",
                      "ASYAA200" = "TUR00003"))
-
-data_tur%>%
-  group_by(subjid)%>%
-  summarise(n = n())
-
-data_tur%>%
-  mutate(age_group = substr(ageinyears, 1,1))%>%
-  group_by(age_group)%>%
-  summarise(n = n_distinct(subjid))
-
 ```
 
 # Congo
@@ -1415,7 +1656,7 @@ rm(f, files, jf, jd)
 
 ```{r}
 tidy_data_cong <- raw_data_cong %>%
-  
+  mutate(subjID = ifelse(subjID == "BD000063", "BY000063", subjID))%>%
   # convert all character vectors into factors
   mutate_if(is.character, as.factor) %>% 
   
@@ -1454,18 +1695,18 @@ tidy_data_cong <- raw_data_cong %>%
     
     datacollection = as.factor("in-person - supervised"), 
     sample = as.factor("na"),
-    studytype = as.factor("vali"),
+    studytype = as.factor("vali")
   ) %>%select(-touchScreen)#%>%select(subjID, population, trialType, trialNr, targetPosition, targetCentralityX, clickDistFromTargetCenterX)
 ```
 
 ```{r}
-tidy_data_cong%>%
-  summarise(n = n_distinct(subjID))
+# quality checks
 
-tidy_data_cong%>%
-  group_by(subjID)%>%
-  summarise(n = n())
+# range of click distance: min = 0; max = 1920
+range(abs(tidy_data_cong$clickDistFromTargetCenterX)) # 
 
+# number of trials: everyone should have more than 4 trials.
+tidy_data_cong%>%group_by(subjID)%>%filter(voiceover == F, trialType == "test")%>%summarise(n = n())%>%filter(n<5) 
 
 ```
 
@@ -1498,20 +1739,35 @@ tidy_demographics_cong <- raw_demographics_cong %>%
 ```
 
 ```{r}
+# quality checks
+
+# check for typos in subject names
+tidy_demographics_cong%>%
+  filter(!subjid %in% tidy_data_cong$subjID)
+# one child has no data, no idea where it is
+
+# range of ages: should not be below 2.5
+range(tidy_demographics_cong$ageinyears) 
+
+# screen and touchscreen should only be 0 or 1 or NA
+unique(tidy_demographics_cong$screen) 
+unique(tidy_demographics_cong$touchscreen) 
+
+# children should at least be 1 (the tested child) 
+tidy_demographics_cong%>%filter(children < 1)
+# household should at least be 2 (the tested child and one adult) 
+tidy_demographics_cong%>%filter(household < 2) 
+# household should be larger than children
+tidy_demographics_cong%>%filter(children >= household) 
+# youngerchildren should be fewer than children
+tidy_demographics_cong%>%filter(younger_children >= children) 
+```
+
+```{r}
 data_cong <- tidy_demographics_cong%>%
   left_join(tidy_data_cong%>%rename_all(tolower),by = c("subjid"))%>%
   #mutate(community = "congo")%>%
   distinct(subjid, trialnr, .keep_all = TRUE)
-
-data_cong%>%
-  group_by(subjid)%>%
-  summarise(n = n())
-
-data_cong%>%
-  group_by(subjid)%>%
-  summarise(n = n(), 
-            mean = mean(abs(clickdistfromtargetcenterx)))
-
 ```
 # Uganda
 
@@ -1581,20 +1837,16 @@ tidy_data_uganda <- raw_data_uganda %>%
   select(-touchScreen)%>%
   mutate_if(is.character, as.factor)%>% 
   distinct(subjID, trialNr, .keep_all = T)#%>%select(subjID, population, trialType, trialNr, targetPosition, targetCentralityX, clickDistFromTargetCenterX)
-
-
-unique(tidy_data_uganda$subjID)
 ```
 
 ```{r}
-tidy_data_uganda%>%
-  filter(trialType == "test")%>%
-  group_by(subjID)%>%
-  summarise(n = n())
+# quality checks
 
-tidy_data_uganda%>%
-  filter(trialType == "test")%>%
-  summarise(n = n_distinct(subjID))
+# range of click distance: min = 0; max = 1920
+range(abs(tidy_data_uganda$clickDistFromTargetCenterX)) # 
+
+# number of trials: everyone should have more than 4 trials.
+tidy_data_uganda%>%group_by(subjID)%>%filter(voiceover == F, trialType == "test")%>%summarise(n = n())%>%filter(n<5) 
 
 ```
 
@@ -1621,15 +1873,38 @@ tidy_demographics_uganda <- raw_demographics_uganda %>%
 ```
 
 ```{r}
+# quality checks
+
+# check for typos in subject names
+tidy_demographics_uganda%>%
+  filter(!subjid %in% tidy_data_uganda$subjID)
+
+# one child is missing: ugand041
+
+# range of ages: should not be below 2.5
+range(tidy_demographics_uganda$ageinyears) 
+
+# screen and touchscreen should only be 0 or 1 or NA
+unique(tidy_demographics_uganda$screen) 
+unique(tidy_demographics_uganda$touchscreen) 
+
+# children should at least be 1 (the tested child) 
+tidy_demographics_uganda%>%filter(children < 1)
+# household should at least be 2 (the tested child and one adult) 
+tidy_demographics_uganda%>%filter(household < 2) 
+# household should be larger than children
+tidy_demographics_uganda%>%filter(children >= household) 
+# youngerchildren should be fewer than children
+tidy_demographics_uganda%>%filter(younger_children >= children) 
+
+exclude_uganda <- tidy_demographics_uganda%>%filter(younger_children >= children) %>% pull(subjid)
+```
+
+```{r}
 data_uganda <- tidy_demographics_uganda%>%
   left_join(tidy_data_uganda%>%rename_all(tolower),by = c("subjid"))%>%
+  filter(!subjid %in% exclude_uganda)%>%
   distinct(subjid, trialnr, .keep_all = TRUE)
-
-data_uganda%>%
-  mutate(age_group = substr(ageinyears, 1,1))%>%
-  group_by(age_group)%>%
-  summarise(n = n_distinct(subjid))
-
 ```
 
 
@@ -1651,7 +1926,7 @@ merge_raw_data <- bind_rows(
   data_cong,
   data_uganda
 )%>%
-  #mutate(community = paste0("c",as.character(as.numeric(as.factor(community)))))%>%
+  mutate(community = paste0("c",as.character(as.numeric(as.factor(community)))))%>%
   filter(trialtype == "test",
          voiceover == F
          )%>%
@@ -1711,7 +1986,7 @@ merge_raw_data%>%
 ## check if there are cases with more younger children than children (cannot be)
 
 merge_raw_data%>%
-  filter(children < younger_children, trialnr == 1)
+  filter(children <= younger_children, trialnr == 1)
 
 merge_raw_data%>%
   filter(children == younger_children, trialnr == 1)
@@ -1732,8 +2007,7 @@ write_csv(data,"../data/gafo-cc-clean-data.csv")
 
 
 methods_data <- merge_raw_data%>%
-  select(subjid, community, age_group, ageinyears, trialnr, targetposition,targetcentralityx, clickdistfromtargetcenterx)%>%
-  filter(ageinyears > 1)
+  select(subjid, community, age_group, ageinyears, trialtype, voiceover, trialnr, targetposition,targetcentralityx, clickdistfromtargetcenterx)
 
 write_csv(methods_data,"../../tango-cc-methods/data/data.csv")
 ```

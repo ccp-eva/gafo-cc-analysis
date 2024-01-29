@@ -16,13 +16,8 @@ library(ggridges)
 
 
 ```{r}
-exclude <- read_csv("../data/gafo-cc-clean-data.csv")%>%
-  filter(children == younger_children, trialnr == 1)%>%
-  pull(subjid)
-
 mdata <- read_csv("../data/gafo-cc-clean-data.csv")%>%
   ungroup()%>%
-  filter(!subjid %in% exclude)%>%
   mutate(older_children = children - 1 - younger_children)%>%
   mutate(ageinyears = scale(ageinyears),
          targetcentralityx = scale(targetcentralityx),
