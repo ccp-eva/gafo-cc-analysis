@@ -1851,7 +1851,7 @@ tidy_data_uganda%>%group_by(subjID)%>%filter(voiceover == F, trialType == "test"
 ```
 
 ```{r demographics}
-raw_demographics_uganda <- read_xlsx("../../raw_data/gafo-cc/uganda/gafo_uganda_participants.xlsx", sheet = 1)[-1, ]
+raw_demographics_uganda <- read_xlsx("../../raw_data/gafo-cc/uganda/gafo_uganda_participants_checked.xlsx", sheet = 1)
 
 tidy_demographics_uganda <- raw_demographics_uganda %>%
   rename(subjid = id)%>%
@@ -1884,6 +1884,12 @@ tidy_demographics_uganda%>%
 # range of ages: should not be below 2.5
 range(tidy_demographics_uganda$ageinyears) 
 
+tidy_demographics_uganda%>%
+  filter(ageinyears< 2)
+
+raw_demographics_uganda%>%
+  filter(id == "ugand114")
+
 # screen and touchscreen should only be 0 or 1 or NA
 unique(tidy_demographics_uganda$screen) 
 unique(tidy_demographics_uganda$touchscreen) 
@@ -1897,7 +1903,7 @@ tidy_demographics_uganda%>%filter(children >= household)
 # youngerchildren should be fewer than children
 tidy_demographics_uganda%>%filter(younger_children >= children) 
 
-exclude_uganda <- tidy_demographics_uganda%>%filter(younger_children >= children) %>% pull(subjid)
+exclude_uganda <- tidy_demographics_uganda%>%filter(ageinyears< 2) %>% pull(subjid)
 ```
 
 ```{r}
@@ -1926,7 +1932,7 @@ merge_raw_data <- bind_rows(
   data_cong,
   data_uganda
 )%>%
-  mutate(community = paste0("c",as.character(as.numeric(as.factor(community)))))%>%
+ # mutate(community = paste0("c",as.character(as.numeric(as.factor(community)))))%>%
   filter(trialtype == "test",
          voiceover == F
          )%>%
