@@ -1884,12 +1884,6 @@ tidy_demographics_uganda%>%
 # range of ages: should not be below 2.5
 range(tidy_demographics_uganda$ageinyears) 
 
-tidy_demographics_uganda%>%
-  filter(ageinyears< 2)
-
-raw_demographics_uganda%>%
-  filter(id == "ugand114")
-
 # screen and touchscreen should only be 0 or 1 or NA
 unique(tidy_demographics_uganda$screen) 
 unique(tidy_demographics_uganda$touchscreen) 
