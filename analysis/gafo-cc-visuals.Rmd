@@ -11,6 +11,8 @@ library(tidyboot)
 library(maps)
 library(brms)
 library(cowplot)
+library(png)
+library(ggimage)
 ```
 
 
@@ -180,6 +182,60 @@ ggplot(ptp, aes(x = targetposition, y = mean, col = community))+
 ```{r}
 ggsave("../visuals/target_position_site.png", width = 8, height = 6, bg = "white")
 ```
+
+```{r}
+im <- readPNG("../visuals/gazemodel-cc-center2.png")
+im2 <- matrix(rgb(im[,,1],im[,,2],im[,,3], im[,,4] * 0.5), nrow=dim(im)[1])
+
+sim_dat <- tibble(
+  targetposition = factor(c(1:10)), 
+  mean = c(550,350,225, 150 , 100, 100, 150,225,350,550),
+  sd = c(seq(100,50, length.out = 5), seq(50, 100, length.out = 5)),
+  col = c("no","no","no","no","yes","yes","no","no","no","no")
+)%>%
+  expand_grid(id = as.character(c(1:50)))%>%
+  rowwise()%>%
+  mutate(impr = rnorm(1, mean, sd))
+
+ggplot(sim_dat, aes(x = targetposition, y= mean, col = col))+
+  background_image(im2) + 
+  geom_point(size = 3)+
+  geom_jitter(aes(y = impr), alpha = 0.1, width = 0.1)+
+  scale_color_manual(values = c("black", "firebrick"), guide = "none")+
+  ylim(0, 1000)+
+  labs(x = "Target position (binned)", y = "Imprecision")+
+  theme_few()
+
+
+ggsave("../visuals/target_position_model_center.png", width = 6.8, height = 4)
+
+
+im3 <- readPNG("../visuals/gazemodel-cc-side2.png")
+im4 <- matrix(rgb(im3[,,1],im3[,,2],im3[,,3], im3[,,4] * 0.5), nrow=dim(im3)[1])
+
+sim_dat2 <- tibble(
+  targetposition = factor(c(1:10)), 
+  mean = c(550,350,225, 150 , 100, 100, 150,225,350,550),
+  sd = c(seq(100,50, length.out = 5), seq(50, 100, length.out = 5)),
+  col = c("yes","no","no","no","no","no","no","no","no","yes")
+)%>%
+  expand_grid(id = as.character(c(1:50)))%>%
+  rowwise()%>%
+  mutate(impr = rnorm(1, mean, sd))
+  
+ggplot(sim_dat2, aes(x = targetposition, y= mean, col = col))+
+  background_image(im4) + 
+  geom_point(size = 3)+
+  geom_jitter(aes(y = impr), alpha = 0.1, width = 0.1)+
+  scale_color_manual(values = c("black", "firebrick"), guide = "none")+
+  ylim(0, 1000)+
+  labs(x = "Target position (binned)", y = "Imprecision")+
+  theme_few()
+
+
+ggsave("../visuals/target_position_model_edge.png", width = 6.8, height = 4)
+```
+
 
 
 ```{r}
