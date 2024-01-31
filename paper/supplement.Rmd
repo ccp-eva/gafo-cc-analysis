@@ -34,6 +34,8 @@ library(ggridges)
 library(papaja)
 library(coda)
 library(ggrepel)
+library(knitr)
+library(kableExtra)
 
 estimate_mode <- function(s) {
   d <- density(s)
@@ -52,6 +54,7 @@ hdi_lower<- function(s){
 }
 
 knitr::opts_chunk$set(echo=F, warning=FALSE, message=FALSE, size="small")
+options(knitr.kable.NA = '')
 
 set.seed(1337)
 ```
@@ -62,11 +65,11 @@ data <- read_csv("../data/gafo-cc-clean-data.csv")%>%
     community %in% c("leipzig", "plymouth"), "Europe", 
     ifelse(
       community %in% c("akure", "hai||om", "khwe", "chimfunshi", "bandongo", "bayaka", "windhoek", "uganda"), "Africa",
-      ifelse(community %in% c("stanford", "mexico", "buenos_aires"), "America",
+      ifelse(community %in% c("stanford", "mexico", "buenos_aires"), "Americas",
              ifelse(community %in% c("india", "beijing", "turkey"), "Asia", "Oceania"))
     )
   ))%>%
-  mutate(continent = factor(continent, levels = c("America", "Africa", "Europe", "Asia", "Oceania"), ordered = T))%>%
+  mutate(continent = factor(continent, levels = c("Americas", "Africa", "Europe", "Asia", "Oceania"), ordered = T))%>%
   mutate(community = recode(community,
                             akure = "Akure (Nigeria)",
                             leipzig = "Leipzig (Germany)",
@@ -90,7 +93,7 @@ data <- read_csv("../data/gafo-cc-clean-data.csv")%>%
 
 # Overview
 
-in the section [site descriptions](#site-descriptions)
+This docuemnt provides a detailed overview of the participants and methods of the in the section [site descriptions](#site-descriptions)
 
 # Participants
 
@@ -112,10 +115,10 @@ demtab <- data %>%
   arrange(continent)
 
 
-knitr::kable(demtab,
+kableExtra::kable(demtab,
              col.names = c("Community", "Country", "Continent", "N", "Sex (male)", "Age (range)"),
-             caption = "Participant demographics.", 
-             #ote = "Column age shows mean and range in paranthesis.", digits = 2, align = "l"
+              caption = "Participant demographics.", 
+             format="latex", booktabs=TRUE
              )
 ```
 
@@ -166,14 +169,6 @@ ppred <- pred_agg_g%>%
   theme(axis.text.y = element_blank(), axis.ticks.y = element_blank(), strip.text.y.right = element_text(angle = 0))
 ```
 
-```{r figpred1, include = T, fig.align = "center", fig.cap = "A) Age distribution and B) prevalence of different types of technology by community. Left: dots show individual data points. Right: color shows the proportion of children with access to screens or touchscreens.", out.width="100%"}
-techpred <- plot_grid(page, ppred, rel_widths = c(1, 0.5),align = "h", labels = c("A", "B"))
-
-ggsave(plot = techpred, "../visuals/techpred.png",  height = 7, width = 10, scale = 1)
-
-knitr::include_graphics("../visuals/techpred.png")
-
-```
 
 A total of `r sum(as.numeric(demtab$N))` children between `r round(min(data$ageinyears), 2)` and `r round(max(data$ageinyears), 2)` provided data for the study. Children lived in `r n_distinct(data$community)` different communities, located in `r n_distinct(data$country)` different countries. Table \@ref(tab:demtable) gives the sample size per community together with some basic demographic information. Figure \@ref(fig:figpred1)A shows the age distribution in each setting. For some children, the exact birthday was unknown. In such cases, we set the birthday to the 30th of June of the year that would make them fall into the reported age category. Additional children were recruited but did not contribute data to the study. The recruitment strategy varied from community to community and we therefore cannot provide detailed information about the number of children that were excluded. All children who contributed at least four valid data points were included in the final sample, however, we excluded children when parents did not fill out the questionnaire correctly (e.g., when the number of children living in the household was reported to be larger than the household itself or when the number of children reported to live in the household equaled the number of children younger than the child being tested). Twelve children had to be excluded for one of these reasons (one from Akure, two from Stanford, seven from Pune and two from Windhoek). We did not exclude any participants for performance reasons. A detailed description of each site and the way children were recruited can be found below.
 
@@ -211,6 +206,16 @@ For this study we reached out to early childcare centers and schools. Two early 
 * Shuker, M. J., & Cherrington, S. (2016). Diversity in New Zealand early childhood education: Challenges and opportunities. International Journal of Early Years Education, 24(2), 172-187.
 * Tesar, M. (2015). New Zealand perspectives on early childhood education: Nāku te rourou nāu te rourou ka ora ai te iwi. Journal of Pedagogy, 6(2), 9-18.
 * New Zealand Census 2018 for Auckland Region: https://www.stats.govt.nz/tools/2018-census-place-summaries/auckland-region#population-and-dwellings
+
+
+```{r figpred1, include = T, fig.align = "center", fig.cap = "A) Age distribution and B) prevalence of different types of technology by community. Left: dots show individual data points. Right: color shows the proportion of children with access to screens or touchscreens.", out.width="100%"}
+# techpred <- plot_grid(page, ppred, rel_widths = c(1, 0.5),align = "h", labels = c("A", "B"))
+# 
+# ggsave(plot = techpred, "../visuals/techpred.png",  height = 7, width = 10, scale = 1)
+
+knitr::include_graphics("../visuals/techpred.png")
+
+```
 
 ### Bandongo (Rep. Congo) - Ethnic group 
 
@@ -456,39 +461,28 @@ https://ifstudies.org/blog/state-of-contradiction-progressive-family-culture-tra
 * ...
 
 
-```{r figpred2, include = T, fig.align = "center", fig.cap = "Household demographics by community.  Vertical lines show individual data points with minimal horizontal jitter to avoid overplotting.", out.width="100%"}
+```{r figpred2, include = T, fig.align = "center", fig.cap = "Household demographics by community.  Points show individual data points with minimal vertical and horizontal jitter to avoid overplotting. Red points show means with 95\\% CI.", out.width="100%"}
 
-dempred <- data%>%
-  group_by(community,continent)%>%
-  mutate(older_children = children - 1 - younger_children)%>%
-  distinct(subjid, .keep_all = T)%>%
-  select(subjid, community, continent, older_children,children, younger_children, household)%>%
-  pivot_longer(names_to = "dem", values_to = "value", cols = c(older_children,children, younger_children, household))%>%
-  mutate(dem = recode(dem,
-                      older_children = "older children",
-                            younger_children = "younger children"),
-         dem = factor(dem, levels = c("household", "children", "older children", "younger children")))%>%
-  ggplot(aes(y = community, x = value))+
-  facet_grid(continent~dem, scales = "free", space = "free_y")+
-  geom_density_ridges(
-    jittered_points = TRUE,
-    position = position_points_jitter(width = 0.25, height = 0),
-    point_shape = '|',  point_alpha = 1, alpha = 0.7,
-  )+
- # geom_density_ridges(
- #    col = "white",
- #    jittered_points = TRUE, quantile_lines = TRUE, scale = 0.9, alpha = 0.7,
- #    vline_size = 1, vline_color = "red",
- #    point_size = 0.4, point_alpha = 1,
- #    position = position_raincloud(adjust_vlines = TRUE)
- #  )
-  labs(x = "No. of individuals", y= "")+
-  #geom_jitter(alpha = .1, width = 0.1, height = 0.1)+
-  theme_few()
-
-ggsave(plot = dempred, "../visuals/dempred.png", height = 8, width = 14, scale = 1.1)
+# dempred <- data%>%
+#   group_by(community,continent)%>%
+#   distinct(subjid, .keep_all = T)%>%
+#   select(subjid, community, continent, children, younger_children, household)%>%
+#   pivot_longer(names_to = "dem", values_to = "value", cols = c(children, younger_children, household))%>%
+#   mutate(dem = recode(dem,
+#                       younger_children = "younger children"),
+#          dem = factor(dem, levels = c("household", "children", "younger children")))%>%
+#   ggplot(aes(y = value, x = community))+
+#   facet_grid(dem~continent, scales = "free", space = "free_x")+
+#   geom_jitter(width = 0.2, height = 0.1, alpha = 0.1)+
+#   geom_pointrange(data = dempred_agg, aes(ymin = ci_lower, ymax = ci_upper, y = mean), col = "firebrick")+
+#   theme_few()+
+#   labs(y = "No. of individuals", x= "")+
+#   theme(axis.text.x = element_text(angle = 55, vjust = 1, hjust=1))
+# 
+# ggsave(plot = dempred, "../visuals/dempred.png", height = 6, width = 12, scale = 1)
 
 knitr::include_graphics("../visuals/dempred.png")
+
 ```
 
 # Method
@@ -497,13 +491,13 @@ We adapted the task developed by Prein and colleagues [@prein2023tango]. We refe
 
 ## Setup and Procedure
 
+```{r task, include = T, fig.align = "center", fig.cap = "Screenshot from the task. The scene depicts the choice phase in a test trial. Participants had to use the gaze of the agent to locate the balloon and click on the hedge where they thought the balloon was.", out.width="80%"}
+knitr::include_graphics("../visuals/task.png")
+``` 
+
 The task was implemented as a browser-based interactive picture book using `HTML` and `JavaScript`. Participants saw animated agents on a touch screen device, listened to pre-recorded audio instructions and responded by touching the screen. In all communities, a research assistant, fluent in the local language(s), guided the child through the task. 
 
 Figure \@ref(fig:task) shows a screenshot from the task. The task was introduced verbally by the assistant as the balloon game in which the participant would play with other children to find a balloon. On each trial, participants saw an agent located in a window in the center of the screen. A balloon fell down from its starting position just below the agent. The agent's gaze followed the trajectory of the balloon. That is, the pupils and the iris were programmed to align with the center of the balloon. Once the balloon had landed on the ground, the agent was instructed to locate it, that is, to touch the location on the screen where they thought the balloon was. On each trial, we recorded the exact x-coordinate of the participant's touch.
-
-```{r figtask, include = T, fig.align = "center", fig.cap = "Screenshot from the task. The scene depicts the choice phase in a test trial. Participants had to use the gaze of the agent to locate the balloon and click on the hedge where they thought the balloon was.", out.width="80%"}
-knitr::include_graphics("../visuals/task.png")
-``` 
 
 There were two types of familiarization trials. In fam1 trials, the balloon fell down and landed in plain sight. Participants simply had to touch the visible balloon. In fam2 trials, the trajectory of the balloon was visible but it landed behind a small barrier (usually a hedge - see Figure \@ref(fig:task)). Thus, participants needed to touch the hedge where they saw the balloon land. Next came test trials. Here, the barrier moved up and covered the balloons trajectory. That is, participants only saw the agents eyes move, but not the balloon. They had to infer the location of the balloon based on the agent's gaze direction. During fam1, fam2 and the first test trial, children heard voice overs commenting what happened on the screen. Critically, the agent was described as wanting to help the child and to always look at the balloon (see section [script](#appendix-script) for the English wording). 
 
@@ -554,20 +548,23 @@ To get around this problem, we used a cross-validation procedure [see e.g., @ste
 We compared the following models (`brms` notation): 
 
 `null`:
+
 * `imprecision ~ age + target_centrality + (target_centrality | participant)`
 
 `culture`:
+
 * `imprecision ~ age + target_centrality + (target_centrality | participant) + (target_centrality | culture)`
 
 `culture_age`: 
+
 * `imprecision ~ age + target_centrality + (target_centrality | participant) + (age + target_centrality | culture)`
 
 ```{r}
-mdata <- data%>%
-  ungroup()%>%
-  mutate(ageinyears = as.numeric(scale(ageinyears)),
-         targetcentralityx = as.numeric(scale(targetcentralityx)),
-         click = abs(clickdistfromtargetcenterx))
+# mdata <- data%>%
+#   ungroup()%>%
+#   mutate(ageinyears = as.numeric(scale(ageinyears)),
+#          targetcentralityx = as.numeric(scale(targetcentralityx)),
+#          click = abs(clickdistfromtargetcenterx))
 
 #write_csv(mdata,"../data/mdata.csv")
 ```
@@ -677,7 +674,7 @@ This prediction is best understood by considering a similar phenomenon: pointing
 #                             "Bandongo (Rep.Congo)" = "Bandongo (Rep. Congo)",
 #                             "Buenos Aires(Argentina)" = "Buenos Aires (Argentina)"))%>%
 #   left_join(data%>%distinct(community, continent))%>%
-#   mutate(continent = factor(continent, levels = c("America", "Africa", "Europe", "Asia", "Oceania"), ordered = T))
+#   mutate(continent = factor(continent, levels = c("Americas", "Africa", "Europe", "Asia", "Oceania"), ordered = T))
 # 
 # saveRDS(pdraws, "../saves/pdraws.rds")
 # 
@@ -692,27 +689,27 @@ This prediction is best understood by considering a similar phenomenon: pointing
 
 ```{r figpreds, include = T, fig.align = "center", fig.cap = "Posterior distributions of model estimates for the poredictor variables by cultural setting.", out.width="100%"}
 
-pdraws <- readRDS("../saves/pdraws.rds")%>%
-  mutate(type = recode(type,
-                       ageinyears = "Age",
-                       targetcentrality = "Target centrality"),
-         type = factor(type, levels = c("Age","Target centrality")))
-
-
-
-ppred <- ggplot(pdraws, aes(x= post, y = community))+
-
-  geom_density_ridges(col = "white", alpha = .75, fill = "grey")+
-  geom_vline(xintercept = 0, lty = 3)+
-  facet_grid(continent~type, scales = "free", space = "free_y")+
-  #stat_pointinterval(size = 0.1)+
-  #xlim(-0.15, 0.1)+
-  labs(x = "Posterior model estimate", y= "")+
-  theme_few()+
-  theme( strip.text.y.right = element_text(angle = 0))
-
-
-ggsave(plot = ppred, "../visuals/pred.png", height = 6, width = 12, scale = 1)
+# pdraws <- readRDS("../saves/pdraws.rds")%>%
+#   mutate(type = recode(type,
+#                        ageinyears = "Age",
+#                        targetcentrality = "Target centrality"),
+#          type = factor(type, levels = c("Age","Target centrality")))
+# 
+# 
+# 
+# ppred <- ggplot(pdraws, aes(x= post, y = community))+
+# 
+#   geom_density_ridges(col = "white", alpha = .75, fill = "grey")+
+#   geom_vline(xintercept = 0, lty = 3)+
+#   facet_grid(continent~type, scales = "free", space = "free_y")+
+#   #stat_pointinterval(size = 0.1)+
+#   #xlim(-0.15, 0.1)+
+#   labs(x = "Posterior model estimate", y= "")+
+#   theme_few()+
+#   theme( strip.text.y.right = element_text(angle = 0))
+# 
+# 
+# ggsave(plot = ppred, "../visuals/pred.png", height = 6, width = 12, scale = 1)
 
 knitr::include_graphics("../visuals/pred.png")
 
@@ -728,176 +725,166 @@ To test these predictions, we inspected the parameter estimates for age and targ
 Another way to look at these signatures is to visualize the group-level developmental trajectories and the aggregated performance at different areas of the screen. Figure \@ref(fig:figdev)A shows that children got more precise with age in all cultural settings. Figure \@ref(fig:figdev)B shows the u-shaped pattern predicted by the cognitive model: the closer the balloon lands to the center of the screen (bins 5 and 6) the more precise children are in all cultural settings.
 
 ```{r}
-devdata <- data%>%
-  mutate(click = abs(clickdistfromtargetcenterx))%>%
-  group_by(subjid, continent,community, ageinyears)%>%
-  summarise(mean_click = mean(click))%>%
-  ungroup()%>%
-  mutate(ageinyears = ageinyears - min(ageinyears))
-
-bm_dev <- brm(mean_click ~ ageinyears + (ageinyears |community),
-                              data   = devdata,
-                              family = lognormal(),
-                              warmup = 2000,
-                              iter   = 4000,
-                              chains = 4,
-                              cores  = 4,
-             control = list(adapt_delta = 0.95))
-
-
-ndata <- devdata%>%
-  distinct(continent, community, ageinyears)
-
-
-post <- fitted(bm_dev, newdata = ndata, re_formula =~(ageinyears|community))%>%
-  as_tibble() %>%
-  bind_cols(ndata)%>%
-  mutate(ageinyears = ageinyears + min(data$ageinyears))
+# devdata <- data%>%
+#   mutate(click = abs(clickdistfromtargetcenterx))%>%
+#   group_by(subjid, continent,community, ageinyears)%>%
+#   summarise(mean_click = mean(click))%>%
+#   ungroup()%>%
+#   mutate(ageinyears = ageinyears - min(ageinyears))
+# 
+# bm_dev <- brm(mean_click ~ ageinyears + (ageinyears |community),
+#                               data   = devdata,
+#                               family = lognormal(),
+#                               warmup = 2000,
+#                               iter   = 4000,
+#                               chains = 4,
+#                               cores  = 4,
+#              control = list(adapt_delta = 0.95))
+# 
+# 
+# ndata <- devdata%>%
+#   distinct(continent, community, ageinyears)
+# 
+# 
+# post <- fitted(bm_dev, newdata = ndata, re_formula =~(ageinyears|community))%>%
+#   as_tibble() %>%
+#   bind_cols(ndata)%>%
+#   mutate(ageinyears = ageinyears + min(data$ageinyears))
 ```
 
 ```{r}
-tc_agg_data<- data%>%
-  mutate(targetposition = factor(targetposition, levels = c(1:10)))%>%
-  group_by(continent, community, targetposition)%>%
-  tidyboot_mean(col= abs(clickdistfromtargetcenterx))
-
-
-tam <- tc_agg_data%>%
-  filter(continent == "America")%>%
-  ggplot(., aes(x = targetposition, y = mean, col = community))+
-  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
-  labs(x = "", y = "")+
-  scale_color_colorblind(name = "", guide = "none")+
-  facet_grid(continent~.)+
-  ylim(0,1000)+
-  theme_few()
-
-taf <- tc_agg_data%>%
-  filter(continent == "Africa")%>%
-  ggplot(., aes(x = targetposition, y = mean, col = community))+
-  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
-  labs(x = "", y = "")+
-  scale_color_colorblind(name = "", guide = "none")+
-  facet_grid(continent~.)+
-  ylim(0,1000)+
-  theme_few()
-
-teu <- tc_agg_data%>%
-  filter(continent == "Europe")%>%
-  ggplot(., aes(x = targetposition, y = mean, col = community))+
-  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
-  labs(x = "", y = "")+
-  scale_color_colorblind(name = "", guide = "none")+
-  facet_grid(continent~.)+
-  ylim(0,1000)+
-  theme_few()
-
-tas <- tc_agg_data%>%
-  filter(continent == "Asia")%>%
-  ggplot(., aes(x = targetposition, y = mean, col = community))+
-  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
-  labs(x = "", y = "")+
-  scale_color_colorblind(name = "", guide = "none")+
-  facet_grid(continent~.)+
-  ylim(0,1000)+
-  theme_few()
-
-toc <- tc_agg_data%>%
-  filter(continent == "Oceania")%>%
-  ggplot(., aes(x = targetposition, y = mean, col = community))+
-  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
-  labs(x = "Target position (binned)", y = "")+
-  scale_color_colorblind(name = "", guide = "none")+
-  facet_grid(continent~.)+
-  ylim(0,1000)+
-  theme_few()
+# tc_agg_data<- data%>%
+#   mutate(targetposition = factor(targetposition, levels = c(1:10)))%>%
+#   group_by(continent, community, targetposition)%>%
+#   tidyboot_mean(col= abs(clickdistfromtargetcenterx))
+# 
+# 
+# tam <- tc_agg_data%>%
+#   filter(continent == "Americas")%>%
+#   ggplot(., aes(x = targetposition, y = mean, col = community))+
+#   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
+#   labs(x = "", y = "")+
+#   scale_color_colorblind(name = "", guide = "none")+
+#   facet_grid(continent~.)+
+#   ylim(0,1000)+
+#   theme_few()
+# 
+# taf <- tc_agg_data%>%
+#   filter(continent == "Africa")%>%
+#   ggplot(., aes(x = targetposition, y = mean, col = community))+
+#   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
+#   labs(x = "", y = "")+
+#   scale_color_colorblind(name = "", guide = "none")+
+#   facet_grid(continent~.)+
+#   ylim(0,1000)+
+#   theme_few()
+# 
+# teu <- tc_agg_data%>%
+#   filter(continent == "Europe")%>%
+#   ggplot(., aes(x = targetposition, y = mean, col = community))+
+#   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
+#   labs(x = "", y = "")+
+#   scale_color_colorblind(name = "", guide = "none")+
+#   facet_grid(continent~.)+
+#   ylim(0,1000)+
+#   theme_few()
+# 
+# tas <- tc_agg_data%>%
+#   filter(continent == "Asia")%>%
+#   ggplot(., aes(x = targetposition, y = mean, col = community))+
+#   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
+#   labs(x = "", y = "")+
+#   scale_color_colorblind(name = "", guide = "none")+
+#   facet_grid(continent~.)+
+#   ylim(0,1000)+
+#   theme_few()
+# 
+# toc <- tc_agg_data%>%
+#   filter(continent == "Oceania")%>%
+#   ggplot(., aes(x = targetposition, y = mean, col = community))+
+#   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
+#   labs(x = "Target position (binned)", y = "")+
+#   scale_color_colorblind(name = "", guide = "none")+
+#   facet_grid(continent~.)+
+#   ylim(0,1000)+
+#   theme_few()
 
 ```
 
 
 ```{r}
-am <- ggplot()+
-  geom_point(data = devdata%>%filter(continent == "America"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
-  geom_smooth(data = post%>%filter(continent == "America"), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
-  theme_few()+
-  scale_fill_colorblind(name = "")+
-  scale_color_colorblind(name = "")+
-  labs(x = "", y="Imprecision")+
-  scale_x_continuous(limits = c(2,10))+
-  scale_y_continuous(limits = c(0,1000))+
-  facet_grid(continent~.)+
-  theme(strip.text = element_blank(), legend.justification = c(0,1),legend.text=element_text(size=8))
-
-af <- ggplot()+
-  geom_point(data = devdata%>%filter(continent == "Africa"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
-  geom_smooth(data = post%>%filter(continent == "Africa"), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
-  theme_few()+
-  scale_fill_colorblind(name = "")+
-  scale_color_colorblind(name = "")+
-  labs(x = "", y="")+
-    scale_x_continuous(limits = c(2,10))+
-  scale_y_continuous(limits = c(0,1000))+
-  facet_grid(continent~.)+
-  theme(strip.text = element_blank(), legend.justification = c(0,1),legend.text=element_text(size=8))
-
-eu <- ggplot()+
-  geom_point(data = devdata%>%filter(continent == "Europe"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
-  geom_smooth(data = post%>%filter(continent == "Europe"), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
-  theme_few()+
-  scale_fill_colorblind(name = "")+
-  scale_color_colorblind(name = "")+
-  labs(x = "", y="")+
-    scale_x_continuous(limits = c(2,10))+
-  scale_y_continuous(limits = c(0,1000))+
-  facet_grid(continent~.)+
-  theme(strip.text = element_blank(), legend.justification = c(0,1),legend.text=element_text(size=8))
-
-as <- ggplot()+
-  geom_point(data = devdata%>%filter(continent == "Asia"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
-  geom_smooth(data = post%>%filter(continent == "Asia"), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
-  theme_few()+
-  scale_fill_colorblind(name = "")+
-  scale_color_colorblind(name = "")+
-  labs(x = "", y="")+
-    scale_x_continuous(limits = c(2,10))+
-  scale_y_continuous(limits = c(0,1000))+
-  facet_grid(continent~.)+
-  theme(strip.text = element_blank(), legend.justification = c(0,1),legend.text=element_text(size=8))
-
-oc <- ggplot()+
-  geom_point(data = devdata%>%filter(continent == "Oceania"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
-  geom_smooth(data = post%>%filter(continent == "Oceania"), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
-  theme_few()+
-  scale_fill_colorblind(name = "")+
-  scale_color_colorblind(name = "")+
-  labs(x = "Age", y="")+
-    scale_x_continuous(limits = c(2,10))+
-  scale_y_continuous(limits = c(0,1000))+
-  facet_grid(continent~.)+
-  theme(strip.text = element_blank(), legend.justification = c(0,1),legend.text=element_text(size=8))
+# am <- ggplot()+
+#   geom_point(data = devdata%>%filter(continent == "Americas"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
+#   geom_smooth(data = post%>%filter(continent == "Americas"), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
+#   theme_few()+
+#   scale_fill_colorblind(name = "")+
+#   scale_color_colorblind(name = "")+
+#   labs(x = "", y="Imprecision")+
+#   scale_x_continuous(limits = c(2,10))+
+#   scale_y_continuous(limits = c(0,1000))+
+#   facet_grid(continent~.)+
+#   theme(strip.text = element_blank(), legend.justification = c(0,1),legend.text=element_text(size=8))
+# 
+# af <- ggplot()+
+#   geom_point(data = devdata%>%filter(continent == "Africa"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
+#   geom_smooth(data = post%>%filter(continent == "Africa"), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
+#   theme_few()+
+#   scale_fill_colorblind(name = "")+
+#   scale_color_colorblind(name = "")+
+#   labs(x = "", y="")+
+#     scale_x_continuous(limits = c(2,10))+
+#   scale_y_continuous(limits = c(0,1000))+
+#   facet_grid(continent~.)+
+#   theme(strip.text = element_blank(), legend.justification = c(0,1),legend.text=element_text(size=8))
+# 
+# eu <- ggplot()+
+#   geom_point(data = devdata%>%filter(continent == "Europe"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
+#   geom_smooth(data = post%>%filter(continent == "Europe"), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
+#   theme_few()+
+#   scale_fill_colorblind(name = "")+
+#   scale_color_colorblind(name = "")+
+#   labs(x = "", y="")+
+#     scale_x_continuous(limits = c(2,10))+
+#   scale_y_continuous(limits = c(0,1000))+
+#   facet_grid(continent~.)+
+#   theme(strip.text = element_blank(), legend.justification = c(0,1),legend.text=element_text(size=8))
+# 
+# as <- ggplot()+
+#   geom_point(data = devdata%>%filter(continent == "Asia"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
+#   geom_smooth(data = post%>%filter(continent == "Asia"), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
+#   theme_few()+
+#   scale_fill_colorblind(name = "")+
+#   scale_color_colorblind(name = "")+
+#   labs(x = "", y="")+
+#     scale_x_continuous(limits = c(2,10))+
+#   scale_y_continuous(limits = c(0,1000))+
+#   facet_grid(continent~.)+
+#   theme(strip.text = element_blank(), legend.justification = c(0,1),legend.text=element_text(size=8))
+# 
+# oc <- ggplot()+
+#   geom_point(data = devdata%>%filter(continent == "Oceania"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
+#   geom_smooth(data = post%>%filter(continent == "Oceania"), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
+#   theme_few()+
+#   scale_fill_colorblind(name = "")+
+#   scale_color_colorblind(name = "")+
+#   labs(x = "Age", y="")+
+#     scale_x_continuous(limits = c(2,10))+
+#   scale_y_continuous(limits = c(0,1000))+
+#   facet_grid(continent~.)+
+#   theme(strip.text = element_blank(), legend.justification = c(0,1),legend.text=element_text(size=8))
 ```
 
-```{r figdev, include = T, fig.align = "center", fig.cap = "A) Developmental trajectories by cultural settings. Transparent dots show aggregated data for each individual. The color dentoes the different cultural settings. The developmental trajectories are predicted based on a model of the data aggregated for each participant. B) Performance by screen section and cultural setting. Each bin covers 1/10th of the screen. Points show means and eroor bars 95\\% confidence intervals for the data within that bin aggregated across participants.", out.width="100%"}
-# plot_grid(
-#   plot_grid(am, tam, nrow = 1, align = "h", rel_widths = c(2,1)),
-#   plot_grid(af, taf, nrow = 1, align = "h", rel_widths = c(2,1)),
-#   plot_grid(eu, teu, nrow = 1, align = "h", rel_widths = c(2,1)),
-#   plot_grid(as, tas, nrow = 1, align = "h", rel_widths = c(2,1)),
-#   plot_grid(oc, toc, nrow = 1, align = "h", rel_widths = c(2,1)),
-#   align = "v",
-#   ncol = 1
-#   )
+```{r figdev, include = T, fig.align = "center", fig.cap = "A) Developmental trajectories by cultural settings. Transparent dots show aggregated data for each individual. The color dentoes the different cultural settings. The developmental trajectories are predicted based on a model of the data aggregated for each participant. B) Performance by screen section and cultural setting. Each bin covers 1/10th of the screen. Points show means and eroor bars 95\\% confidence intervals for the data within that bin aggregated across participants.", out.width="75%"}
 
-
-pvis_pred <- plot_grid(
-  plot_grid(am, af, eu, as,oc, ncol = 1, align = "v"),
-  plot_grid(tam, taf, teu, tas,toc, ncol = 1, align = "v"),
-  nrow = 1,
-  labels = c("A","B"),
-  rel_widths = c(1.75,1)
-)
-
-ggsave(plot = pvis_pred, "../visuals/pvis_pred.png", height = 10, width = 6, scale = 1.5)
+# pvis_pred <- plot_grid(
+#   plot_grid(am, af, eu, as,oc, ncol = 1, align = "v"),
+#   plot_grid(tam, taf, teu, tas,toc, ncol = 1, align = "v"),
+#   nrow = 1,
+#   labels = c("A","B"),
+#   rel_widths = c(1.75,1)
+# )
+# 
+# ggsave(plot = pvis_pred, "../visuals/pvis_pred.png", height = 10, width = 6, scale = 1.5)
 
 knitr::include_graphics("../visuals/pvis_pred.png")
 
@@ -968,9 +955,10 @@ bf <- readRDS("../model/output/bf_comparison.rds")%>%
                             uganda = "Nyabyeya (Uganda)"))
   
 
-knitr::kable(bf,
-             col.names = c("Community", "log(BF~gaze,center~)", "log(BF~gaze,guess~)"),
-             caption = "Log Bayes Factors in favor of the gaze model compared to two alternative models.", 
+kableExtra::kable(bf,
+             col.names = c("Community", "log(BF\\textsubscript{gaze,center})", "log(BF\\textsubscript{gaze,guess}"),
+             caption = "Log Bayes Factors in favor of the gaze model compared to two alternative models.",
+             format="latex", booktabs=TRUE, escape = F
              )
 ```
 
@@ -1094,18 +1082,23 @@ For household composition, we asked for the total number of people in the househ
 We compared models in a Bayesian model comparison. Models were compared based on the difference in expected log pointwise predictive density (ELPD) computed via the widely applicable information criterion (`WAIC`) and the standard error of that difference (SE). As pre-registered, we fit a separate model for each aspect of household composition. We compared the following models. 
 
 `null`:
+
 * `mean_imprecision ~ age + (age | culture)`
 
 `touchscreen`:
+
 * `mean_imprecision ~ touchscreen + age + (age | culture)`
 
 `household`:
+
 * `mean_imprecision ~ household + touchscreen + age + (age | culture)`
 
 `children`:
+
 * `mean_imprecision ~ children + touchscreen + age + (age | culture)`
 
 `younger_children`:
+
 * `mean_imprecision ~ younger_children + touchscreen + age + (age | culture)`
 
 ```{r predcomptable, echo=F}
@@ -1117,14 +1110,18 @@ pred_mocel_comp <- readRDS("../saves/model_comp.rds")%>%
                         bm_pred_tc = "touchscreen",
                         bm_pred_tc_hh = "household",
                         bm_pred_tc_c = "children",
-                        bm_pred_tc_yc = "younger_children",
+                        bm_pred_tc_yc = "younger children",
                         bm_pred_tc_rand = "touchscreen (by culture)"))
   
 
-knitr::kable(pred_mocel_comp,
-             col.names = c("Model", "WAIC", "SE","diffWAIC", "diffSE", "Weight"),
-             caption = "Model comparison based on WAIC for experiential predictor models.", 
+
+kableExtra::kable(pred_mocel_comp,
+             col.names = c("Model","diff\\textsubscript{WAIC}", "diff\\textsubscript{SE}", "WAIC", "SE", "Weight"),
+             caption = "Log Bayes Factors in favor of the gaze model compared to two alternative models.",
+             format="latex", booktabs=TRUE, escape = F
              )
+
+
 ```
 
 
@@ -1133,6 +1130,7 @@ Table \@ref(tab:predcomptable) shows that the model predicting average imprecisi
 To test whether there was variation across cultural settings in the importance of the availability of touchscreens, we added a model to the comparison that allowed this predictors to vary by cultural setting: 
 
 `touchscreen (by culture)`:
+
 * `mean_imprecision ~ touchscreen + age + (touchscreen + age | culture)`
 
 ```{r}
@@ -1160,17 +1158,17 @@ When inspecting the posterior estimates for the different predictors referring t
 # 
 # saveRDS(ptc_com, "../saves/ptc_com.rds")
 
-ptc_com <- readRDS("../saves/ptc_com.rds")
-
-pcomtc <- ggplot(ptc_com,aes(x = touchscreen, y = Estimate))+
-  stat_cor(aes(x = touchscreen, y = Estimate,label = paste(..r.label..)),inherit.aes = F,r.accuracy = 0.01, cor.coef.name = "r",label.y = 0.85)+
-  geom_point(alpha = .75, pch = 1)+
-  geom_smooth(method = "lm", col = "firebrick", alpha = .25)+
-  labs(x = "Touchscreen exposure", y = "Relative imprecision (age corrected)")+
-  geom_text_repel(aes(label = community), size = 3, min.segment.length = 0, segment.curvature = -0.1)+
-  theme_few()
-
-ggsave(plot = pcomtc, "../visuals/pcomtc.png", height = 4, width = 5, scale = 1.5)
+# ptc_com <- readRDS("../saves/ptc_com.rds")
+# 
+# pcomtc <- ggplot(ptc_com,aes(x = touchscreen, y = Estimate))+
+#   stat_cor(aes(x = touchscreen, y = Estimate,label = paste(..r.label..)),inherit.aes = F,r.accuracy = 0.01, cor.coef.name = "r",label.y = 0.85)+
+#   geom_point(alpha = .75, pch = 1)+
+#   geom_smooth(method = "lm", col = "firebrick", alpha = .25)+
+#   labs(x = "Touchscreen exposure", y = "Relative imprecision (age corrected)")+
+#   geom_text_repel(aes(label = community), size = 3, min.segment.length = 0, segment.curvature = -0.1)+
+#   theme_few()
+# 
+# ggsave(plot = pcomtc, "../visuals/pcomtc.png", height = 4, width = 5, scale = 1.5)
 
 knitr::include_graphics("../visuals/pcomtc.png")
 ```
