@@ -97,14 +97,14 @@ data <- read_csv("../data/gafo-cc-clean-data.csv")%>%
                             khwe = "Khwe (Namibia)",
                             windhoek = "Windhoek (Namibia)",
                             stanford = "Stanford (USA)",
-                            chimfunshi = "Chimfunshi (Sambia)",
+                            chimfunshi = "Chimfunshi (Zambia)",
                             mexico = "Ocuilan (Mexico)",
                             plymouth = "Plymouth (UK)",
                             beijing = "Beijing (China)", 
                             india = "Pune (India)",
                             buenos_aires = "Buenos Aires (Argentina)",
                             auckland = "Auckland (New Zealand)",
-                            turkey = "Malatya (Turkey)",
+                            turkey = "Malatya (Türkiye)",
                             bandongo = "Bandongo (Rep. Congo)",
                             bayaka = "BaYaka (Rep. Congo)", 
                             uganda = "Nyabyeya (Uganda)"))
@@ -181,6 +181,9 @@ What is left to explain are the marked community- and individual-level differenc
 ```{r fig3, include = T, fig.align = "center", fig.cap = "Correlation between performance in the gaze-following task and the exposure to touchscreens on a cultural setting-level. Realtive imprecision accounts for differences in age between settings in that it corresponds to the random intercept estimate for each setting in a model predicting performance by age.", out.width="50%"}
 knitr::include_graphics("../visuals/pcomtc.png")
 ```
+
+Based on this, we also computed the number of older children living in the household. We did not pre-register this, but decided to also include this variable because prior work on advanced forms of social cognition has suggested that the presence of older siblings is slightly more predictive of development compared to other aspects of household composition [e.g., @lewis1996social; @ruffman1998older; but see @peterson2003opening]. We think that gaze following improves though practice during social interaction. Particularly supportive, we believe, are situations in which it is difficult to infer the goals and intentions of another person based on other information sources (e.g., language or context). In such situations, children have to pay closer attention to the interaction partner and use their gaze to make such inferences. We are well aware that the numbers in the questionnaire are very far removed from these forms of social interaction. Thus, at best, they are a very coarse approximation. As a consequence, we do not expect there to be a very strong link between the two. We sincerely hope that future work will be able to directly assess children's social interactions.
+
 
 On an individual level, other factors likely generated individual differences because there was substantial variation even in communities where almost all children had access to touchscreens. Previous work suggested that social cognition develops in social interaction [@barresi1996intentional; @perner1994theory; @rakoczy2022foundations], in particular, with older siblings [@lewis1996social; @ruffman1998older]. We found tentative support for this idea in the form of a small but consistent effect in the direction that participants living together with more children older than themselves (relative to other children from the same setting) had slightly higher levels of precision ($\beta$ = `r pred_est%>%filter(term == "older_children")%>%pull(Estimate)`, SE = `r pred_est%>%filter(term == "older_children")%>%pull(Est.Error)`, 95% CrI = `r pred_est%>%filter(term == "older_children")%>%pull(Q2.5)` - `r pred_est%>%filter(term == "older_children")%>%pull(Q97.5)`).
 
