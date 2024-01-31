@@ -85,11 +85,11 @@ data <- read_csv("../data/gafo-cc-clean-data.csv")%>%
     community %in% c("leipzig", "plymouth"), "Europe", 
     ifelse(
       community %in% c("akure", "hai||om", "khwe", "chimfunshi", "bandongo", "bayaka", "windhoek", "uganda"), "Africa",
-      ifelse(community %in% c("stanford", "mexico", "buenos_aires"), "America",
+      ifelse(community %in% c("stanford", "mexico", "buenos_aires"), "Americas",
              ifelse(community %in% c("india", "beijing", "turkey"), "Asia", "Oceania"))
     )
   ))%>%
-  mutate(continent = factor(continent, levels = c("America", "Africa", "Europe", "Asia", "Oceania"), ordered = T))%>%
+  mutate(continent = factor(continent, levels = c("Americas", "Africa", "Europe", "Asia", "Oceania"), ordered = T))%>%
   mutate(community = recode(community,
                             akure = "Akure (Nigeria)",
                             leipzig = "Leipzig (Germany)",

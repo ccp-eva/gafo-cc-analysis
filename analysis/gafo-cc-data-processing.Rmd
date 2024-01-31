@@ -1897,13 +1897,11 @@ tidy_demographics_uganda%>%filter(children >= household)
 # youngerchildren should be fewer than children
 tidy_demographics_uganda%>%filter(younger_children >= children) 
 
-exclude_uganda <- tidy_demographics_uganda%>%filter(ageinyears< 2) %>% pull(subjid)
 ```
 
 ```{r}
 data_uganda <- tidy_demographics_uganda%>%
   left_join(tidy_data_uganda%>%rename_all(tolower),by = c("subjid"))%>%
-  filter(!subjid %in% exclude_uganda)%>%
   distinct(subjid, trialnr, .keep_all = TRUE)
 ```
 
@@ -2007,7 +2005,7 @@ write_csv(data,"../data/gafo-cc-clean-data.csv")
 
 
 methods_data <- merge_raw_data%>%
-  select(subjid, community, age_group, ageinyears, trialtype, voiceover, trialnr, targetposition,targetcentralityx, clickdistfromtargetcenterx)
+  select(subjid, community, age_group, ageinyears, trialtype, voiceover, trialnr,screen, touchscreen, household, children, younger_children, targetposition,targetcentralityx, clickdistfromtargetcenterx)
 
 write_csv(methods_data,"../../tango-cc-methods/data/data.csv")
 ```
