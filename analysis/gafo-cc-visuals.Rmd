@@ -46,6 +46,7 @@ data <- read_csv("../data/gafo-cc-clean-data.csv")%>%
                             bandongo = "Bandongo (Rep. Congo)",
                             bayaka = "BaYaka (Rep. Congo)", 
                             uganda = "Nyabyeya (Uganda)"))
+
 ```
 ```{r}
 # Population of the countries involved
@@ -551,7 +552,7 @@ data_map <- read_csv("../data/gafo-cc-clean-data.csv")%>%
                             turkey = "Turkey",
                             bandongo = "Republic of Congo",
                             bayaka = "Republic of Congo", 
-                         uganda = "Uganda"))%>%
+                            uganda = "Uganda"))%>%
   mutate(loc_lat = recode(community,
                             akure = 7.251070,
                             leipzig = 51.339695,
