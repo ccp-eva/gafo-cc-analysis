@@ -36,6 +36,8 @@ library(coda)
 library(ggrepel)
 library(knitr)
 library(kableExtra)
+library(pals)
+library(RColorBrewer)
 
 estimate_mode <- function(s) {
   d <- density(s)
@@ -88,6 +90,12 @@ data <- read_csv("../data/gafo-cc-clean-data.csv")%>%
                             bandongo = "Bandongo (Rep. Congo)",
                             bayaka = "BaYaka (Rep. Congo)",
                             uganda = "Nyabyeya (Uganda)"))
+```
+```{r}
+qual_col_pals = brewer.pal.info[brewer.pal.info$colorblind == TRUE,]
+col_vector = unlist(mapply(brewer.pal, qual_col_pals$maxcolors, rownames(qual_col_pals)))
+colors=kelly(n=n_distinct(data$community)+1)
+colors <- colors[ !colors == '#F2F3F4']
 ```
 
 
@@ -419,9 +427,25 @@ For the study, we first obtained permission from Mexican school authorities to v
 
 ### Pune (India) - Location 
 
+Pune is located in the state of Maharashtra in western India. The city’s total area is 15.642 square kilometres and the municipal corporation area covers 518 square kilometers. It lies on the western margin of the Deccan plateau at an altitude of 1840 feet. It is on the leeward side of the Sahyadri mountain range which forms a barrier with the Arabian Sea. The population within city limits is 4.5 million while including the metro population, it stands at 7.1 million. Pune is one of the largest information technology hubs in India and is also an important automobile and manufacturing hub. Sixty-two percent of the population in Pune is under the age of 30. The top three industries that offer employment are automotive, manufacturing and information technology and start-ups. Automobile industries such as Tata Motors, Jaguar, Renault, Volkswagen, General motors, Skoda, Force motors, Kinetic motors  and Mercedes-Benz have their manufacturing plants in Chakan, an industrial area around Pune. Cummins, a leading manufacturer of diesel and natural gas engines as well as JCB, the farm equipment company are other renowned investors. The manufacturing industry provides employment to over 600,000 people while the IT sector employs over 350,000 people. About 2.2 million migrant workers are employed in the automobile, construction and medium scale manufacturing industries. 
+
+Pune is referred to as the ‘Oxford of the East’ because of its reputed educational institutions and is also considered to be one of the most livable cities in India. The literacy rate in Pune is 86.15%.  As a result of rapid industrialization since the 1960s, a large number of people moved to Pune. Since there was inadequate housing to meet the demand, there was an increase in the number of slum dwellers. Nearly half of the slum dwellers do not have in-house toilets and 10% do not have electricity. 
+Pune experiences a tropical wet and dry climate with average temperatures ranging between 20 and 28 degrees Celsius. Summer, monsoon and winter are the three main seasons with May being the hottest month. During summer, i.e. mid-March to mid-June, temperatures can go as high as 42 degrees Celsius. Monsoon lasts from June to October with most of the annual rainfall of 722mm falling between June and September with July being the wettest month. In the months of December and January, temperatures remain around 29 degrees Celsius with overnight temperatures dropping to below 12 degrees. 
+
+During the 18th century, Pune was part of the Maratha empire and seat of the Peshwas. Besides it has been ruled by dynasties such as the Rashtrakutas, Ahmednagar Sultanate, Mughals and Adil Shahi dynasty.  The modern city of Pune is comprised of many distinct neighbourhoods. These include ‘peths’ [Marathi for locality] on the eastern bank of the Mutha river and the cantonment areas of Khadki and Camp. Pune is considered to be the cultural capital of Maharashtra with emphasis on education, arts and crafts, music and theater. The most common language spoken is Marathi. Hinduism is the major religion practiced by just under 80% of the population. Other religions practised are Islam, Buddhism, Jainism, Christianity, Sikhism and Zoroastrianism. Food is made of sorghum and pearl millets with a fairly large consumption of coconut, garlic and green chillies to spice up the food. 
+
+
+Children in Pune normally enter school between the ages of 2.5 and 3.5. The school leaving exam is taken between the ages of 17 and 18. Grades 11th and 12th (equivalent to AS and A levels in the UK) may be attended in school or ‘junior college’ with the latter offering education up to the postgraduate level. Following a school day, it is not uncommon for children to attend tuition or focussed coaching in sports or arts. Most households will have at least one mobile phone as well as a laptop so children are exposed to technology fairly early. 
+
+Children are taught to address their elders (either in English or the equivalent term in a local language) as ‘older brother/sister’, ‘uncle’, ‘aunty’ or ‘grandmother’/’grandfather’ even if they are not relatives. This is considered to be respectful. At times, children touch the feet of elders as a sign of respect. Parents encourage their children to visit family and friends particularly during festivals. 
+For the current study, recruitment took place via personal contacts. Both schools have participated in previous research projects and the researcher is on the management committee of one of the schools. The researcher was given a separate quiet room to carry out testing. Normally, after one child finished the task, he or she would send their classmate who had volunteered for the project. In the case of very young children, the researcher would the children personally from their respective class and ensure that they were handed back to their teachers upon completion. 
+
 **References and further readings:**
 
-* ...
+* https://en.wikipedia.org/wiki/Pune
+* https://www.iimb.ac.in/turn_turn/pune-industrial-workforce.php
+* https://pune.gov.in/culture-heritage/
+* https://www.bbc.com/travel/article/20181028-an-indian-city-with-audacious-attitude
 
 ### Stanford (USA) - Location 
 
@@ -539,7 +563,7 @@ We used Bayesian Regression models fit in `R` [@r] using the package `brms` [@bu
 
 We pre-registered an analysis plan at https://osf.io/tdsvc. The analyses reported below follow the same logical as the pre-registered analyses but they differ substantially in detail. The main difference lies in the random effects structure we used in the models. In the pre-registration, we did not include random slopes for target centrality (i.e. the distance of the location where the balloon landed from the center of the screen), neither within subject nor within cultural setting. Instead, we included random slopes for trial within subject. We decided to change this and remove random slopes for trial but include them for target centrality. The reasons were as follows: trail effects in the sense of learning across trials were unlikely because participants did not receive differential feedback. Furthermore, in multiple studies with the same task since the registration we never found any trial effects [@prein2023tango; @prein2023variation]. We therefore removed trial from the models completely to reduce model complexity. On the other hand, we included random slopes for target centrality to be able to look at cross-cultural variation. The cognitive model was not mentioned in the pre-registration because it is a more recent development [see @prein2023variation].
 
-## Cross-cultural variation
+0## Cross-cultural variation
 
 As a first step, we investigated cross-cultural variation in performance. As stated in the pre-registration, this can be problematic when including random intercepts for participant and cultural setting at the same time. Participants are fully nested within cultural setting. If there was an effect of cultural setting, we would expect participant random intercepts to cluster by cultural setting. This clustering would appear whether or not cultural setting would be included in the model as a random effect or not -- the only difference would be if the participant random intercepts are estimated as a deviation from a grand intercept or a culture-specific one. Standard metrics such as `WAIC` or `LOO` would penalize the model with additional intercept for cultural setting for having additional parameters that do not help to improve predictive accuracy.
 
@@ -616,75 +640,90 @@ We compared the following models (`brms` notation):
 
 ```
 
-
 ```{r}
 # script for cross validation can be found in  `../scripts/cross_validation.R`
 # cross validation is run in script `../scripts/run_cross_validation.R`, here we only load the saved output
 cv_cult <- readRDS("../saves/cross_validation_result.rds")
 ```
 
+```{r}
+bm_inward_click <- brm(inwardclick ~ ageinyears + targetcentralityx + (targetcentralityx|subjid),
+                              data   = mdata,
+                              family = bernoulli(),
+                              warmup = 2000,
+                              iter   = 6000,
+                              chains = 4,
+                              cores  = 4,
+                              threads = threading(8),
+             control = list(adapt_delta = 0.95),
+             backend = "cmdstanr")
+
+saveRDS(bm_inward_click, "../saves/bm_inward_click.rds")
+```
+
+
 We pre-registered the inclusion of additional models which did not include age as a predictor. To reduce computational demands and given that we did not implement this approach to determine the effect of age, we decided to leave these models out so that all models included age as a predictor. The main questions were, therefore, whether there were systematic absolute (model `culture`) or also developmental (model `culture_age`) differences between cultural settings.
 
-The results showed that the `culture_age` model made, by far, the best predictions and outperformed the `culture` model in `r mean(cv_cult$m3_beats_m2)*100`% and the `null` model in `r mean(cv_cult$m3_beats_m1)*100`% of cases. Furthermore, the `culture` model outperformed the `null` model in `r mean(cv_cult$m2_beats_m1)*100` % of cases. This suggests that there were substantial absolute and developmental differences between cultural settings (see Figure \@ref(fig:figdev)A). 
+The results showed that the `culture_age` model made, by far, the best predictions and outperformed the `culture` model in `r round(mean(cv_cult$m3_beats_m2),2)*100`% and the `null` model in `r round(mean(cv_cult$m3_beats_m1),2)*100`% of cases. Furthermore, the `culture` model outperformed the `null` model in `r round(mean(cv_cult$m2_beats_m1),2)*100` % of cases. This suggests that there were substantial absolute and developmental differences between cultural settings (see Figure \@ref(fig:figdev)A). 
 
 
 ## Processing signatures
 
-In the second analysis focused on signatures in the data that suggest that children in all cultural settings use similar cognitive processes to infer the location of the balloon. The first -- weaker -- signature was simply an increase in performance with age. The second -- stronger -- signature was a strong effect of target centrality. That is, the further away from the center the balloon lands, the more imprecise should participants be. This second signature is derived from the model by the cognitive model introduced in @prein2023variation. It predicts that trials in which the agent looks further away from the center (i.e. to the left or right side of the screen) result in higher levels of imprecision compared to trials in which the agent looks closer to the middle.
+In the second analysis focused on signatures in the data that suggest that children in all cultural settings use similar cognitive processes to infer the location of the balloon. The first -- somewhat weaker -- signature was simply an increase in performance with age. The second signature was a strong effect of target centrality. That is, the further away from the center the balloon lands, the more imprecise should participants be. This second signature is derived from the model by the cognitive model introduced in @prein2023variation. It predicts that trials in which the agent looks further away from the center (i.e. to the left or right side of the screen) result in higher levels of imprecision compared to trials in which the agent looks closer to the middle. The third prediction is derived from the same model and predicts that for any given location where the target lands, clicks are not normally distributed around the true location but the distribution is skewed "inwards", that is, towards the center. This effect should be stronger the further away from the center the target lands.
 
-This prediction is best understood by considering a similar phenomenon: pointing a torch light to a flat surface. The width of the light beam represents each individual's level of uncertainty in vector estimation and is represented in the model as a normal distribution around the true gaze vector with a participant specific standard deviation. On each trial, the model assumes that the participant samples a vector from this distribution to infer the location of the balloon. The smaller the standard deviation -- -- the narrower the light beam --, the more precise on average the participant is. Now, when the torch is directed straight down, the light beam is concentrated in a relatively small area. When the torch is rotated to the side, the the light from one half of the cone must travel further than the light from the other half to reach the surface. As a consequence, the light is spread over a wider area. This is true no matter how wide the cone (how large the standard deviation) is. A formal definition of the model can be found below.  
+These prediction is best understood by considering a similar phenomenon: pointing a torch light to a flat surface. The width of the light beam represents each individual's level of uncertainty in vector estimation and is represented in the model as a normal distribution around the true gaze vector with a participant specific standard deviation. On each trial, the model assumes that the participant samples a vector from this distribution to infer the location of the balloon. The smaller the standard deviation -- -- the narrower the light beam --, the more precise on average the participant is. Now, when the torch is directed straight down, the light beam is concentrated in a relatively small area. When the torch is rotated to the side, the the light from one half of the cone must travel further than the light from the other half to reach the surface. As a consequence, the light is spread over a wider area. This is true no matter how wide the cone (how large the standard deviation) is. A formal definition of the model can be found below. 
 
 
 ```{r}
-# draws <- bind_rows(
-# as_draws_df(bm_cult_age)%>%
-#   select(contains("ageinyears"))%>%
-#   select(contains("ageinyears"))%>%
-#   select(-contains("sd"))%>%
-#   select(-contains("cor"))%>%
-#   pivot_longer(cols = contains("ageinyears]"), names_to = "community", values_to = "value")%>%
-#   mutate(post = value + b_ageinyears,
-#          community = str_remove(community, "r_community"),
-#          community = str_remove(community, ",ageinyears]"),
-#          community = str_remove(community, "\\["))%>%
-#   select(community, post)%>%
-#   mutate(type = "ageinyears"),
-# 
-# as_draws_df(bm_cult_age)%>%
-#   select(contains("targetcentralityx"))%>%
-#   select(contains("targetcentralityx"))%>%
-#   select(-contains("sd"))%>%
-#   select(-contains("cor"))%>%
-#   select(-contains("subjid"))%>%
-#   pivot_longer(cols = contains("targetcentralityx]"), names_to = "community", values_to = "value")%>%
-#   mutate(post = value + b_targetcentralityx,
-#          community = str_remove(community, "r_community"),
-#          community = str_remove(community, ",targetcentralityx]"),
-#          community = str_remove(community, "\\["))%>%
-#   select(community, post)%>%
-#   mutate(type = "targetcentrality")
-# )%>%
-#   mutate(community = str_replace(community, "\\.", " "),
-#          community= str_remove(community,"\\."))
-# 
-# pdraws <- draws%>%
-#   mutate(community = recode(community,
-#                             "Auckland (NewZealand)" = "Auckland (New Zealand)",
-#                             "BaYaka (Rep.Congo)" = "BaYaka (Rep. Congo)",
-#                             "Bandongo (Rep.Congo)" = "Bandongo (Rep. Congo)",
-#                             "Buenos Aires(Argentina)" = "Buenos Aires (Argentina)"))%>%
-#   left_join(data%>%distinct(community, continent))%>%
-#   mutate(continent = factor(continent, levels = c("Americas", "Africa", "Europe", "Asia", "Oceania"), ordered = T))
-# 
-# saveRDS(pdraws, "../saves/pdraws.rds")
-# 
-# post_agg <- pdraws%>%
-#   group_by(community, type)%>%
-#   summarise(mean = mean(post),
-#             lci = hdi_lower(post),
-#             uci = hdi_upper(post))
-# 
-# saveRDS(post_agg, "../saves/post_agg.rds")
+draws <- bind_rows(
+as_draws_df(bm_cult_age)%>%
+  select(contains("ageinyears"))%>%
+  select(contains("ageinyears"))%>%
+  select(-contains("sd"))%>%
+  select(-contains("cor"))%>%
+  pivot_longer(cols = contains("ageinyears]"), names_to = "community", values_to = "value")%>%
+  mutate(post = value + b_ageinyears,
+         community = str_remove(community, "r_community"),
+         community = str_remove(community, ",ageinyears]"),
+         community = str_remove(community, "\\["))%>%
+  select(community, post)%>%
+  mutate(type = "ageinyears"),
+
+as_draws_df(bm_cult_age)%>%
+  select(contains("targetcentralityx"))%>%
+  select(contains("targetcentralityx"))%>%
+  select(-contains("sd"))%>%
+  select(-contains("cor"))%>%
+  select(-contains("subjid"))%>%
+  pivot_longer(cols = contains("targetcentralityx]"), names_to = "community", values_to = "value")%>%
+  mutate(post = value + b_targetcentralityx,
+         community = str_remove(community, "r_community"),
+         community = str_remove(community, ",targetcentralityx]"),
+         community = str_remove(community, "\\["))%>%
+  select(community, post)%>%
+  mutate(type = "targetcentrality")
+)%>%
+  mutate(community = str_replace(community, "\\.", " "),
+         community= str_remove(community,"\\."))
+
+pdraws <- draws%>%
+  mutate(community = recode(community,
+                            "Auckland (NewZealand)" = "Auckland (New Zealand)",
+                            "BaYaka (Rep.Congo)" = "BaYaka (Rep. Congo)",
+                            "Bandongo (Rep.Congo)" = "Bandongo (Rep. Congo)",
+                            "Buenos Aires(Argentina)" = "Buenos Aires (Argentina)"))%>%
+  left_join(data%>%distinct(community, continent))%>%
+  mutate(continent = factor(continent, levels = c("Americas", "Africa", "Europe", "Asia", "Oceania"), ordered = T))
+
+saveRDS(pdraws, "../saves/pdraws.rds")
+
+post_agg <- pdraws%>%
+  group_by(community, type)%>%
+  summarise(mean = mean(post),
+            lci = hdi_lower(post),
+            uci = hdi_upper(post))
+
+saveRDS(post_agg, "../saves/post_agg.rds")
 ```
 
 ```{r figpreds, include = T, fig.align = "center", fig.cap = "Posterior distributions of model estimates for the poredictor variables by cultural setting.", out.width="100%"}
@@ -720,7 +759,7 @@ fixef_cult_age <- readRDS("../saves/cult_age_fix.rds")
 ```
 
 
-To test these predictions, we inspected the parameter estimates for age and target centrality in the "winning" `culture_age` model described in the previous sections. We found strong main effects of age ($\beta$ = `r fixef_cult_age%>%filter(term == "ageinyears")%>%pull(Estimate)`, SE = `r fixef_cult_age%>%filter(term == "ageinyears")%>%pull(Est.Error)`, 95% CrI = `r fixef_cult_age%>%filter(term == "ageinyears")%>%pull(Q2.5)` - `r fixef_cult_age%>%filter(term == "ageinyears")%>%pull(Q97.5)`) and target centrality ($\beta$ =`r fixef_cult_age%>%filter(term == "targetcentralityx")%>%pull(Estimate)`, SE = `r fixef_cult_age%>%filter(term == "targetcentralityx")%>%pull(Est.Error)`, 95% CrI = `r fixef_cult_age%>%filter(term == "targetcentralityx")%>%pull(Q2.5)` - `r fixef_cult_age%>%filter(term == "targetcentralityx")%>%pull(Q97.5)`). Figure \@ref(fig:figpreds) visualizes the posterior distributions for each cultural setting and shows that -- despite variation in strength -- there was a substantial effect of age and target centrality in all cultural settings. 
+To test the first two predictions, we inspected the parameter estimates for age and target centrality in the "winning" `culture_age` model described in the previous sections. We found strong main effects of age ($\beta$ = `r fixef_cult_age%>%filter(term == "ageinyears")%>%pull(Estimate)`, SE = `r fixef_cult_age%>%filter(term == "ageinyears")%>%pull(Est.Error)`, 95% CrI = `r fixef_cult_age%>%filter(term == "ageinyears")%>%pull(Q2.5)` - `r fixef_cult_age%>%filter(term == "ageinyears")%>%pull(Q97.5)`) and target centrality ($\beta$ =`r fixef_cult_age%>%filter(term == "targetcentralityx")%>%pull(Estimate)`, SE = `r fixef_cult_age%>%filter(term == "targetcentralityx")%>%pull(Est.Error)`, 95% CrI = `r fixef_cult_age%>%filter(term == "targetcentralityx")%>%pull(Q2.5)` - `r fixef_cult_age%>%filter(term == "targetcentralityx")%>%pull(Q97.5)`). Figure \@ref(fig:figpreds) visualizes the posterior distributions for each cultural setting and shows that -- despite variation in strength -- there was a substantial effect of age and target centrality in all cultural settings. 
 
 Another way to look at these signatures is to visualize the group-level developmental trajectories and the aggregated performance at different areas of the screen. Figure \@ref(fig:figdev)A shows that children got more precise with age in all cultural settings. Figure \@ref(fig:figdev)B shows the u-shaped pattern predicted by the cognitive model: the closer the balloon lands to the center of the screen (bins 5 and 6) the more precise children are in all cultural settings.
 
@@ -741,6 +780,13 @@ Another way to look at these signatures is to visualize the group-level developm
 #                               cores  = 4,
 #              control = list(adapt_delta = 0.95))
 # 
+# ndata_all <- devdata%>%
+#   distinct(ageinyears)
+# 
+# post_all <- fitted(bm_dev, newdata = ndata_all, re_formula = NA)%>%
+#   as_tibble() %>%
+#   bind_cols(ndata_all)%>%
+#   mutate(ageinyears = ageinyears + min(data$ageinyears))
 # 
 # ndata <- devdata%>%
 #   distinct(continent, community, ageinyears)
@@ -753,139 +799,82 @@ Another way to look at these signatures is to visualize the group-level developm
 ```
 
 ```{r}
-# tc_agg_data<- data%>%
-#   mutate(targetposition = factor(targetposition, levels = c(1:10)))%>%
-#   group_by(continent, community, targetposition)%>%
-#   tidyboot_mean(col= abs(clickdistfromtargetcenterx))
+# pagg_dev <- ggplot()+
+#   geom_point(data = devdata, aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
+#   geom_smooth(data = post_all, aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5), stat = "identity", alpha = 0.5, col = "#555555", size = 1.5)+
+#   theme_few()+
+#     scale_x_continuous(limits = c(2,10))+
+#   scale_y_continuous(limits = c(0,1000))+
+#   scale_fill_manual(name = "Community", values = colors, guide = "none")+
+#   scale_color_manual(name = "Community", values = colors, guide = "none")+
+#   labs(x = "Age", y="Imprecision")+
+#   theme(legend.position = "right")
 # 
-# 
-# tam <- tc_agg_data%>%
-#   filter(continent == "Americas")%>%
-#   ggplot(., aes(x = targetposition, y = mean, col = community))+
-#   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
-#   labs(x = "", y = "")+
-#   scale_color_colorblind(name = "", guide = "none")+
-#   facet_grid(continent~.)+
-#   ylim(0,1000)+
-#   theme_few()
-# 
-# taf <- tc_agg_data%>%
-#   filter(continent == "Africa")%>%
-#   ggplot(., aes(x = targetposition, y = mean, col = community))+
-#   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
-#   labs(x = "", y = "")+
-#   scale_color_colorblind(name = "", guide = "none")+
-#   facet_grid(continent~.)+
-#   ylim(0,1000)+
-#   theme_few()
-# 
-# teu <- tc_agg_data%>%
-#   filter(continent == "Europe")%>%
-#   ggplot(., aes(x = targetposition, y = mean, col = community))+
-#   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
-#   labs(x = "", y = "")+
-#   scale_color_colorblind(name = "", guide = "none")+
-#   facet_grid(continent~.)+
-#   ylim(0,1000)+
-#   theme_few()
-# 
-# tas <- tc_agg_data%>%
-#   filter(continent == "Asia")%>%
-#   ggplot(., aes(x = targetposition, y = mean, col = community))+
-#   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
-#   labs(x = "", y = "")+
-#   scale_color_colorblind(name = "", guide = "none")+
-#   facet_grid(continent~.)+
-#   ylim(0,1000)+
-#   theme_few()
-# 
-# toc <- tc_agg_data%>%
-#   filter(continent == "Oceania")%>%
-#   ggplot(., aes(x = targetposition, y = mean, col = community))+
-#   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper),pch = 1, alpha = 0.75, position = position_dodge(width = .5))+
-#   labs(x = "Target position (binned)", y = "")+
-#   scale_color_colorblind(name = "", guide = "none")+
-#   facet_grid(continent~.)+
-#   ylim(0,1000)+
-#   theme_few()
+# pind <- ggplot()+ 
+#  geom_point(data = devdata, aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
+#   geom_smooth(data = post, aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
+#   theme_few()+
+#   scale_fill_manual(name = "Community", values = colors, guide = "none")+
+#   scale_color_manual(name = "color", values = colors, guide = "none")+
+#   labs(x = "Age", y="Imprecision")+
+#   scale_x_continuous(limits = c(2,10))+
+#   scale_y_continuous(limits = c(0,1000))+
+#   theme(legend.position = c(0.7, 0.9), legend.background = element_blank(),axis.title.x = element_blank(), axis.title.y = element_blank(), axis.ticks.y = element_blank(), axis.ticks.x = element_blank(), axis.text.x = element_blank(), axis.text.y = element_blank())+
+#   facet_wrap(~community, nrow = 3)
 
 ```
 
 
 ```{r}
-# am <- ggplot()+
-#   geom_point(data = devdata%>%filter(continent == "Americas"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
-#   geom_smooth(data = post%>%filter(continent == "Americas"), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
-#   theme_few()+
-#   scale_fill_colorblind(name = "")+
-#   scale_color_colorblind(name = "")+
-#   labs(x = "", y="Imprecision")+
-#   scale_x_continuous(limits = c(2,10))+
-#   scale_y_continuous(limits = c(0,1000))+
-#   facet_grid(continent~.)+
-#   theme(strip.text = element_blank(), legend.justification = c(0,1),legend.text=element_text(size=8))
+# tc_ind<- data%>%
+#   mutate(targetposition = factor(targetposition, levels = c(1:10)))%>%
+#   group_by(community, subjid, targetposition)%>%
+#   summarise(mean = mean(abs(clickdistfromtargetcenterx)))
 # 
-# af <- ggplot()+
-#   geom_point(data = devdata%>%filter(continent == "Africa"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
-#   geom_smooth(data = post%>%filter(continent == "Africa"), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
-#   theme_few()+
-#   scale_fill_colorblind(name = "")+
-#   scale_color_colorblind(name = "")+
-#   labs(x = "", y="")+
-#     scale_x_continuous(limits = c(2,10))+
-#   scale_y_continuous(limits = c(0,1000))+
-#   facet_grid(continent~.)+
-#   theme(strip.text = element_blank(), legend.justification = c(0,1),legend.text=element_text(size=8))
+# tc_agg<- data%>%
+#   mutate(targetposition = factor(targetposition, levels = c(1:10)))%>%
+#   group_by(targetposition)%>%
+#   tidyboot_mean(col= abs(clickdistfromtargetcenterx))
 # 
-# eu <- ggplot()+
-#   geom_point(data = devdata%>%filter(continent == "Europe"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
-#   geom_smooth(data = post%>%filter(continent == "Europe"), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
-#   theme_few()+
-#   scale_fill_colorblind(name = "")+
-#   scale_color_colorblind(name = "")+
-#   labs(x = "", y="")+
-#     scale_x_continuous(limits = c(2,10))+
-#   scale_y_continuous(limits = c(0,1000))+
-#   facet_grid(continent~.)+
-#   theme(strip.text = element_blank(), legend.justification = c(0,1),legend.text=element_text(size=8))
+# tc_com<- data%>%
+#   mutate(targetposition = factor(targetposition, levels = c(1:10)))%>%
+#   group_by(community, targetposition)%>%
+#   tidyboot_mean(col= abs(clickdistfromtargetcenterx))
 # 
-# as <- ggplot()+
-#   geom_point(data = devdata%>%filter(continent == "Asia"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
-#   geom_smooth(data = post%>%filter(continent == "Asia"), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
-#   theme_few()+
-#   scale_fill_colorblind(name = "")+
-#   scale_color_colorblind(name = "")+
-#   labs(x = "", y="")+
-#     scale_x_continuous(limits = c(2,10))+
-#   scale_y_continuous(limits = c(0,1000))+
-#   facet_grid(continent~.)+
-#   theme(strip.text = element_blank(), legend.justification = c(0,1),legend.text=element_text(size=8))
 # 
-# oc <- ggplot()+
-#   geom_point(data = devdata%>%filter(continent == "Oceania"), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
-#   geom_smooth(data = post%>%filter(continent == "Oceania"), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
+# 
+# ptagg <- ggplot()+
+#   geom_jitter(data = tc_ind, aes(x = targetposition, y = mean, col = community), alpha = .05, height = 0, width = 0.2)+
+#   geom_pointrange(data =tc_agg, aes(x = targetposition, y = mean, ymin = ci_lower, ymax = ci_upper),pch = "-", col = "#555555", size = 3, stroke = 1.5, linewidth = 2)+
+#   labs(x = "Target position (binned)", y = "Imprecision")+
+#   scale_color_manual(name = "", guide = "none", values = colors)+
+#   ylim(0,1000)+
+#   theme_few()
+# 
+# 
+# ptind <- ggplot()+
+#   geom_pointrange(data =tc_com, aes(x = targetposition, y = mean, ymin = ci_lower, ymax = ci_upper, col = community),pch = "-", size = 1)+
+#   labs(x = "", y = "")+
+#   scale_color_manual(name = "", guide = "none", values = colors)+
+#   ylim(0,1000)+
 #   theme_few()+
-#   scale_fill_colorblind(name = "")+
-#   scale_color_colorblind(name = "")+
-#   labs(x = "Age", y="")+
-#     scale_x_continuous(limits = c(2,10))+
-#   scale_y_continuous(limits = c(0,1000))+
-#   facet_grid(continent~.)+
-#   theme(strip.text = element_blank(), legend.justification = c(0,1),legend.text=element_text(size=8))
+#   theme(legend.position = c(0.7, 0.9), legend.background = element_blank(),axis.title.x = element_blank(), axis.title.y = element_blank(), axis.ticks.y = element_blank(), axis.ticks.x = element_blank(), axis.text.x = element_blank(), axis.text.y = element_blank())+
+#   facet_wrap(~community, nrow = 3)
 ```
 
-```{r figdev, include = T, fig.align = "center", fig.cap = "A) Developmental trajectories by cultural settings. Transparent dots show aggregated data for each individual. The color dentoes the different cultural settings. The developmental trajectories are predicted based on a model of the data aggregated for each participant. B) Performance by screen section and cultural setting. Each bin covers 1/10th of the screen. Points show means and eroor bars 95\\% confidence intervals for the data within that bin aggregated across participants.", out.width="75%"}
+```{r figdev, include = T, fig.align = "center", fig.cap = "A) Developmental trajectory across and B) by community. The developmental trajectories are predicted based on a model of the data aggregated for each participant. C) Performance by screen section across and D) by community. Each bin covers 1/10th of the screen. Points show means, and error bars 95% confidence intervals for the data within that bin aggregated across participants. Transparent dots in A) and C) show aggregated data for each individual.", out.width="100%"}
 
 # pvis_pred <- plot_grid(
-#   plot_grid(am, af, eu, as,oc, ncol = 1, align = "v"),
-#   plot_grid(tam, taf, teu, tas,toc, ncol = 1, align = "v"),
-#   nrow = 1,
-#   labels = c("A","B"),
-#   rel_widths = c(1.75,1)
+# plot_grid(
+#   pagg_dev, pind, rel_widths = c(1,1.5), align = "h", axis = "bt",labels = c("A", "B")
+# ),
+# plot_grid(
+#   ptagg, ptind, rel_widths = c(1,1.5), align = "h", axis = "bt", labels = c("C", "D")
+# ), nrow = 2, align = "v"
 # )
 # 
-# ggsave(plot = pvis_pred, "../visuals/pvis_pred.png", height = 10, width = 6, scale = 1.5)
-# 
+# ggsave(plot = pvis_pred, "../visuals/pvis_pred.png", width = 12, height = 8, bg = "white", scale = 1.25)
+
 knitr::include_graphics("../visuals/pvis_pred.png")
 
 ```
@@ -1156,17 +1145,17 @@ When inspecting the posterior estimates for the different predictors referring t
 # 
 # saveRDS(ptc_com, "../saves/ptc_com.rds")
 
-# ptc_com <- readRDS("../saves/ptc_com.rds")
-# 
-# pcomtc <- ggplot(ptc_com,aes(x = touchscreen, y = Estimate))+
-#   stat_cor(aes(x = touchscreen, y = Estimate,label = paste(..r.label..)),inherit.aes = F,r.accuracy = 0.01, cor.coef.name = "r",label.y = 0.85)+
-#   geom_point(alpha = .75, pch = 1)+
-#   geom_smooth(method = "lm", col = "firebrick", alpha = .25)+
-#   labs(x = "Touchscreen exposure", y = "Relative imprecision (age corrected)")+
-#   geom_text_repel(aes(label = community), size = 3, min.segment.length = 0, segment.curvature = -0.1)+
-#   theme_few()
-# 
-# ggsave(plot = pcomtc, "../visuals/pcomtc.png", height = 4, width = 5, scale = 1.5)
+ptc_com <- readRDS("../saves/ptc_com.rds")
+
+pcomtc <- ggplot(ptc_com,aes(x = touchscreen, y = Estimate))+
+  stat_cor(aes(x = touchscreen, y = Estimate,label = paste(..r.label..)),inherit.aes = F,r.accuracy = 0.01, cor.coef.name = "r",label.y = 0.85)+
+  geom_point(alpha = .75, pch = 1)+
+  geom_smooth(method = "lm", col = "firebrick", alpha = .25)+
+  labs(x = "Touchscreen exposure", y = "Relative imprecision (age corrected)")+
+  geom_text_repel(aes(label = community), size = 3, min.segment.length = 0, segment.curvature = -0.1)+
+  theme_few()
+
+ggsave(plot = pcomtc, "../visuals/pcomtc.png", height = 4, width = 5, scale = 1.2)
 
 knitr::include_graphics("../visuals/pcomtc.png")
 ```

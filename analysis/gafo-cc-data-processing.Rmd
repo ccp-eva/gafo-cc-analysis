@@ -248,6 +248,7 @@ tidy_data_leipzig <- raw_data_leipzig %>%
 
 
 #unique(tidy_data_leipzig$subjID)
+
 ```
 
 ```{r}
@@ -1928,7 +1929,7 @@ merge_raw_data <- bind_rows(
   filter(trialtype == "test",
          voiceover == F
          )%>%
-  mutate(#age_group = substr(ageinyears, 1,1), 
+  mutate(age_group = substr(ageinyears, 1,1), 
          trialnr = as.numeric(factor(trialnr)), 
          sex = ifelse(sex == "F", "f", sex),
          sex = ifelse(sex == "female", "f", sex),
@@ -1998,7 +1999,7 @@ write_csv(merge_raw_data,"../data/gafo-cc-raw-data.csv")
 
 ```{r}
 data <- merge_raw_data%>%
-  select(subjid, community, age_group, ageinyears, sex, screen, touchscreen, household, children, younger_children, trialnr, targetposition,targetcenterx, targetcentralityx, clickdistfromtargetcenterx)%>%
+  select(subjid, community, age_group, ageinyears, sex, screen, touchscreen, household, children, younger_children, trialnr, targetposition,targetcenterx, targetcentralityx, clickdistfromtargetcenterx, inwardclick)%>%
   filter(ageinyears > 1)
 
 write_csv(data,"../data/gafo-cc-clean-data.csv")
