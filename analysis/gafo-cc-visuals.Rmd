@@ -14,6 +14,7 @@ library(cowplot)
 library(png)
 library(ggimage)
 library(ggridges)
+library(ggside)
 ```
 
 
@@ -943,4 +944,42 @@ ggplot(data = gWorld2, mapping = aes(x = long, y = lat, group = group)) +
 
 ```{r}
 ggsave("../../../../../../Desktop/map2.png", width = 12, height = 8, scale = 1)
+```
+
+
+# talk plots
+
+```{r}
+meand <- ddata%>%
+  filter(community %in% c("Leipzig (Germany)", "Akure (Nigeria)", "Malatya (Turkey)"))%>%
+  group_by(community)%>%
+  tidyboot_mean(col = mean_click)
+
+ggplot()+
+  #geom_point(data = ddata%>%filter(community %in% c("Akure (Nigeria)")), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
+    geom_point(data = ddata%>%filter(community %in% c("Leipzig (Germany)", "Akure (Nigeria)", "Malatya (Turkey)")), aes(x = ageinyears+ min(data$ageinyears), y = mean_click, col = community), alpha = 0.25)+
+  #geom_smooth(data = post%>%filter(community %in% c("Akure (Nigeria)")), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
+    geom_smooth(data = post%>%filter(community %in% c("Leipzig (Germany)",  "Akure (Nigeria)", "Malatya (Turkey)")), aes(x = ageinyears, y = Estimate, ymin = Q2.5, ymax = Q97.5, fill =community, col = community), stat = "identity", alpha = .25)+
+  #geom_ysidedensity(data = ddata%>%filter(community %in% c("Akure (Nigeria)")), aes(y = mean_click, fill = community),col = "white",alpha = 0.5)+
+    #geom_ysidedensity(data = ddata%>%filter(community %in% c("Leipzig (Germany)",  "Akure (Nigeria)", "Malatya (Turkey)")), aes(y = mean_click, fill = community),col = "white",alpha = 0.5)+
+  geom_ysidepoint(data = meand, aes(y =mean, col = community, x = community), pch = 4, orientation = "x", size = 2, stroke = 2)+
+  geom_ysidesegment(data = meand, aes(y =ci_lower, yend = ci_upper , col = community, x = community, xend = community), size = 1)+
+  theme_classic()+
+    scale_x_continuous(limits = c(2,9))+
+  scale_y_continuous(limits = c(0,1000))+
+  scale_fill_colorblind(name = "Community", guide = "none")+
+  scale_color_colorblind(name = "Community", guide = "none")+
+  labs(x = "Age", y="Cognitive measure (Imprecision)")+
+  theme(legend.position = "right")+
+  theme(#panel.border = element_rect(color = "black",fill = NA,size = .25),
+        ggside.panel.border = element_blank(),
+        ggside.panel.scale.y = .25,
+        #axis.title.x = element_text(hjust = 0.2),
+        legend.position = c(0.85,0.3),
+        legend.background = element_blank())+
+  theme_ggside_void()
+```
+
+```{r}
+ggsave("../../../../../../Desktop/dev4.png", width = 10, height = 6, scale = 1)
 ```
