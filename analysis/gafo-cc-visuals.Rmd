@@ -206,7 +206,7 @@ ggplot(sim_dat, aes(x = targetposition, y= mean, col = col))+
   geom_jitter(aes(y = impr), alpha = 0.1, width = 0.1)+
   scale_color_manual(values = c("black", "firebrick"), guide = "none")+
   ylim(0, 1000)+
-  labs(x = "Target position (binned)", y = "Imprecision")+
+  labs(x = "Target position (binned)", y = "Imprecision (simulated)")+
   theme_few()
 
 
@@ -232,7 +232,7 @@ ggplot(sim_dat2, aes(x = targetposition, y= mean, col = col))+
   geom_jitter(aes(y = impr), alpha = 0.1, width = 0.1)+
   scale_color_manual(values = c("black", "firebrick"), guide = "none")+
   ylim(0, 1000)+
-  labs(x = "Target position (binned)", y = "Imprecision")+
+  labs(x = "Target position (binned)", y = "Imprecision (simulated)")+
   theme_few()
 
 

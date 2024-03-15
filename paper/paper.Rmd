@@ -1,49 +1,183 @@
 ---
-title             : "Unity in diversity: Children from 17 diverse communities process gaze in similar ways"
+title             : "A cross-cultural universal of human social cognition: Children from 17 diverse communities process gaze in similar ways"
 shorttitle        : "Gaze-following across 17 communities"
 
 author: 
-  - name          : "Manuel Bohn"
-    affiliation   : "1,2"
+  - name          : "Manuel Bohn (ORCID: 0000-0001-6006-1348)"
+    affiliation   : "1,2,*"
     corresponding : yes    # Define only one corresponding author
-    address       : "Postal address"
-    email         : "my@email.com"
+    address       : "Universitätsallee 1, 21335 Lüneburg, Germany"
+    email         : "manuel.bohn@leuphana.de"
     role: # Contributorship roles (e.g., CRediT, https://credit.niso.org/)
       - "Conceptualization"
+      - "Methodology"
+      - "Formal Analysis"
       - "Writing - Original Draft Preparation"
       - "Writing - Review & Editing"
-  - name          : "Julia Prein"
-    affiliation   : "1,2"
+  - name          : "Julia Prein (ORCID: 0000-0002-3154-6167)"
+    affiliation   : "1,2,*"
     role:
       - "Conceptualization"
       - "Methodology"
+      - "Software"
+      - "Investigation"
       - "Writing - Review & Editing"
-  - name          : "..."
-    affiliation   : "..."
+  - name          : "Agnes Ayikoru"
+    affiliation   : "3"
+    role:
+      - "Investigation"
+  - name          : "Florian M. Bednarski (ORCID: 0000-0003-4384-4791)"
+    affiliation   : "4"
+    role:
+      - "Investigation"
+      - "Writing - Review & Editing" 
+  - name          : "Ardain Dzabatou"
+    affiliation   : "5"
+    role:
+      - "Investigation"
+  - name          : "Michael C. Frank (ORCID: 0000-0002-7551-4378)"
+    affiliation   : "6"
+    role:
+      - "Investigation"
+      - "Writing - Review & Editing"
+  - name          : "Annette M. E. Henderson (ORCID: 0000-0003-4384-4791)"
+    affiliation   : "4"
+    role:
+      - "Investigation"
+      - "Writing - Review & Editing"      
+  - name          : "Joan Isabella"
+    affiliation   : "3"
+    role:
+     - "Investigation" 
+  - name          : "Josefine Kalbitz"
+    affiliation   : "2"
+    role:
+      - "Investigation"
+      - "Writing - Review & Editing"
+  - name          : "Patricia Kanngiesser (ORCID:0000-0003-1068-3725)"
+    affiliation   : "7"
+    role:
+      - "Investigation"
+      - "Writing - Review & Editing" 
+  - name          : "Dilara Keşşafoğlu (ORCID: 0000-0002-7356-0733)"
+    affiliation   : "8"
+    role:
+      - "Investigation"
+      - "Writing - Review & Editing" 
+  - name          : "Bahar Köymen (ORCID: 0000-0001-5126-8240)"
+    affiliation   : "9"
+    role:
+      - "Investigation"
+      - "Writing - Review & Editing"  
+  - name          : "Maira V. Manrique-Hernandez"
+    affiliation   : "2"
+    role:
+      - "Investigation"
+  - name          : "Shirley Magazi (ORCID: 0009-0006-0479-9800)"
+    affiliation   : "10"
+    role:
+      - "Investigation"
+  - name          : "Lizbeth Mújica-Manrique"
+    affiliation   : "2"
+    role:
+      - "Investigation"
+      - "Writing - Review & Editing" 
+  - name          : "Julia Ohlendorf"
+    affiliation   : "2"
+    role:
+      - "Investigation"
+  - name          : "Damilola Olaoba"
+    affiliation   : "2"
+    role:
+     - "Investigation"
+  - name          : "Wesley R. Pieters (ORCID:0000-0002-6152-249X)"
+    affiliation   : "10"
+    role:
+      - "Investigation"
+      - "Writing - Review & Editing" 
+  - name          : "Sarah Pope-Caldwell"
+    affiliation   : "2"
+    role:
+     - "Investigation"    
+  - name          : "Katie Slocombe (ORCID: 0000-0002-7310-1887)"
+    affiliation   : "11"
+    role:
+     - "Investigation"
+  - name          : "Robert Z. Sparks (ORCID: 0000-0001-7545-0522)"
+    affiliation   : "6"
+    role:
+      - "Investigation"
+  - name          : "Jahnavi Sunderarajan"
+    affiliation   : "2"
+    role:
+      - "Investigation"
+  - name          : "Wilson Vieira"
+    affiliation   : "2"
+    role:
+     - "Investigation"
+  - name          : "Zhen Zhang (ORCID: 0000-0001-9300-0920)"
+    affiliation   : "12"
+    role:
+      - "Investigation"
+      - "Writing - Review & Editing"   
+  - name          : "Yufei Zong (ORCID: 0009-0000-5012-0244)"
+    affiliation   : "12"
+    role:
+      - "Investigation"
+      - "Writing - Review & Editing"
+  - name          : "Roman Stengelin (ORCID: 0000-0003-2212-4613)"
+    affiliation   : "2,10"
     role:
       - "Conceptualization"
       - "Methodology"
-      - "Writing - Review & Editing"
+      - "Investigation"
+      - "Writing - Review & Editing" 
   - name          : "Daniel B. M. Haun"
     affiliation   : "2"
     role:
       - "Conceptualization"
+      - "Funding acquisition"
       - "Writing - Review & Editing"
       
+
 
 affiliation:
   - id            : "1"
     institution   : "Institute of Psychology in Education, Leuphana University Lüneburg"
   - id            : "2"
     institution   : "Department of Comparative Cultural Psychology, Max Planck Institute for Evolutionary Anthropology"
+  - id            : "3"
+    institution   : "Budongo Conservation Field Station"
+  - id            : "4"
+    institution   : "School of Psychology, University of Auckland"
+  - id            : "5"
+    institution   : "Université Marien Ngouabi"
+  - id            : "6"
+    institution   : "Department of Psychology, Stanford University"
+  - id            : "7"
+    institution   : "School of Psychology, University of Plymouth"
+  - id            : "8"
+    institution   : "Department of Psychology, Koç University"
+  - id            : "9"
+    institution   : "Division of Psychology, Communication, and Human Neuroscience, University of Manchester"   
+  - id            : "10"
+    institution   : "Department of Psychology and Social Work, University of Namibia"
+  - id            : "11"
+    institution   : "Department of Psychology, University of York"
+  - id            : "12"
+    institution   : "CAS Key Laboratory of Behavioral Science, Institute of Psychology, Chinese Academy of Sciences"
+  - id            : "*"
+    institution   : "joint first author"
+
+
+  
+  
 
 authornote: |
-  Add complete departmental affiliations for each author here. Each new line herein must be indented, like this line.
-
-  Enter author note here.
+   The authors would like to thank Luke Maurits for statistical advice. Manuel Bohn was supported by a Jacobs Foundation Research Fellowship (2022-1484-00). We are gratful to thank all children and caregivers for participating in the study.
 
 abstract: |
-  Following and understanding gaze is critical for human social interaction. In a comprehensive cross-cultural study spanning five continents and 17 distinct cultural contexts, we examined the development of gaze following among preschoolers using a single reliable task tailored to each cultural setting. Our data provides evidence that children worldwide process gaze in the same way. Key performance signatures of a computational model that sees gaze following as a form of social vector estimation were found in all communities. Additionally, we found a cross-culturally consistent relationship between children's environments and their performance in the task. These results highlight the cross-cultural robustness of core social cognitive skills, as well as similarities in the developmental process, suggesting that fundamental aspects of social cognition and interaction emerge and develop in comparable ways globally and hence are a bedrock of human social cognition.
+  Theoretical accounts assume that key features of human social cognition are universal. Here we focus on gaze following, the bedrock of social interactions and coordinated activities, to test this claim. In this comprehensive cross-cultural study spanning five continents and 17 distinct cultural communities, we examined the development of gaze following in early childhood. We identified key processing signatures through a computational model that assumes that participants follow an individual’s gaze by estimating a vector emanating from the eye-center through the pupil. Using a single reliable touchscreen-based task, we found these signatures in all communities, suggesting that children worldwide processed gaze in highly similar ways. Additionally, we found a cross-culturally consistent relationship between children’s exposure to touchscreens and their performance in the task, which also explained absolute differences between communities. These results provide strong evidence for a universal process underlying a foundational socio-cognitive ability in humans that can be reliably inferred even in the presence of cultural variation in overt behavior.
 
   
 keywords          : "keywords"
@@ -62,7 +196,7 @@ tablelist         : no
 footnotelist      : no
 
 classoption       : "man"
-output            : papaja::apa6_docx
+output            : papaja::apa6_doc
 ---
 
 ```{r setup, include = FALSE}
@@ -98,7 +232,7 @@ data <- read_csv("../data/gafo-cc-clean-data.csv")%>%
                             windhoek = "Windhoek (Namibia)",
                             stanford = "Stanford (USA)",
                             chimfunshi = "Chimfunshi (Zambia)",
-                            mexico = "Ocuilan (Mexico)",
+                            mexico = "Ocuilan (México)",
                             plymouth = "Plymouth (UK)",
                             beijing = "Beijing (China)", 
                             india = "Pune (India)",
@@ -110,12 +244,13 @@ data <- read_csv("../data/gafo-cc-clean-data.csv")%>%
                             uganda = "Nyabyeya (Uganda)"))
 ```
 
+Human socio-cognitive skills enable unique forms of communication and cooperation that provide a bedrock for cumulative culture and the formation of complex societies  [@tomasello2020adaptive; @laland2021understanding; @wellman2014making; @henrich2016secret; @tomasello2003makes; @legare2019development; @heyes2018cognitive]. The eyes are the proverbial "window to the mind" and eye gaze is essential for many social reasoning processes  [@shepherd2010following; @doherty2006development]. Others’ eye gaze is used to infer their focus of visual attention, which is a critical aspect of coordinated activities, including communication and cooperation [@tomasello2007reliance; @scaife1975capacity]. The ability to follow gaze emerges early in childhood [@tang2023slow; @gredeback2010development; @byers2021development; @del2019developmental] and individual differences in children’s gaze-following ability predict later life outcomes, most notably, communicative abilities [@brooks2005development; @carpenter1998social]. Difficulties with gaze following have been linked to developmental disorders, including Autism [@itier2009neural].
 
-Social cognition is a defining aspect of the human species [@tomasello2005understanding; @laland2021understanding; @wellman2014making]. It is supposed to enable unique forms of communication and cooperation that underlie cumulative cultural evolution and the formation of complex societies [@henrich2016secret; @tomasello2003makes; @legare2019development]. The eyes are the proverbial window to the mind and the starting point for a majority of social reasoning processes [@shepherd2010following]. Gaze is used to infer the focus of visual attention, which is a critical aspect of coordinated activities, including communication and cooperation [@tomasello2007reliance; @scaife1975capacity]. The ability to follow gaze emerges early in childhood [@tang2023slow; @gredeback2010development; @byers2021development] and individual differences in children's gaze following ability predict later life outcomes, most notably, later communicative abilities [@brooks2005development; @carpenter1998social]. Underlying this narrative is the wide-held assumption that gaze following is fundamental to human social cognition and, therefore, works and develops in the same way across human societies despite substantial variation in developmental contexts. This claim, however, lacks a solid empirical foundation. 
+There is a widely-held assumption, that, despite substantial variation in developmental contexts, gaze-following works and develops in the same way across human societies [@tomasello2019becoming]. However, this view is seemingly at odds with the substantial diversity in socio-cognitive development that cross-cultural studies have revealed [@miller2018contributions; @wellman2014making; @mayer2013synchrony; @dixson2018scaling; @taumoepeau2019cross]. One potential source for this paradox lies in the reliance on aggregated measures in cross-cultural studies. Absolute differences in mean performance across communities are interpreted as a signal of different underlying cognitive processes. In this study, we resolve this paradox by instead focusing on processing signatures that can be investigated independently of absolute community-level differences. This allows us to directly evaluate the empirical foundation of claims about universal features of human social cognition. To this end, we conducted a pre-registered, large-scale, cross-cultural study on the development of gaze-following abilities to study potentially universal processing signatures. These signatures were derived from a computational model that assumes that participants follow gaze by estimating a vector emanating from the eye center through the pupil [@prein2023variation]. 
 
-We conducted a large-scale cross-cultural study on the development of gaze-following abilities to study potentially universal processing signatures and their development. Previous developmental studies focused on the onset of gaze following in infancy [@hernik2019infant; @callaghan2011early]. The `r n_distinct(data$subjid)` participants in the study lived in 17 different communities spread over five continents (Fig. \@ref(fig:fig1)A, Tab. \@ref(tab:tab1)). The countries from which data was contributed to the study represented 46 % of the world's population. Communities covered a broad spectrum of geographical locations, social and political systems, languages, and subsistence styles (see Supplemental Materials). 
+The `r n_distinct(data$subjid)` participants who took part in the study lived in 17 different communities across 14 countries and five continents (Fig. \@ref(fig:fig1)A, Tab. \@ref(tab:tab1)). These countries represent ~46% of the world’s population. Communities covered a broad spectrum of geographical locations, social and political systems, languages, and subsistence styles (see Supplemental Materials). This diversity allowed us to overcome the common pitfall of cross-cultural studies that largely compared urban communities from the global north to rural communities from the global south [@barrett2020towards]. 
 
-```{r fig1, include = T, fig.align = "center", fig.cap = "(A) Data collection sites. Points show approximate geographical location of the data collection sites, coloring shows the sample sizes. (B) Screenshot from the task. The scene depicts the choice phase in a test trial. Participants had to use the gaze of the agent to locate the balloon and click on the hedge where they thought the balloon was. Agents, audio recordings and backgrounds were adpated to each cultural setting. (C) Drawings used as agents across cultural settings. (D) Graphical illustration of the cognitive model. Individuals infer the target of an agent's attention by estimating a vector based on the position of the pupils within the eyes. This process is noisy, illustrated by the different vectors. Individuals differ in their level of precision (indicated by alpha). For a given level of precision, the further out the target lands, the less precise the model predicts individuals to be. Solid and transparent dots show simualted means and individual data points to illustrate the predicted effect of target position.", out.width="75%"}
+```{r fig1, include = T, fig.align = "center", fig.cap = "(A) Data collection sites. Points show the approximate geographical location of the data collection sites, coloring shows the sample sizes. (B) Screenshot from the task. The scene depicts the choice phase in a test trial. Participants had to use the gaze of the agent to locate the balloon and click on the location on the hedge where they thought the balloon was. Agents, audio recordings and backgrounds were adapted to each cultural setting. (C) Drawings used as agents across cultural settings. (D) Graphical illustration of the cognitive model. Individuals infer the target of an agent’s attention by estimating a vector based on the position of the pupils within the eyes. This process is noisy, illustrated by the different vectors (transparent lines). Individuals differ in their level of precision (indicated by sigma). For a given level of precision, the closer the  target lands to the left or the right, the less precise the model predicts individuals to be. Solid and transparent dots show simulated means and individual data points to illustrate the predicted effect of target position.", out.width="75%"}
 knitr::include_graphics("../visuals/fig1.png")
 ``` 
 
@@ -138,29 +273,24 @@ tba1 <- data %>%
   select(-c(mean_age, min_age, max_age))%>%
   arrange(continent, country)%>%
   group_by(continent) %>%
-  mutate(continent = replace(continent, duplicated(continent), " ")) %>%
-  ungroup %>%
+  mutate(continent = as.character(continent),
+         continent = replace(continent, duplicated(continent), " ")) %>%
+  ungroup() %>%
   mutate(country = replace(country, duplicated(country), " "))%>%
-  mutate(language = c("Spanish (Rioplatense)", "Spanish (Mexican)", "English (American)", "Hai||om", "Khwedam", "English (Nigerian)", "English (Nigerian)", "BaYaka", "Lingala", "Swahili", "Bemba", "German", "English (British)", "Mandarin", "English (Indian) / Marathi", "Turkish", "English (New Zealand)"),
+  mutate(language = c("Spanish (Rioplatense)", "Spanish (Mexican)", "English (American)", "Hai||om", "Khwedam", "English (Nigerian)*", "English (Nigerian)", "BaYaka", "Lingala", "Swahili", "Bemba", "German", "English (British)", "Mandarin", "English (Indian) / Marathi", "Turkish", "English (New Zealand)"),
            market_integration = c("high", "medium", "high", "low", "low", "high", "high", "low", "low", "medium", "medium", "high", "high", "high", "high", "high", "high"))%>%
   select(continent, country, community, N, age, language, market_integration, touchscreen)
-
-
-# kableExtra::kable(tba1,
-#              col.names = linebreak(c("Continent", "Country", "Community", "N(male)", "Age (range)", "Language", "Market integration","Touchscreen")),
-#              caption = "Participant demographics.", 
-#              format="latex", booktabs=TRUE
-#              )%>% 
-#   kable_styling(latex_options="scale_down")
-
 
 apa_table(tba1,
           col.names = linebreak(c("Continent", "Country", "Community", "N(male)", "Age (range)", "Language", "Market integration","Touchscreen")),
           caption = "Participant demographics.",
+          #align = paste0("m{", 1/(ncol(tba1) + 1), "\\linewidth}"),
+          longtable = TRUE,
+          note = "*Local collaborators and piloting suggested that Nigerian English is suitable for Windhoek as well.",
           escape=TRUE)
 ```
 
-We used an animated picture book tablet task in which participants were asked to locate a hidden object based on observing an agent's gaze. Children watched a balloon disappear behind a hedge. An agent followed the trajectory of the balloon with their eyes (Fig. \@ref(fig:fig1)B). The key dependent variable was the precision with which children located the agent's focus of attention, that is, the deviation between where the agent looked (where the object was) and where the child thought the agent looked. We adapted visuals and audio instructions specifically to each of the 17 communities. Previous work demonstrated excellent individual-level measurement properties for this task [@prein2023tango]. Thus, in addition to group-level trends, we were able to investigate individual-level variation. 
+We used an animated picture book tablet task in which participants had to locate a hidden object based on observing an agent’s gaze. Children watched a balloon disappear behind a hedge. An agent followed the trajectory of the balloon with their eyes (Fig. \@ref(fig:fig1)B). The key dependent variable was the (im)precision with which children located the agent’s focus of attention, that is, the deviation between where the agent looked (where the object was) and the child’s response. We adapted visuals and audio instructions specifically to each of the 17 communities. Previous work demonstrated excellent individual-level measurement properties for this task in a German sample [@prein2023tango].
 
 ```{r}
 post_agg <- readRDS("../saves/post_agg.rds")
@@ -168,32 +298,36 @@ post_fix <- readRDS("../saves/cult_age_fix.rds")
 
 ```
 
-As the first step, we investigated developmental gains. Across all 17 communities, we found a substantial increase in average levels of precision with age (fixed effect in Bayesian regression model [@burkner2019bayesian]: $\beta$ = `r post_fix%>%filter(term == "ageinyears")%>%pull(Estimate)`, 95% HDI (`r post_fix%>%filter(term == "ageinyears")%>%pull(Q2.5)` - `r post_fix%>%filter(term == "ageinyears")%>%pull(Q97.5)`); range of community-level (random) effects: $\beta_{min}$ = `r post_agg%>%filter(type == "ageinyears")%>%arrange(mean)%>%tail(1)%>%pull(mean)`, 95% HDI (`r post_agg%>%filter(type == "ageinyears")%>%arrange(mean)%>%tail(1)%>%pull(lci)` - `r post_agg%>%filter(type == "ageinyears")%>%arrange(mean)%>%tail(1)%>%pull(uci)`) to $\beta_{max}$ = `r post_agg%>%filter(type == "ageinyears")%>%arrange(mean)%>%head(1)%>%pull(mean)`, 95% HDI (`r post_agg%>%filter(type == "ageinyears")%>%arrange(mean)%>%head(1)%>%pull(lci)` - `r post_agg%>%filter(type == "ageinyears")%>%arrange(mean)%>%head(1)%>%pull(uci)`). 
+As the first step, we investigated developmental improvements, that is, how children become more precise at estimating the target location with age. Across all 17 communities, we found a substantial increase in average levels of precision with age (fixed effect in Bayesian regression model [@burkner2019bayesian]: $\beta$ = `r post_fix%>%filter(term == "ageinyears")%>%pull(Estimate)`, 95% HDI (`r post_fix%>%filter(term == "ageinyears")%>%pull(Q2.5)` - `r post_fix%>%filter(term == "ageinyears")%>%pull(Q97.5)`); range of community-level (random) effects: $\beta_{min}$ = `r post_agg%>%filter(type == "ageinyears")%>%arrange(mean)%>%tail(1)%>%pull(mean)`, 95% HDI (`r post_agg%>%filter(type == "ageinyears")%>%arrange(mean)%>%tail(1)%>%pull(lci)` - `r post_agg%>%filter(type == "ageinyears")%>%arrange(mean)%>%tail(1)%>%pull(uci)`) to $\beta_{max}$ = `r post_agg%>%filter(type == "ageinyears")%>%arrange(mean)%>%head(1)%>%pull(mean)`, 95% HDI (`r post_agg%>%filter(type == "ageinyears")%>%arrange(mean)%>%head(1)%>%pull(lci)` - `r post_agg%>%filter(type == "ageinyears")%>%arrange(mean)%>%head(1)%>%pull(uci)`).
 
 ```{r}
 cv_cult <- readRDS("../saves/cross_validation_result.rds")
 ```
 
+Nevertheless, there were also marked differences between communities (see Fig. \@ref(fig:fig2)A). In a six-fold cross-validation procedure, we trained a regression model on a subset of the data (training data) to later predict the held-out data (testing data) [@stengelin2023children]. We found that a model assuming cross-cultural variation in average performance as well as cross-cultural variation in developmental trajectories outperformed simpler models – assuming no variation in the shape of developmental trajectories or nor variation between settings at all – in `r round(mean(cv_cult$m3_beats_m2),2)*100`% of cases (see Supplemental Material). At first glance, it seems that highly market-integrated communities around the globe showed higher levels of precision compared to less market-integrated communities (compare Tab. \@ref(tab:tab1) and Fig. \@ref(fig:fig2)A). However, numerous alternative groupings (e.g., average levels of education or average household size) are possible and, instead, these results could be best understood in terms of exposure to touch-screen devices; a finding we discuss in more detail below. Importantly, average differences in precision between communities were small compared to differences between individuals: communities did not form homogeneous clusters but largely overlapping distributions in that some individuals from communities with a lower average level of precision performed better compared to some individuals from a setting with a very high average level of precision. Similarly, in all communities, some 4-year-olds outperformed children two years older than them (see Fig. \@ref(fig:fig2)A). The lack of adequate individual-level measurement instruments  in previous large-scale developmental cross-cultural studies made it impossible to contrast these perspectives. The substantial overlap between communities found here speaks against categorical differences in gaze following and is suggestive of a similar underlying process. However, consistent developmental improvements alone cannot inform us about the cognitive processes children use when locating the agent’s focus of attention.
 
-Nevertheless, there were also marked differences between communities (see Fig. \@ref(fig:fig2)A). In a cross-validation procedure, we trained a regression model on a subset of the data (training data) to later predict the held-out data (testing data) [@stengelin2023children], we found that a model assuming cross-cultural variation in average performance as well as developmental trajectories outperformed simpler models -- assuming no variation in the shape of developmental trajectories or nor variation between settings at all -- in `r round(mean(cv_cult$m3_beats_m2),2)*100`% of cases (see Supplemental Material). At first glance, it seems that highly market-integrated communities around the globe showed higher levels of precision compared to less market-integrated communities (see Tab. \@ref(tab:tab1)). However, numerous alternative groupings (e.g., average levels of education or average household size) are possible and, instead, we believe that these results are best understood in terms of exposure to technology; a finding we discuss in more detail below. Importantly, average differences between communities were small compared to differences between individuals: communities did not form homogeneous clusters but largely overlapping distributions in that some individuals from communities with a lower average level of precision performed better compared to some individuals from a setting with a very high average level of precision. Similarly, in all communities, some 4-year-olds outperformed children two years older than them (see Fig. \@ref(fig:fig2)A). 
 
-```{r fig2, include = T, fig.align = "center", fig.cap = "A) Developmental trajectories by cultural settings. Transparent dots show aggregated data for each individual. The color dentoes the different cultural settings. The developmental trajectories are predicted based on a model of the data aggregated for each participant. B) Performance by screen section and cultural setting. Each bin covers 1/10th of the screen. Points show means and eroor bars 95\\% confidence intervals for the data within that bin aggregated across participants.", out.width="75%"}
+```{r fig2, include = T, fig.align = "center", fig.cap = "A) Developmental trajectory across and B) by community. The developmental trajectories are predicted based on a model of the data aggregated for each participant. C) Performance by screen section across and D) by community. Each bin covers 1/10th of the screen. Points show means, and error bars 95% confidence intervals for the data within that bin aggregated across participants. Transparent dots in A) and C) show aggregated data for each individual.", out.width="100%"}
 knitr::include_graphics("../visuals/pvis_pred.png")
 ```
 
-Consistent developmental gains alone cannot inform us about the cognitive processes children use when locating the agent's focus of attention. Recent computational work modeled gaze following as social vector estimation [@prein2023variation]. When observing the eyes, onlookers estimate a vector from the center of the eye through the pupil. The focus of attention is the location wherever the estimated vectors from both eyes hit a surface (Fig. \@ref(fig:fig1)D). The estimation process is not perfect, but each individual has a specific level of uncertainty, which causes average individual differences in performance. Crucially, this process model predicts a clear performance signature in our cross-cultural gaze following task: Trials in which the agent looks further away from the center (i.e. to the left or right side of the screen) should result in lower levels of precision compared to trials in which the agent looks closer to the middle. This prediction is best understood by considering a similar phenomenon: pointing a torch light to a flat surface. The width of the light beam represents each individual's level of uncertainty in vector estimation. When the torch is directed straight down, the light beam is concentrated in a relatively small area. When the torch is rotated to the side, the light from one half of the cone must travel further than the light from the other half to reach the surface. As a consequence, the light is spread over a wider area (see Fig. \@ref(fig:fig1)D). 
+Recent computational work modeled gaze following as social vector estimation [@prein2023variation]. When observing the eyes, onlookers estimate a vector emanating from the center of the eye that runs through the pupil. The focus of attention is the location where the estimated vectors from both eyes hit a surface (Fig. \@ref(fig:fig1)D). It is assumed that this estimation process has some uncertainty and that individuals vary in their level of uncertainty. As a consequence, even though individuals use the same general process, they might differ in their absolute levels of precision. Crucially, this process model predicts a clear performance signature in our gaze following task: Trials in which the agent looks further away from the center (i.e. to the left or right side of the screen) should result in lower levels of precision compared to trials in which the agent looks closer to the middle. This prediction is best understood by considering a similar phenomenon: pointing a torch light to a flat surface. The width of the light beam represents each individual’s level of uncertainty in vector estimation. When the torch is directed straight down, the light beam is concentrated in a relatively small area. When the torch is rotated to the side, the light from one half of the cone must travel further than the light from the other half to reach the surface. As a consequence, the light is spread over a wider area (see Fig. \@ref(fig:fig1)D).
 
-This processing signature was clearly visible across all 17 communities. Precision decreased when the agent looked at locations further away from the center (fixed effect: $\beta$ = `r post_fix%>%filter(term == "targetcentralityx")%>%pull(Estimate)`, 95% HDI (`r post_fix%>%filter(term == "targetcentralitx")%>%pull(Q2.5)` - `r post_fix%>%filter(term == "targetcentralityx")%>%pull(Q97.5)`); range of community-level effects: $\beta_{min}$ = `r post_agg%>%filter(type == "targetcentrality")%>%arrange(mean)%>%tail(1)%>%pull(mean)`, 95% HDI (`r post_agg%>%filter(type == "targetcentrality")%>%arrange(mean)%>%tail(1)%>%pull(lci)` - `r post_agg%>%filter(type == "targetcentrality")%>%arrange(mean)%>%tail(1)%>%pull(uci)`) to $\beta_{max}$ = `r post_agg%>%filter(type == "targetcentrality")%>%arrange(mean)%>%head(1)%>%pull(mean)`, 95% HDI (`r post_agg%>%filter(type == "targetcentrality")%>%arrange(mean)%>%head(1)%>%pull(lci)` - `r post_agg%>%filter(type == "targetcentrality")%>%arrange(mean)%>%head(1)%>%pull(uci)`). Visualization of the data showed the predicted u-shaped pattern in all communities (see Fig. \@ref(fig:fig2)B). These results indicate a universal cognitive process used by children in all communities. There is, however, an alternative way in which the u-shaped pattern might arise: if participants ignored the agent's gaze and instead always selected the middle of the screen (center bias), precision would also decrease when the balloon lands further away from the center. To rule out this alternative explanation, we directly compared three cognitive models that made different assumptions about how participants' responses were generated: the focal vector-based gaze estimation model described above, a center-bias model where participants always select the center, and a random guessing model where participants select random locations. For every community, we found overwhelming support for the gaze estimation model (min $BF_{10}$ > 1000 for comparisons with both alternative models). Taken together, children from all 17 communities processed gaze in similar ways.
+This processing signature was clearly visible across all 17 communities. Precision decreased when the agent looked at locations further away from the center (fixed effect: $\beta$ = `r post_fix%>%filter(term == "targetcentralityx")%>%pull(Estimate)`, 95% HDI (`r post_fix%>%filter(term == "targetcentralityx")%>%pull(Q2.5)` - `r post_fix%>%filter(term == "targetcentralityx")%>%pull(Q97.5)`); range of community-level effects: $\beta_{min}$ = `r post_agg%>%filter(type == "targetcentrality")%>%arrange(mean)%>%tail(1)%>%pull(mean)`, 95% HDI (`r post_agg%>%filter(type == "targetcentrality")%>%arrange(mean)%>%tail(1)%>%pull(lci)` - `r post_agg%>%filter(type == "targetcentrality")%>%arrange(mean)%>%tail(1)%>%pull(uci)`) to $\beta_{max}$ = `r post_agg%>%filter(type == "targetcentrality")%>%arrange(mean)%>%head(1)%>%pull(mean)`, 95% HDI (`r post_agg%>%filter(type == "targetcentrality")%>%arrange(mean)%>%head(1)%>%pull(lci)` - `r post_agg%>%filter(type == "targetcentrality")%>%arrange(mean)%>%head(1)%>%pull(uci)`). Visualization of the data showed the predicted u-shaped pattern in all communities (see Fig. \@ref(fig:fig2)B). These results indicate a universal cognitive process used by children in all communities. There are, however, alternative ways in which the u-shaped pattern might arise: if participants ignored the agent’s gaze and instead always selected the middle of the screen (center bias) or randomly select locations (random guessing), precision would also decrease when the balloon lands further away from the center. To rule out these alternative explanations, we compared three cognitive models that made different assumptions about how participants’ responses were generated: the focal vector-based gaze estimation model described above, a center-bias model where participants always select the center, and a random guessing model where participants select random locations. For every community, we found overwhelming support for the gaze estimation model (min $BF_{10}$ > 100 000 for comparisons with both alternative models). Taken together, children from all 17 communities processed gaze in similar ways.
 
 ```{r}
 pred_est <- readRDS("../saves/pred_est.rds")
 ```
 
-What is left to explain are the marked community- and individual-level differences. In addition to the gaze-following task, caregivers filled out a small questionnaire about children's access to screen-based technology and the composition of their households. On an individual level, we found that children with access to touchscreen devices had higher levels of precision ($\beta$ = `r pred_est%>%filter(term == "touchscreen")%>%pull(Estimate)`, SE = `r pred_est%>%filter(term == "touchscreen")%>%pull(Est.Error)`, 95% CrI = `r pred_est%>%filter(term == "touchscreen")%>%pull(Q2.5)` - `r pred_est%>%filter(term == "touchscreen")%>%pull(Q97.5)`). This effect was consistent across communities in that allowing the effect of access to touchscreens to vary across communities did not improve model fit (see Supplemental Materials). On a community level, we also saw that average performance was lowest in the communities in which touchscreen devices were the least frequent (Fig. \@ref(fig:fig3)). Thus, familiarity with the device used for data collection likely explains the marked differences between communities.
+```{r}
+ptc_com <- readRDS("../saves/ptc_com.rds")
 
-```{r fig3, include = T, fig.align = "center", fig.cap = "Correlation between performance in the gaze-following task and the exposure to touchscreens on a cultural setting-level. Relative imprecision accounts for differences in age between settings in that it corresponds to the random intercept estimate for each setting in a model predicting performance by age.", out.width="50%"}
-knitr::include_graphics("../visuals/pcomtc.png")
+pttest <- cor.test(ptc_com$Estimate, ptc_com$touchscreen)
 ```
+
+
+Next, we looked at factors that could explain community- and individual-level variation. In addition to the gaze-following task, caregivers responded to a short questionnaire about children’s access to screen-based technology and household composition. On an individual level, we found that children with access to touchscreen devices had higher levels of precision ($\beta$ = `r pred_est%>%filter(term == "touchscreen")%>%pull(Estimate)`, SE = `r pred_est%>%filter(term == "touchscreen")%>%pull(Est.Error)`, 95% CrI = `r pred_est%>%filter(term == "touchscreen")%>%pull(Q2.5)` - `r pred_est%>%filter(term == "touchscreen")%>%pull(Q97.5)`). This effect was consistent across communities in that allowing the effect of access to touchscreens to vary across communities did not improve model fit (see Supplemental Materials). On a community level, we also saw that average performance was lowest in communities in which touchscreen devices were the least frequent (community-level correlation between age-corrected imprecision and proportion of children with access to touchscreens: *r* = `r round(pttest$estimate,2)`, 95% CI = `r round(pttest$conf.int[1],2)` - `r round(pttest$conf.int[2],2)`). Thus, familiarity with the device used for data collection likely explains variation between communities. The most likely explanation for this effect is that children with more touchscreen experience were better at task handling and thus more likely to precisely touch the location they inferred the agent to look at. 
+
 
 ```{r}
 cor_dat <- data%>%
@@ -203,14 +337,15 @@ cor_dat <- data%>%
 ctest <- cor.test(cor_dat$children, cor_dat$click)
 ```
 
+However, there was substantial variation between individuals that could not be explained by differential exposures to touch screens alone. For example, in Malatya (Türkyie) where 100% of children had access to touch screens there was still substantial variation between individuals (see Fig. 1B).  This strongly indicates that other factors likely contributed to individual differences. Social interaction has been highlighted as an important driver of social-cognitive development [e.g., @tomasello2019becoming; @carpendale2020makes; @barresi1996intentional; @perner1994theory; @rakoczy2022foundations] and thus we hypothesized (and pre-registered) that more opportunities for social interaction -- approximated by living in larger households with more children -- would be associated with higher levels of precision. At first glance, the opposite seemed to be the case: there was a substantial zero-order correlation between the number of children living in the household and average imprecision (`r round(ctest$estimate,2)`, 95% CI = `r round(ctest$conf.int[1],2)` - `r round(ctest$conf.int[2],2)`) suggesting that having more opportunities for social interactions was related to poorer performance. However, this correlation is spurious and reflects a confounding of household composition with exposure to technology on a community level. When predicting performance by relative opportunities for social interactions within a community -- while accounting for absolute differences and the prevalence of touchscreens -- we found no strong associations between any of the demographic indicators and performance (see Supplemental Material). The reason for an absence of such an association may be a lack of resolution: household composition is very far removed from the factors that previous work has suggested to be related to the development of gaze following in younger children, such as attachment quality or the use of gaze in early communicative interactions [@astor2020social; @movellan2002development; @senju2015early]. Future work could increase the resolution with which everyday experiences in children from diverse communities are recorded to compare the drivers behind development as we observe it. Recent work in the field of language acquisition has shown how technological innovations allowed for direct recording of social interactions across communities which can be used to close this explanatory gap [@bergelson2023everyday; @donnelly2021longitudinal].
 
-On an individual level, other factors likely generated individual differences because there was substantial variation even in communities where almost all children had access to touchscreens. Social interaction has been highlighted as an important driver of social-cognitive development [e.g., @tomasello2019becoming; @carpendale2020makes; @barresi1996intentional; @perner1994theory; @rakoczy2022foundations] and thus we hypothesized that more opportunities for social interaction -- approximated by living in larger households with more children -- would be associated with higher levels of precision. At first glance, the opposite seemed to be the case: there was a substantial zero-order correlation between the number of children living in the household and average imprecision (`r round(ctest$estimate,2)`, 95% CI = `r round(ctest$conf.int[1],2)` - `r round(ctest$conf.int[2],2)`), suggesting that more opportunity for social interaction was related to poorer performance. However, this correlation is spurious and reflects a confounding of household composition with exposure to technology on a community level. When predicting performance by relative opportunities for social interactions within community -- while accounting for absolute differences and the prevalence of touchscreens -- we find no strong associations between any of the demographic indicators and performance (see Supplemental Material). We think the reason for this lack of a strong association is a lack of resolution: household composition is very far removed from the factors that previous work has suggested to be related to the development of gaze following in younger children, such as attachment quality or the importance of gaze in early communicative interactions [@astor2020social; @movellan2002development; @senju2015early]. We hope that future work can increase the resolution with which everyday experiences in children from diverse cultural settings are recorded to compare the drivers behind development as we observe it. Naturalistic data directly recording social interactions across communities would offer crucial information to close this explanatory gap. Recent work in the field of language acquisition has shown how technological innovations can be used to close this explanatory gap [@bergelson2023everyday; @donnelly2021longitudinal]. 
+Following and understanding gaze is a foundational building block of human social cognition [@tomasello2007reliance; @scaife1975capacity]. A substantial body of work has explored the developmental onset of gaze following in a few selected cultural communities [@moore2008development; @tang2023slow; @gredeback2010development; @byers2021development]. The data reported here provides strong evidence that children from a large and diverse set of communities process others’ gaze in similar ways. We found key performance signatures of a model treating gaze following as a form of social vector estimation across all 17 communities. With the focus on individual-level processing signatures, the study goes beyond previous studies on gaze following – focused on the onset of gaze following in infancy [@hernik2019infant; @callaghan2011early] – as well as comprehensive cross-cultural studies that compared average developmental trajectories [@house2020universal; @van2018development; @blake2015ontogeny; @kanngiesser2022children]. 
 
-Following and understanding gaze is a foundational building block of human social cognition [@tomasello2007reliance; @scaife1975capacity]. A substantial body of work has explored the developmental onset of gaze following in a few selected cultural settings [@moore2008development; @tang2023slow; @gredeback2010development; @byers2021development; @hernik2019infant; @callaghan2011early]. The data reported here provides evidence that children all over the world process gaze in the same way. Key performance signatures of a model that sees gaze following as a form of social vector estimation were found in the data of all 17 distinct cultural communities. The cognitive processes underlying gaze following are thus likely to be rooted in humans' evolved cognitive architecture, which is -- presumably -- later refined during social interaction [@astor2020social; @movellan2002development; @senju2015early]. The phylogenetic roots of these processes might possibly lie much deeper as primates from a wide range of species follow gaze [@rosati2009looking; @tomasello1998five; @itakura2004gaze; @kano2014cross]. Yet, if they also show the same processing signatures has yet to be explored.      
+The cognitive processes underlying gaze following might be rooted in humans’ evolved cognitive architecture, which is -- presumably -- later refined during social (i.e., cultural) interaction [@astor2020social; @movellan2002development; @senju2015early]. The phylogenetic roots of these processes might possibly lie much deeper as primates from a wide range of species follow gaze [@rosati2009looking; @tomasello1998five; @itakura2004gaze; @kano2014cross]. Yet, similarities in overt behavior do not imply the same underlying cognitive processes. The present study defines clear performance signatures that can be explored in other species to test such evolutionary hypotheses.
 
-There are important limitations to this study. The methodological factors that influenced performance might have overshadowed individual and community-level differences that originate from other sources. Importantly, this does not affect our interpretation of the data as evidence for shared cognitive processing because the key processing signatures were present in all communities. Furthermore, the role that social interaction plays as a potential driver of development and source of individual differences is vastly under-explored in the current study.
+Our study combined precise individual-level cognitive measurement and individual-level assessment of experience (here: touchscreen exposure) in a large and diverse sample to directly investigate the impact of specific cultural experiences on developmental outcomes. Instead of establishing universality by maximizing the cultural distance between two or three tested communities [@norenzayan2005psychological], this large-scale cross-cultural approach treats children’s cultural experience at scale, shedding light on the big “middle ground” of children’s cultural experience [@barrett2020towards].
 
-The evidence presented here holds far-reaching implications. Our work pioneers a methodological approach that introduces solid individual-level measurement to the cross-cultural study of cognitive development. As such, it serves as a blueprint for future research on a broad spectrum of cognitive abilities. Most importantly, this study offers a much-needed empirical foundation for theories on human nature. The finding that children from diverse cultures deploy similar cognitive processes in interpreting gaze points to an evolutionary basis of basic social cognition, which is refined during development. 
+In sum, our work pioneers an approach that introduces computational modeling and precise individual-level measurement to the cross-cultural study of cognitive development. This approach allowed us to test for universals in the human cognitive architecture rather than just overt behavior. As such, it can serve as a blueprint for future research on a broad spectrum of cognitive abilities and offers a much-needed empirical foundation for theories on the nature of the human mind. Children from diverse cultures deploy similar cognitive processes in interpreting gaze, pointing to a universal foundation of basic social cognition, which is refined during development.
 
 \newpage
 
