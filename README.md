@@ -27,13 +27,17 @@ Theoretical accounts assume that key features of human social cognition are univ
         ├── trialnr: trial number starting from the first test trial
         ├── targetposition: bin in which the balloon landed (1-10)
         ├── targetcenterx: x-coordinate of the balloon (0 - 1920)
-        ├── targetcentralityx: distance of balloon's x-coordinate from the center (in pixel)
-        └── clickdistfromtargetcenterx: distance between touched location and balloon's x-coordinate (in pixel)
+        ├── targetcentralityx: distance of balloon's x-coordinate from the center (in pixels)
+        └── clickdistfromtargetcenterx: distance between touched location and balloon's x-coordinate (in pixels)
+├── figures                     <-- figures in paper and supplement
 ├── model                       <-- data files
-    └── final_item_list.csv     <-- list of items in the PREVIC
-├── paper                       <-- freproducible manuscript file
+    ├── model-comparison.wppl   <-- code to run model comparison (incl. prior specification)
+    ├── model-data              <-- data files by community with additional information for model comparison
+    ├── node-moduls             <-- helper scripts for model comparison
+    └── output                  <-- saved model outputs by community
+        └── bf_comparison.rds   <-- saved log Bayes Factors for model comparisons by community
+├── paper                       <-- reproducible manuscript file
 ├── saves                       <-- saved outputs
-├── scripts                     <-- reproducible manuscript file
-├── supplement                  <-- reproducible supplemental material file
-└── visuals                     <-- figures in paper
+├── scripts                     <-- scripts to run cross-validation and process model outputs
+└── supplement                  <-- reproducible supplemental material file
 ```

@@ -14,6 +14,10 @@ paper/submissions/*
 
 analysis/*
 
+visuals/*
+
+*.docx
+
 model/output/*.csv
 
 # DO NOT CHANGE THE CONTENT THAT FOLLOWS HERE ...
