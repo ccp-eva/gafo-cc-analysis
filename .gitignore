@@ -6,6 +6,15 @@
 # 
 # Put your project-specific ignores here:
 
+data/mdata.csv
+data/gafo-cc-raw-data.csv
+data/gafo-cc-uk-namibia.csv
+data/gafo-cc-data-lizbeth.csv
+data/individual_sds.csv
+data/gafo-cc-clean-data-incl-fam.csv
+data/gafo-cc-windhoek.csv
+
+
 data/gafo-cc-data-lizbeth.csv
 
 saves/bm_*
