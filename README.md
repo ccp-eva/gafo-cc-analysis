@@ -13,22 +13,9 @@ Theoretical accounts assume that key features of human social cognition are univ
 ```         
 .
 ├── data
-    └── gafo-cc-clean-data.csv  <-- tidy dataset
-        ├── subjid: anonymized participant id
-        ├── community: name of community
-        ├── age_group: age group
-        ├── ageinyears: age in years
-        ├── sex: participant sex (m/f)
-        ├── screen: screen in household (yes = 1, no = 0)
-        ├── touchscreen: access to touchscreen (yes = 1, no = 0)
-        ├── household: people living in the same household (incl. participant)
-        ├── children: children living in the same household (incl. participant)
-        ├── younger_children: children younger than the participant living in the same household
-        ├── trialnr: trial number starting from the first test trial
-        ├── targetposition: bin in which the balloon landed (1-10)
-        ├── targetcenterx: x-coordinate of the balloon (0 - 1920)
-        ├── targetcentralityx: distance of balloon's x-coordinate from the center (in pixels)
-        └── clickdistfromtargetcenterx: distance between touched location and balloon's x-coordinate (in pixels)
+    ├── gafo-cc-clean-data.csv  <-- tidy dataset
+    └── README.md               <-- description of data structure
+
 ├── figures                     <-- figures in paper and supplement
 ├── model                       <-- data files
     ├── model-comparison.wppl   <-- code to run model comparison (incl. prior specification)
