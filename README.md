@@ -28,7 +28,7 @@ Theoretical accounts assume that key features of human social cognition are univ
         ├── targetposition: bin in which the balloon landed (1-10)
         ├── targetcenterx: x-coordinate of the balloon (0 - 1920)
         ├── targetcentralityx: distance of balloon's x-coordinate from the center (in pixel)
-        └── clickdistfromtargetcenterx: distance between the balloon's x-coordinate and the x-coordinate the participant touched (in pixel)
+        └── clickdistfromtargetcenterx: distance between touched location and balloon's x-coordinate (in pixel)
 ├── model                       <-- data files
     └── final_item_list.csv     <-- list of items in the PREVIC
 ├── paper                       <-- freproducible manuscript file

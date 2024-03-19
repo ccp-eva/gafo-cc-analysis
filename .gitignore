@@ -12,6 +12,8 @@ saves/bm_*
 
 paper/submissions/*
 
+analysis/*
+
 model/output/*.csv
 
 # DO NOT CHANGE THE CONTENT THAT FOLLOWS HERE ...
