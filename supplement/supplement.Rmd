@@ -12,8 +12,8 @@ output:
     fig_caption: yes
     #code_folding: hide
     number_sections: false
-bibliography: library.bib
-#csl: pnas.csl
+bibliography: ../paper/library.bib
+csl: science.csl
 header-includes:
   \usepackage{caption}
   \renewcommand{\figurename}{Supplementary Figure}

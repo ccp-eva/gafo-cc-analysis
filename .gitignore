@@ -10,6 +10,8 @@ data/gafo-cc-data-lizbeth.csv
 
 saves/bm_*
 
+paper/submissions/*
+
 model/output/*.csv
 
 # DO NOT CHANGE THE CONTENT THAT FOLLOWS HERE ...
