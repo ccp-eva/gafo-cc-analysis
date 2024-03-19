@@ -242,9 +242,9 @@ For this study we reached out to early childcare centers and schools. Two early 
 ```{r figpred1, include = T, fig.align = "center", fig.cap = "A) Age distribution and B) prevalence of different types of technology by community. Left: dots show individual data points. Right: color shows the proportion of children with access to screens or touchscreens.", out.width="100%"}
 # techpred <- plot_grid(page, ppred, rel_widths = c(1, 0.5),align = "h", labels = c("A", "B"))
 # 
-# ggsave(plot = techpred, "../visuals/techpred.png",  height = 7, width = 10, scale = 1)
+# ggsave(plot = techpred, "../figures/techpred.png",  height = 7, width = 10, scale = 1)
 
-knitr::include_graphics("../visuals/techpred.png")
+knitr::include_graphics("../figures/techpred.png")
 
 ```
 
@@ -693,9 +693,9 @@ Participants came from predominantly middle-class communities and were tested at
 #   labs(y = "No. of individuals", x= "")+
 #   theme(axis.text.x = element_text(angle = 55, vjust = 1, hjust=1))
 # 
-# ggsave(plot = dempred, "../visuals/dempred.png", height = 6, width = 10, scale = 1)
+# ggsave(plot = dempred, "../figures/dempred.png", height = 6, width = 10, scale = 1)
 
-knitr::include_graphics("../visuals/dempred.png")
+knitr::include_graphics("../figures/dempred.png")
 
 ```
 
@@ -706,7 +706,7 @@ We adapted the task developed by Prein and colleagues [@prein2023tango]. We refe
 ## Setup and Procedure
 
 ```{r task, include = T, fig.align = "center", fig.cap = "Screenshot from the task. The scene depicts the choice phase in a test trial. Participants had to use the gaze of the agent to locate the balloon and click on the hedge where they thought the balloon was.", out.width="80%"}
-knitr::include_graphics("../visuals/task.png")
+knitr::include_graphics("../figures/task.png")
 ``` 
 
 The task was implemented as a browser-based interactive picture book using `HTML` and `JavaScript`. Participants saw animated agents on a touch screen device, listened to pre-recorded audio instructions and responded by touching the screen. In all communities, a research assistant, fluent in the local language(s), guided the child through the task. 
@@ -730,7 +730,7 @@ The following components of the task were adapted to each cultural settings: voi
 The agents were drawn for each cultural setting in close collaboration with local researchers and/or research assistants. They were meant to show young adults and represent the diversity in appearance prevalent in the local population. Figure \@ref(fig:figagents) shows the agents that were used in the study. Some agents were used in multiple cultural settings. All agents had the same underlying eye-geometry (size of the pupil and the iris) and only differed in superficial features. 
 
 ```{r figagents, include = T, fig.align = "center", fig.cap = "Agents used in the task. Some agents were used for multiple cultural settings", out.width="100%"}
-knitr::include_graphics("../visuals/agents.png")
+knitr::include_graphics("../figures/agents.png")
 ``` 
 
 ## Questionnaire
@@ -921,9 +921,9 @@ These prediction is best understood by considering a similar phenomenon: pointin
 #   theme( strip.text.y.right = element_text(angle = 0))
 # 
 # 
-# ggsave(plot = ppred, "../visuals/pred.png", height = 6, width = 12, scale = 1)
+# ggsave(plot = ppred, "../figures/pred.png", height = 6, width = 12, scale = 1)
 
-knitr::include_graphics("../visuals/pred.png")
+knitr::include_graphics("../figures/pred.png")
 
 ```
 
@@ -1046,9 +1046,9 @@ Another way to look at these signatures is to visualize the group-level developm
 # ), nrow = 2, align = "v"
 # )
 # 
-# ggsave(plot = pvis_pred, "../visuals/pvis_pred.png", width = 12, height = 8, bg = "white", scale = 1.25)
+# ggsave(plot = pvis_pred, "../figures/pvis_pred.png", width = 12, height = 8, bg = "white", scale = 1.25)
 
-knitr::include_graphics("../visuals/pvis_pred.png")
+knitr::include_graphics("../figures/pvis_pred.png")
 
 ```
 
@@ -1327,9 +1327,9 @@ When inspecting the posterior estimates for the different predictors referring t
 #   labs(x = "Touchscreen exposure", y = "Relative imprecision (age corrected)")+
 #   theme_few()
 # 
-# ggsave(plot = pcomtc, "../visuals/pcomtc.png", height = 4, width = 5, scale = 1.2)
+# ggsave(plot = pcomtc, "../figures/pcomtc.png", height = 4, width = 5, scale = 1.2)
 
-knitr::include_graphics("../visuals/pcomtc.png")
+knitr::include_graphics("../figures/pcomtc.png")
 ```
 
 # Appendix
