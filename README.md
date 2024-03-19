@@ -1,29 +1,39 @@
-# Project Title
-> Oneliner about your project 
+# A universal of human social cognition: Children from 17 communities process gaze in similar ways
 
 ## Abstract
-Paste your Abstract in here.
+
+Theoretical accounts assume that key features of human social cognition are universal. Here we focus on gaze following, the bedrock of social interactions and coordinated activities, to test this claim. In this comprehensive cross-cultural study spanning five continents and 17 distinct cultural communities, we examined the development of gaze following in early childhood. We identified key processing signatures through a computational model that assumes that participants follow an individual’s gaze by estimating a vector emanating from the eye-center through the pupil. Using a single reliable touchscreen-based task, we found these signatures in all communities, suggesting that children worldwide processed gaze in highly similar ways. Absolute differences in performance between groups are accounted for by a cross-culturally consistent relationship between children’s exposure to touchscreens and their performance in the task. These results provide strong evidence for a universal process underlying a foundational socio-cognitive ability in humans that can be reliably inferred even in the presence of cultural variation in overt behavior.
 
 ## Publication Links
-- [Journal](https://#)
-- [Preprint](https://#)
-- [OSF](https://#)
-- [Zenodo](https://#)
-- [Figshare](https://#)
+
+-   [Preprint](https://#)
 
 ## Repository Structure
-### data
-You can retrieve the data here ...
 
-### docs
-Procedures and coding schema can be found here. It is structured like this... 
-
-### Use CFF for Documents/Articles
-
-Use the `preferred-citation` key in the cff if you want to get a correct bibtext file:
-More here: https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-on-github/about-citation-files#citing-something-other-than-software
-
-
-## Installation Instructions
-lalaliii
-
+```         
+.
+├── data
+    └── gafo-cc-clean-data.csv  <-- tidy dataset
+        ├── subjid: anonymized participant id
+        ├── community: name of community
+        ├── age_group: age group
+        ├── ageinyears: age in years
+        ├── sex: participant sex (m/f)
+        ├── screen: screen in household (yes = 1, no = 0)
+        ├── touchscreen: access to touchscreen (yes = 1, no = 0)
+        ├── household: people living in the same household (incl. participant)
+        ├── children: children living in the same household (incl. participant)
+        ├── younger_children: children younger than the participant living in the same household
+        ├── trialnr: trial number starting from the first test trial
+        ├── targetposition: bin in which the balloon landed (1-10)
+        ├── targetcenterx: x-coordinate of the balloon (0 - 1920)
+        ├── targetcentralityx: distance of balloon's x-coordinate from the center (in pixel)
+        └── clickdistfromtargetcenterx: distance between the balloon's x-coordinate and the x-coordinate the participant touched (in pixel)
+├── model                       <-- data files
+    └── final_item_list.csv     <-- list of items in the PREVIC
+├── paper                       <-- freproducible manuscript file
+├── saves                       <-- saved outputs
+├── scripts                     <-- reproducible manuscript file
+├── supplement                  <-- reproducible supplemental material file
+└── visuals                     <-- figures in paper
+```
