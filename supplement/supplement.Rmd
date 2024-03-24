@@ -1,11 +1,41 @@
 ---
-title: "Unity in diversity: Children from 17 diverse communities process gaze in similar ways"
+title: "A universal of human social cognition: Children from 17 communities process gaze in similar ways"
 subtitle: "Supplemental material"
-author: "..."
+author:
+  - Manuel Bohn
+  - Julia Prein
+  - Agnes Ayikoru
+  - Florian M. Bednarski
+  - Ardain Dzabatou
+  - Michael C. Frank 
+  - Annette M. E. Henderson 
+  - Joan Isabella
+  - Josefine Kalbitz 
+  - Patricia Kanngiesser
+  - Dilara Keşşafoğlu
+  - Bahar Köymen
+  - Maira V. Manrique-Hernandez 
+  - Shirley Magazi
+  - Lizbeth Mújica-Manrique
+  - Julia Ohlendorf
+  - Damilola Olaoba
+  - Wesley R. Pieters
+  - Sarah Pope-Caldwell
+  - Katie Slocombe
+  - Robert Z. Sparks
+  - Jahnavi Sunderarajan
+  - Wilson Vieira
+  - Zhen Zhang
+  - Yufei Zong
+  - Roman Stengelin
+  - Daniel B. M. Haun
 output: 
   bookdown::pdf_document2:
     toc: yes 
     number_sections: false    
+  bookdown::word_document2:
+    toc: yes 
+    number_sections: false
   bookdown::html_document2:
     toc: yes
     toc_float: true
@@ -99,10 +129,6 @@ colors <- colors[ !colors == '#F2F3F4']
 ```
 
 
-# Overview
-
-This docuemnt provides a detailed overview of the participants and methods of the in the section [site descriptions](#site-descriptions)
-
 # Participants
 
 ```{r demtable, echo=F}
@@ -178,7 +204,19 @@ kableExtra::kable(demtab,
 ```
 
 
-A total of `r sum(as.numeric(demtab$N))` children between `r round(min(data$ageinyears), 2)` and `r round(max(data$ageinyears), 2)` provided data for the study. Children lived in `r n_distinct(data$community)` different communities, located in `r n_distinct(data$country)` different countries. Table \@ref(tab:demtable) gives the sample size per community together with some basic demographic information. Figure \@ref(fig:figpred1)A shows the age distribution in each setting. For some children, the exact birthday was unknown. In such cases, we set the birthday to the 30th of June of the year that would make them fall into the reported age category. Additional children were recruited but did not contribute data to the study. The recruitment strategy varied from community to community and we therefore cannot provide detailed information about the number of children that were excluded. All children who contributed at least four valid data points were included in the final sample, however, we excluded children when parents did not fill out the questionnaire correctly (e.g., when the number of children living in the household was reported to be larger than the household itself or when the number of children reported to live in the household equaled the number of children younger than the child being tested). Twelve children had to be excluded for one of these reasons (one from Akure, two from Stanford, seven from Pune and two from Windhoek). We did not exclude any participants for performance reasons. A detailed description of each site and the way children were recruited can be found below.
+A total of `r sum(as.numeric(demtab$N))` children between `r round(min(data$ageinyears), 2)` and `r round(max(data$ageinyears), 2)` provided data for the study. Children lived in `r n_distinct(data$community)` different communities, located in `r n_distinct(demtab$country)` different countries. Table \@ref(tab:demtable) gives the sample size per community together with some basic demographic information. The recruitment strategy for each community is reported in the respective site descriptions. Figure \@ref(fig:figpred1)A shows the age distribution in each setting. For some children, the exact birthday was unknown. In such cases, we set the birthday to the 30th of June of the year that would make them fall into the reported age category. 
+
+Data from children was only included in the study when they contributed at least four valid test trials. We also excluded the data from children with a diagnosed developmental disorder. In sum, in addition to the sample size reported above, 74 additional children participated in the study but did not contribute data. The main reasons for exclusion were: contribution of less than four valid test trials, technical failures, and missing or implausible demographic information (e.g., when the number of children living in the household was reported to be larger than the household itself or when the number of children reported to live in the household equaled the number of children younger than the child being tested). We did not exclude any participants for performance reasons. A detailed description of each site and the way children were recruited can be found in the respective site description.
+
+```{r figpred1, include = T, fig.align = "center", fig.cap = "A) Age distribution and B) prevalence of different types of technology by community. Left: dots show individual data points. Right: color shows the proportion of children with access to screens or touchscreens.", out.width="100%"}
+# techpred <- plot_grid(page, ppred, rel_widths = c(1, 0.5),align = "h", labels = c("A", "B"))
+# 
+# ggsave(plot = techpred, "../figures/techpred.png",  height = 7, width = 10, scale = 1)
+
+knitr::include_graphics("../figures/techpred.png")
+
+```
+
 
 ## Site descriptions
 
@@ -186,7 +224,7 @@ The descriptions below give detailed information about each data collection site
 
 ### Akure (Nigeria) - Location 
 
-Akure is situated in the Ondo State in southwest Nigeria. About 800,000 people live in this medium-sized city. Most inhabitants moved from the nearby urban and rural areas to Akure. 
+Akure is situated in the Ondo State in southwest Nigeria. About 800 000 people live in this medium-sized city. Most inhabitants moved from the nearby urban and rural areas to Akure. 
 
 There are two different seasons in Akure's tropical climate: the wet season, which runs from April to October, and the dry season, which runs from November to March. Rich vegetation, including deep forests and productive agriculture, defines the city.
 
@@ -217,11 +255,11 @@ For this study, participants were recruited from churches during Sunday services
 
 Auckland | Tāmaki Makaurau is the largest city of New Zealand | Aotearoa with a population of about 1.5 million people. The city is located on the North Island | Te Ika-a-Māui inbetween the Hauraki Gulf | Tīkapa Moana to the East and the Waitākere Ranges to the West. The climate is defined as either oceanic (Cfb) or subtropical (NIWA). Temperatures are mild throughout the year, with an average temperature of 23.7°C during summer and 14.7°C during winter months. 
 
-The median age in the Auckland region was 34.7 years. 181,194 Māori people with a median age of 24.9 years were counted in the 2018 census. Overall the population is composed of 53.5% European, 28.2% Asian, 15.5% Pacific Peoples, 11.5% Māori, 2.3% Middle Eastern / Latin American / African and 1.1% Other ethnicity. 92.7% are English speakers, with 4.4% speaking Northern Chinese (Mandarin Chinese), 4.4% speaking Samoan and 2.4% speaking te reo Māori.
+The median age in the Auckland region was 34.7 years. 181 194 Māori people with a median age of 24.9 years were counted in the 2018 census. Overall the population is composed of 53.5% European, 28.2% Asian, 15.5% Pacific Peoples, 11.5% Māori, 2.3% Middle Eastern / Latin American / African and 1.1% Other ethnicity. 92.7% are English speakers, with 4.4% speaking Northern Chinese (Mandarin Chinese), 4.4% speaking Samoan and 2.4% speaking te reo Māori.
 
-Māori peoples arrived in Auckland | Tāmaki Makaurau around 1350 from other Pacific Islands. Before the arrival of European New Zealanders | Pākehā New Zealand was populated by about 20,000 Māori. Aotearoa was colonized by the Dutch and British Empires in the 18th Century. The effects the British Monarchy had on Aotearoa have been at the center of long lasting societal disputes. The Treaty of Waitangi | Te Tiriti o Waitangi is a document signed by 240 Māori chiefs and representatives of the British Crown in 1840 trying to establish a cooperative relationship while redeeming some of the mistakes that have been made. This document is still important for the revitalization of Māori culture throughout Aotearoa.
+Māori peoples arrived in Auckland | Tāmaki Makaurau around 1350 from other Pacific Islands. Before the arrival of European New Zealanders | Pākehā New Zealand was populated by about 20 000 Māori. Aotearoa was colonized by the Dutch and British Empires in the 18th Century. The effects the British Monarchy had on Aotearoa have been at the center of long lasting societal disputes. The Treaty of Waitangi | Te Tiriti o Waitangi is a document signed by 240 Māori chiefs and representatives of the British Crown in 1840 trying to establish a cooperative relationship while redeeming some of the mistakes that have been made. This document is still important for the revitalization of Māori culture throughout Aotearoa.
 
-51.9% of the people in Auckland are employed full time, with an unemployment rate of 4.1% and 30.4% retirees. The main occupations are professionals (25.9%) and managers (18.1%) with only 5.9% operating machinery and 7.9% laborers. The people of Auckland are part of a service society with a median income of 34,400NZD and 19.8% of the population earning more than 70,000NZD. 
+51.9% of the people in Auckland are employed full time, with an unemployment rate of 4.1% and 30.4% retirees. The main occupations are professionals (25.9%) and managers (18.1%) with only 5.9% operating machinery and 7.9% laborers. The people of Auckland are part of a service society with a median income of 34 400NZD and 19.8% of the population earning more than 70 000NZD. 
 
 Auckland is made up of mainly sub-urban areas with single family housing. 45.4% of the population own or partly own a house. People mostly live with their core family in loosely separated areas of the city. Those areas commonly have an economical center with shops and restaurants as well as a mix of private and public education institutions. The socialization goals and cultural norms are comparable to most western, democratic societies. High education standards are deemed as vital for success. Success is determined by career paths, income and general success in professional and private aspects of life. The role of sports is viewed as essential for living a healthy and successful life and as such is a central part in education programs.    
 
@@ -237,16 +275,6 @@ For this study we reached out to early childcare centers and schools. Two early 
 * Shuker, M. J., & Cherrington, S. (2016). Diversity in New Zealand early childhood education: Challenges and opportunities. International Journal of Early Years Education, 24(2), 172-187.
 * Tesar, M. (2015). New Zealand perspectives on early childhood education: Nāku te rourou nāu te rourou ka ora ai te iwi. Journal of Pedagogy, 6(2), 9-18.
 * New Zealand Census 2018 for Auckland Region: https://www.stats.govt.nz/tools/2018-census-place-summaries/auckland-region#population-and-dwellings
-
-
-```{r figpred1, include = T, fig.align = "center", fig.cap = "A) Age distribution and B) prevalence of different types of technology by community. Left: dots show individual data points. Right: color shows the proportion of children with access to screens or touchscreens.", out.width="100%"}
-# techpred <- plot_grid(page, ppred, rel_widths = c(1, 0.5),align = "h", labels = c("A", "B"))
-# 
-# ggsave(plot = techpred, "../figures/techpred.png",  height = 7, width = 10, scale = 1)
-
-knitr::include_graphics("../figures/techpred.png")
-
-```
 
 ### Bandongo and BaYaka (Rep. Congo) - Ethnic groups
 
@@ -499,24 +527,24 @@ Children were recruited through nurseries and schools who expressed interest in 
 
 ### Nyabyeya (Uganda) - Location
 
-Nyabyeya Forestry College is situated in the Masindi district of western Uganda, approximately 25 km from Masindi Town and 240 km from Kampala, the capital city. The college is adjacent to Budongo Tropical High Forest and 8 km from Budongo conservation field station, where primatologists study wild-ranging chimpanzees. The college draws its sample from the surrounding villages, including Marram, Kyempunu, Nyabigoma, Nyabyeya 1 and 2 and Trading Center, Nyakafunjo, and Kyamasuka.
+Nyabyeya Forestry College is situated in the Masindi district of western Uganda, approximately 25 km from Masindi Town and 240 km from Kampala, the capital city. The college is adjacent to Budongo Forest and 8 km from Budongo Conservation Field Station, where primatologists study habituated wild chimpanzees. The sample were invited to participate at the college from the surrounding villages, including Marram, Kyempunu, Nyabigoma, Nyabyeya 1 and 2 and Trading Center, Nyakafunjo, and Kyamasuka.
 
-Nyabyeya is located on a green, gently sloping area behind Nyabyeya Hill and is characterized by tropical vegetation and a savanna climate, characterized by daytime temperatures reaching 32°C and cooler nights at 17°C. The region observes two distinct agricultural seasons - a wet season from late March to June and August to November, followed by a dry season from early December to March.
+Nyabyeya village is characterized by tropical vegetation and a savanna climate, characterized by daytime temperatures reaching 32°C and cooler nights at 17°C. The region observes two distinct agricultural seasons - a wet season from late March to June and August to November, followed by a dry season from early December to March.
 
-The studied villages are culturally very diverse and house ethnic groups such as Bantu, Luo, Nilotics, and Nilo-Hamites. Spoken languages depend on the tribe and include Alur, Lugbara, Runyoro, lendu, kakwa, Acholi, Langi, Luganda, Logo, Kebu, madi, and many others. Kiswahili and English often serve as a common ground. For this study, children who understand Kiswahili were invited. 
+The studied villages are culturally very diverse and are home to different ethnic groups including Bantu, Luo, Nilotics, and Nilo-Hamites. Spoken languages depend on the tribe and include Alur, Lugbara, Runyoro, Lendu, Kakwa, Acholi, Langi, Luganda, Logo, Kebu, Madi, and many others. Kiswahili and English often serve as a common ground. For this study, children who understood Kiswahili were invited.
 
 During the Second World War, many Polish refugees were brought to Uganda and located in Bunyoro on the fringes of Budongo Forest at Nyabyeya. When the refugees were evacuated after World War II ended, the forestry college was transferred into the facilities the Polish refugees had left behind. It now serves as an educational institute conducting training in Forestry, Agroforestry, Biomass Energy Technologies, and beekeeping.
 
-The community predominantly practices subsistence farming, cultivating crops like maize, cassava, sweet potatoes, and beans. Wealthier families sometimes keep goats, pigs, chickens, or ducks. Additionally, sugarcane and coffee cultivation contribute significantly to the local economy, with the Kinyara Sugar Company playing a pivotal role in sugarcane harvesting.
+The local communities predominantly practices subsistence farming, cultivating crops like maize, cassava, sweet potatoes, and beans. Wealthier families sometimes keep goats, pigs, chickens, or ducks. Additionally, sugarcane and coffee cultivation contribute significantly to the local economy, with the Kinyara Sugar Company playing a pivotal role in sugarcane harvesting. Salaried work is rare and many households struggle to provide essentials, including food, health care, and school materials for family members. 
 
-Living conditions in the community are characterized by extended families residing together, with an average of 10 people under one roof. While temporary round mud huts are common, permanent houses are found in the trading center of Nyabyeya. Most people in the community live by hand to mouth, and parents (especially women) work hard to provide the basics for their household members.
+Living conditions in the community are characterized by extended families residing together, with an average of 10 people in each household. Households tend to inhabit several buildings within a compound, with buildings made from traditional materials (wood and mud walls; straw roof) or bricks with metal roofing. 
 
-Parental socialization goals vary, with limited guidance for children in some instances, leading to very independent lives at a young age. Cultural practices include the belief in producing many children as a sign of respect, with specific tribes attaching wealth to the number of daughters. Twins are highly honored, and rituals are performed to welcome them. Often, young children take care of their siblings and carry them around on their backs. Children start working early, for example, by helping their parents with farming or cow herding. Often, families cannot afford school materials for their children and struggle to provide regular food. 
+Parental socialization goals vary, but a previous sample of mothers from these communities valued relational socialization goals over autonomous goals (Holden et al., 2022). Cultural practices include the belief in producing many children as a sign of respect, with specific tribes attaching wealth to the number of daughters. Twins are highly honored, and rituals are performed to welcome them. Often, young children take care of their siblings and carry them around on their backs. Children start to help their parents with chores from an early age (collecting fire wood or water, tending crops or animal care).
 
-Parental education levels are generally low, with many parents above 50 having only primary education. The education system faces challenges such as inadequate school supplies, leading to high dropout rates. Children start primary school at ages 5-7, and secondary education runs for four years, with options to pursue advanced levels. Early marriages and teenage pregnancies often result in girls leaving school earlier.
+School is not mandatory and parental education levels in these communities is  generally low, with a minority of mothers in the Holden et al (2022) sample having any secondary level education. The education system faces challenges such as overcrowding and lack of resources, leading to high dropout rates. Children start primary school at ages 5-9, and secondary education runs for four years, with options to pursue advanced levels. Lack of sanitary products to allow attendance of school during menstruation, early marriages and teenage pregnancies often result in girls performing worse than boys and leaving school earlier.
 
-The community exhibits low exposure to technology, with smartphones and touchscreen devices considered luxuries. Limited internet usage and power supply challenges contribute to this low adoption. However, technology is more prevalent in institutions like Nyabyeya Forestry College.
-Participating families were recruited by the local research assistants, for example, via personal contact, visiting them at home, or calling them. Families were invited to the Nyabyeya Forestry College (transport offered via boda boda (motorcycle)), and children participated in a quiet room in the College. 
+The community exhibits low exposure to technology, with smartphones and touchscreen devices considered luxuries. Limited internet access and power supply challenges contribute to this low adoption. However, technology is more prevalent in institutions like Nyabyeya Forestry College. Participating families were recruited by the local research assistants, for example, via personal contact, visiting them at home, or calling them. Families were invited to participate at the Nyabyeya Forestry College (transport offered via boda boda (motorcycle taxi)), and children participated in a quiet room in the College.
+
 
 **References and further readings:**
 
@@ -526,7 +554,7 @@ Participating families were recruited by the local research assistants, for exam
 
 ### Ocuilan (Mexico) - Location 
 
-Ocuilan is a municipality located in the center south of Mexico with a population of 36,223 inhabitants, distributed in 48 towns in an area of 344.84 km^2^ inside the Mexican State (Ocuilan, n.d.). Geographically, Ocuilan has an altitude of between 1000 to 2600 m situated 80 km south of Mexico City (INEGI,2010).
+Ocuilan is a municipality located in the center south of Mexico with a population of 36 223 inhabitants, distributed in 48 towns in an area of 344.84 km^2^ inside the Mexican State (Ocuilan, n.d.). Geographically, Ocuilan has an altitude of between 1000 to 2600 m situated 80 km south of Mexico City (INEGI, 2010).
 
 The communities in Ocuilan are distributed on a mountain range called Trans-Mexican volcanic Belt surrounded by valleys and mountains, the climate is semi-humid with summer rains, and average temperatures vary between 8°C and 22°C throughout the year. The higher elevations have mixed pine forests with more tropical vegetation in the lowlands. The distribution of the land is 31.91% agriculture, 0.48% urban zone and the rest forest (INEGI,2010).
 
@@ -667,6 +695,52 @@ Participants came from predominantly middle-class communities and were tested at
 * Pendleton, W., & Nickanor, N. (2016). The State of Food Insecuritity in Windhoek, Namibia (No. 14). Southern African Migration Programme.
 
 
+# Method
+
+We adapted the task developed by Prein and colleagues [@prein2023tango]. We refer to the original publication for a detailed description of its development, implementation and psychometric evaluation (in Germany). Below, we give an overview and focus on the cross-cultural adaptation of the task. The task itself, including all the versions used in the study, can be accessed via the following website: https://ccp-odc.eva.mpg.de/tango-cc/
+
+## Setup and Procedure
+
+```{r task, include = T, fig.align = "center", fig.cap = "Screenshot from the task. The scene depicts the choice phase in a test trial. Participants had to use the gaze of the agent to locate the balloon and click on the hedge where they thought the balloon was.", out.width="80%"}
+knitr::include_graphics("../figures/task.png")
+``` 
+
+The task was implemented as a browser-based interactive picture book using `HTML` and `JavaScript`. Participants saw animated agents on a touch screen device, listened to pre-recorded audio instructions and responded by touching the screen. In all communities, a research assistant, fluent in the local language(s), guided the child through the task. 
+
+Figure \@ref(fig:task) shows a screenshot from the task. The task was introduced verbally by the assistant as the balloon game in which the participant would play with other children to find a balloon. On each trial, participants saw an agent located in a window in the center of the screen. A balloon fell down from its starting position just below the agent. The agent's gaze followed the trajectory of the balloon. That is, the pupils and the iris were programmed to align with the center of the balloon. Once the balloon had landed on the ground, the agent was instructed to locate it, that is, to touch the location on the screen where they thought the balloon was. On each trial, we recorded the exact x-coordinate of the participant's touch.
+
+There were two types of familiarization trials. In fam1 trials, the balloon fell down and landed in plain sight. Participants simply had to touch the visible balloon. In fam2 trials, the trajectory of the balloon was visible but it landed behind a small barrier (a hedge - see Figure \@ref(fig:task)). Thus, participants needed to touch the hedge where they saw the balloon land. Next came test trials. Here, the barrier moved up and covered the balloon's trajectory. That is, participants only saw the agent's eyes move, but not the balloon. They had to infer the location of the balloon based on the agent's gaze direction. During fam1, fam2 and the first test trial, children heard voice overs commenting what happened on the screen. Critically, the agent was described as wanting to help the child and always looking at the balloon (see section [script](#appendix-script) for the English wording). 
+
+Children completed one fam1 trial, two fam2 trials and 16 test trials. We excluded the first test trial from the analysis because of the voice-over. Thus, 15 test trials were used in the analysis below. 
+
+Each child saw eight different agents, four male, four female. The agent changed from trial to trial, with alternating genders. A coin toss before the first trial decided whether the first agent was male or female. The order in which agents were shown was randomized with the constraint that all agents had to be shown once until an agent was shown again. The color of the balloon also changed from trial to trial in a random order, also with the constraint that all colors appeared once before any one was repeated.
+
+The location (x-coordinate) where the balloon landed was determined in the following way: The screen was divided in ten equally sized bins. On each trial, one of the bins was randomly selected and the exact x-coordinate was randomly chosen within that bin. Constraints were that the balloon landed in each bin equally often and the same bin appeared no more than twice in a row. 
+
+All children were tested with a touch screen device with a size between 11 and 13 inch equipped with a webcam. The data was either stored locally or sent to a server. In addition to the behavioral data, we stored the webcam recording of the session for verification purposes.  
+
+## Culture-specific adaptations
+
+The following components of the task were adapted to each cultural setting: voice-overs, agents, background. The voice overs were originally formulated in British English and German (see section [script](#script)). For each setting, they were first translated/adapted to the local language. In some cases (BaYaka and Bandongo), this was done by first translating them to French. The translations were done by native or near-native speakers. They were not exact translations of the original text but were adapted so that children from the respective community would understand them. For example, the word "hedge" in the British English version was changed to "bush" for the Nigerian English version to adjust for how children in the respective community would refer to the thing they saw. The content of each utterance was comparable across languages.
+
+The agents were drawn for each cultural setting in close collaboration with local researchers and/or research assistants. They were meant to show young adults and represent the diversity in appearance prevalent in the local population. Figure \@ref(fig:figagents) shows the agents that were used in the study. Some agents were used in multiple cultural settings. All agents had roughly the same underlying eye-geometry (size of the pupil and the iris) and only differed in superficial features. 
+
+```{r figagents, include = T, fig.align = "center", fig.cap = "Agents used in the task. Some agents were used for multiple cultural settings", out.width="100%"}
+knitr::include_graphics("../figures/agents.png")
+``` 
+
+## Questionnaire
+
+The parents of children who participated in the task were asked to fill out a short questionnaire with the following questions (English version):
+
+* Is there a device with a screen in your household? (answer: "yes" or "no")
+* Does your child have experience with touchscreens? (answer: "yes" or "no")
+* How many people live in your household (people residing and sleeping in one place e.g., a house)? (answer: number)
+* How many children live in your household? (answer: number)
+* How many children in your household are younger than the child participating in the study? (answer: number)
+
+The questions were translated to parents’ native language by an assistant fluent in English and the parents’ language. Whenever parents were not able to read or write (most relevant for Chimfunshi, BaYaka, Bandongo, Khwe, Ha||om, Nyabyeya), research assistants asked the question and recorded the answer. Figure \@ref(fig:figpred2) summarizes the responses to the questions for each cultural setting.  
+
 ```{r figpred2, include = T, fig.align = "center", fig.cap = "Household demographics by community.  Points show individual data points with minimal vertical and horizontal jitter to avoid overplotting. Red points show means with 95\\% CI.", out.width="100%"}
 
 # dempred_agg <- data%>%
@@ -704,57 +778,12 @@ knitr::include_graphics("../figures/dempred.png")
 
 ```
 
-# Method
-
-We adapted the task developed by Prein and colleagues [@prein2023tango]. We refer to the original publication for a detailed description of its development, implementation and psychometric evaluation (in Germany). Below, we give an overview and focus on the cross-cultural adaptation of the task. The task itself, including all the versions used in the study, can be accessed via the following website: https://ccp-odc.eva.mpg.de/tango-cc/
-
-## Setup and Procedure
-
-```{r task, include = T, fig.align = "center", fig.cap = "Screenshot from the task. The scene depicts the choice phase in a test trial. Participants had to use the gaze of the agent to locate the balloon and click on the hedge where they thought the balloon was.", out.width="80%"}
-knitr::include_graphics("../figures/task.png")
-``` 
-
-The task was implemented as a browser-based interactive picture book using `HTML` and `JavaScript`. Participants saw animated agents on a touch screen device, listened to pre-recorded audio instructions and responded by touching the screen. In all communities, a research assistant, fluent in the local language(s), guided the child through the task. 
-
-Figure \@ref(fig:task) shows a screenshot from the task. The task was introduced verbally by the assistant as the balloon game in which the participant would play with other children to find a balloon. On each trial, participants saw an agent located in a window in the center of the screen. A balloon fell down from its starting position just below the agent. The agent's gaze followed the trajectory of the balloon. That is, the pupils and the iris were programmed to align with the center of the balloon. Once the balloon had landed on the ground, the agent was instructed to locate it, that is, to touch the location on the screen where they thought the balloon was. On each trial, we recorded the exact x-coordinate of the participant's touch.
-
-There were two types of familiarization trials. In fam1 trials, the balloon fell down and landed in plain sight. Participants simply had to touch the visible balloon. In fam2 trials, the trajectory of the balloon was visible but it landed behind a small barrier (a hedge - see Figure \@ref(fig:task)). Thus, participants needed to touch the hedge where they saw the balloon land. Next came test trials. Here, the barrier moved up and covered the balloon's trajectory. That is, participants only saw the agent's eyes move, but not the balloon. They had to infer the location of the balloon based on the agent's gaze direction. During fam1, fam2 and the first test trial, children heard voice overs commenting what happened on the screen. Critically, the agent was described as wanting to help the child and to always look at the balloon (see section [script](#appendix-script) for the English wording). 
-
-Children completed one fam1 trial, two fam2 trials and 16 test trials. We excluded the first test trial from the analysis because of the voice-over. Thus, 15 test trials were used in the analysis below. 
-
-Each child saw eight different agents, four male, four female. The agent changed from trial to trial, with alternating genders. A coin toss before the first trial decided whether the first agent was male or female. The order in which agents were shown was randomized with the constraint that all agents had to be shown once until an agent was shown again. The color of the balloon also changed from trial to trial in a random order, also with the constraint that all colors appeared once before any one was repeated.
-
-The location (x-coordinate) where the balloon landed was determined in the following way: The screen was divided in ten equally sized bins. On each trial, one of the bins was randomly selected and the exact x-coordinate was randomly chosen within that bin. Constraints were that the balloon landed in each bin equally often and the same bin appeared no more than twice in a row. 
-
-All children were tested with a touch screen device with a size between 11 and 13 inch equipped with a webcam. The data was either stored locally or sent to a server. In addition to the behavioral data, we stored the webcam recording of the session for verification purposes.  
-
-## Culture-specific adaptations
-
-The following components of the task were adapted to each cultural settings: voice-overs, agents, background. The voice overs were originally formulated in British English and German (see section [script](#script)). For each setting, they were first translated/adapted to the local language. In some cases (BaYaka and Bandongo), this was done by first translating them to French. The translations were done by native or near-native speakers. They were not exact translations of the original text but were adapted so that children from the respective community would understand them. For example, the word "hedge" in the British English version was changed to "bush" for the Nigerian English version to adjust for how children in the respective community would refer to the thing they saw. The content of each utterance was comparable across languages.
-
-The agents were drawn for each cultural setting in close collaboration with local researchers and/or research assistants. They were meant to show young adults and represent the diversity in appearance prevalent in the local population. Figure \@ref(fig:figagents) shows the agents that were used in the study. Some agents were used in multiple cultural settings. All agents had roughly the same underlying eye-geometry (size of the pupil and the iris) and only differed in superficial features. 
-
-```{r figagents, include = T, fig.align = "center", fig.cap = "Agents used in the task. Some agents were used for multiple cultural settings", out.width="100%"}
-knitr::include_graphics("../figures/agents.png")
-``` 
-
-## Questionnaire
-
-The parents of children who participated in the task were asked to fill out a short questionnaire with the following questions (English version):
-
-* Is there a device with a screen in your household? (answer: "yes" or "no")
-* Does your child have experience with touchscreens? (answer: "yes" or "no")
-* How many people live in your household (people residing and sleeping in one place e.g., a house)? (answer: number)
-* How many children live in your household? (answer: number)
-* How many children in your household are younger than the child participating in the study? (answer: number)
-
-The questions were translated to parents' native language by a native speaker. The number of older children living in the same household was computed by subtracting one (the child completing the study) and the number of younger children from the total number of children. Whenever parents were not able to read or write (most relevant for Chimfunshi, BaYaka, Bandongo, Khwe, Ha||om), research assistants asked the question and recorded the answer. 
 
 # Analysis
 
 We analysed the data in three steps. First, we tested whether there was substantial cross-cultural variation in performance. Second, we looked for signatures in the data that children processed gaze in the same way across cultural settings. Finally, we related performance in the task (on an individual level) to aspects of everyday experience, in particular the exposure to screen-based technology and social interaction (approximated by household composition). 
 
-We used Bayesian Regression models fit in `R` [@r] using the package `brms` [@burkner2017brms] for all analyses except the cognitive models, which were implemented in the probabilistic programming language `webppl` [@dippl]. For regression models, we used the default priors built in to `brms`. The dependent variable in all regression models was imprecision, that is, the absolute distance between the true location of the balloon (x-coordinate of its center) and the location where the participant touched the screen. We used a Log-normal distribution to model the data because the natural lower bound for imprecision is zero and the data was right skewed with a long tail. Numeric predictors that entered the models were scaled to have a mean of zero and a standard deviation of 1. For each model, we collected 6000 samples from four chains, removing the first 2000 for burn-in. All models had converging chains (Rhat values < 1.01). Details specific to each analysis can be found below. The analysis code can be found in the online repository associated with the study (link).  
+We used Bayesian Regression models fit in `R` [@r] using the package `brms` [@burkner2017brms] for all analyses except the cognitive models, which were implemented in the probabilistic programming language `webppl` [@dippl]. For regression models, we used the default priors built in to `brms`. The dependent variable in all regression models was imprecision, that is, the absolute distance between the true location of the balloon (x-coordinate of its center) and the location where the participant touched the screen. We used a Log-normal distribution to model the data because the natural lower bound for imprecision is zero and the data was right skewed with a long tail. Numeric predictors that entered the models were scaled to have a mean of zero and a standard deviation of 1. For each model, we collected 6000 samples from four chains, removing the first 2000 for burn-in. All models had converging chains (Rhat values < 1.01). Details specific to each analysis can be found below. The analysis code can be found in the online repository associated with the study (https://github.com/ccp-eva/gafo-cc-analysis).  
 
 We pre-registered an analysis plan at https://osf.io/tdsvc. The analyses reported below follow the same logic as the pre-registered analyses but they differ substantially in detail. The main difference lies in the random effects structure we used in the models. In the pre-registration, we did not include random slopes for target centrality (i.e. the distance of the location where the balloon landed from the center of the screen), neither within subject nor within cultural setting. Instead, we included random slopes for trial within subject. We decided to change this and remove random slopes for trial but include them for target centrality. The reasons were as follows: trial effects in the sense of learning across trials were unlikely because participants did not receive differential feedback. Furthermore, in multiple studies with the same task since the registration we never found any trial effects [@prein2023tango; @prein2023variation]. We therefore removed trial from the models completely. On the other hand, we included random slopes for target centrality to be able to look at cross-cultural variation. The cognitive model was not mentioned in the pre-registration because it is a more recent development [see @prein2023variation].
 
@@ -1098,8 +1127,6 @@ All models were run separately for each cultural setting. The code to run the mo
 
 We compared models based on the marginal likelihood of the data for each model, which represents the likelihood of the data while averaging over the prior distribution on parameters. The pair-wise ratio of marginal likelihoods for two models is known as the Bayes Factor. Bayes Factors are a quantitative measure of the predictive quality of a model, taking into account the possible values of the model parameters weighted by their prior probabilities. The incorporation of the prior distribution over parameters in the averaging process implicitly considers model complexity: models with more parameters typically exhibit broader prior distributions over parameter values and broader prior distribution can attenuate the potential gains in predictive accuracy that a model with more parameters might otherwise achieve [@lee2014bayesian].
 
-Table \@ref(tab:bftable) shows the Bayes Factors in favor of the vector-based gaze estimation model for each cultural setting. The evidence in favor of the gaze model compared to the two alternative models was clear (all BF > 1 000 000 000 000 000). This result rules out that the u-shaped pattern in the data was the result of participants always clicking the center instead of following gaze. 
-
 ```{r bftable, echo=F}
 bf <- readRDS("../model/output/bf_comparison.rds")%>%
   mutate_if(is.numeric, format, digits = 2, nsmall = 2)%>%
@@ -1129,6 +1156,8 @@ kableExtra::kable(bf,
              format="latex", booktabs=TRUE, escape = F
              )
 ```
+
+Table \@ref(tab:bftable) shows the Bayes Factors in favor of the vector-based gaze estimation model for each cultural setting. The evidence in favor of the gaze model compared to the two alternative models was clear (all BF > 1 000 000 000 000 000). This result rules out that the u-shaped pattern in the data was the result of participants always clicking the center instead of following gaze. 
 
 ## Experiential predictors 
 
