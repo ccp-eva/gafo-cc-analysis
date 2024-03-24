@@ -1,5 +1,5 @@
 ---
-title             : "A cross-cultural universal of human social cognition: Children from 17 diverse communities process gaze in similar ways"
+title             : "A universal of human social cognition: Children from 17 communities process gaze in similar ways"
 shorttitle        : "Gaze-following across 17 communities"
 
 author: 
