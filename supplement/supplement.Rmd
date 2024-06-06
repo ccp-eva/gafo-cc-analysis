@@ -1,20 +1,20 @@
 ---
 title: "A universal of human social cognition: Children from 17 communities process gaze in similar ways"
-subtitle: "Supplemental material"
+subtitle: "Supplementary Material"
 author:
   - Manuel Bohn
   - Julia Prein
   - Agnes Ayikoru
   - Florian M. Bednarski
   - Ardain Dzabatou
-  - Michael C. Frank 
-  - Annette M. E. Henderson 
+  - Michael C. Frank
+  - Annette M. E. Henderson
   - Joan Isabella
-  - Josefine Kalbitz 
+  - Josefine Kalbitz
   - Patricia Kanngiesser
   - Dilara Keşşafoğlu
   - Bahar Köymen
-  - Maira V. Manrique-Hernandez 
+  - Maira V. Manrique-Hernandez
   - Shirley Magazi
   - Lizbeth Mújica-Manrique
   - Julia Ohlendorf
@@ -783,9 +783,9 @@ knitr::include_graphics("../figures/dempred.png")
 
 We analysed the data in three steps. First, we tested whether there was substantial cross-cultural variation in performance. Second, we looked for signatures in the data that children processed gaze in the same way across cultural settings. Finally, we related performance in the task (on an individual level) to aspects of everyday experience, in particular the exposure to screen-based technology and social interaction (approximated by household composition). 
 
-We used Bayesian Regression models fit in `R` [@r] using the package `brms` [@burkner2017brms] for all analyses except the cognitive models, which were implemented in the probabilistic programming language `webppl` [@dippl]. For regression models, we used the default priors built in to `brms`. The dependent variable in all regression models was imprecision, that is, the absolute distance between the true location of the balloon (x-coordinate of its center) and the location where the participant touched the screen. We used a Log-normal distribution to model the data because the natural lower bound for imprecision is zero and the data was right skewed with a long tail. Numeric predictors that entered the models were scaled to have a mean of zero and a standard deviation of 1. For each model, we collected 6000 samples from four chains, removing the first 2000 for burn-in. All models had converging chains (Rhat values < 1.01). Details specific to each analysis can be found below. The analysis code can be found in the online repository associated with the study (https://github.com/ccp-eva/gafo-cc-analysis).  
+We used Bayesian Regression models fit in `R` [@r] using the package `brms` [@burkner2017brms] for all analyses except the cognitive models, which were implemented in the probabilistic programming language `webppl` [@dippl]. For regression models, we used the default priors built in to `brms`. The dependent variable in all regression models was imprecision, that is, the absolute distance between the true location of the balloon (x-coordinate of its center) and the location where the participant touched the screen. We used a Log-normal distribution to model the data because the natural lower bound for imprecision is zero and the data was right skewed with a long tail. Numeric predictors that entered the models were scaled to have a mean of zero and a standard deviation of 1. For each model, we collected 6000 samples from four chains, removing the first 2000 for burn-in. All models had converging chains (Rhat values < 1.01). Details specific to each analysis can be found below. The analysis code can be found in the online repository associated with the study<!--[masked for peer review; see .zip file included]--> (https://github.com/ccp-eva/gafo-cc-analysis/).  
 
-We pre-registered an analysis plan at https://osf.io/tdsvc. The analyses reported below follow the same logic as the pre-registered analyses but they differ substantially in detail. The main difference lies in the random effects structure we used in the models. In the pre-registration, we did not include random slopes for target centrality (i.e. the distance of the location where the balloon landed from the center of the screen), neither within subject nor within cultural setting. Instead, we included random slopes for trial within subject. We decided to change this and remove random slopes for trial but include them for target centrality. The reasons were as follows: trial effects in the sense of learning across trials were unlikely because participants did not receive differential feedback. Furthermore, in multiple studies with the same task since the registration we never found any trial effects [@prein2023tango; @prein2023variation]. We therefore removed trial from the models completely. On the other hand, we included random slopes for target centrality to be able to look at cross-cultural variation. The cognitive model was not mentioned in the pre-registration because it is a more recent development [see @prein2023variation].
+We pre-registered an analysis plan at <!--https://osf.io/tdsvc/?view_only=f404d66c967542f28ce4af16371f34e6-->https://osf.io/tdsvc. The analyses reported below follow the same logic as the pre-registered analyses but they differ substantially in detail. The main difference lies in the random effects structure we used in the models. In the pre-registration, we did not include random slopes for target centrality (i.e. the distance of the location where the balloon landed from the center of the screen), neither within subject nor within cultural setting. Instead, we included random slopes for trial within subject. We decided to change this and remove random slopes for trial but include them for target centrality. The reasons were as follows: trial effects in the sense of learning across trials were unlikely because participants did not receive differential feedback. Furthermore, in multiple studies with the same task since the registration we never found any trial effects [@prein2023tango; @prein2023variation]. We therefore removed trial from the models completely. On the other hand, we included random slopes for target centrality to be able to look at cross-cultural variation. The cognitive model was not mentioned in the pre-registration because it is a more recent development [see @prein2023variation].
 
 ## Cross-cultural variation
 
