@@ -808,11 +808,11 @@ We compared the following models (`brms` notation):
 * `imprecision ~ age + target_centrality + (target_centrality | participant) + (age + target_centrality | culture)`
 
 ```{r}
-# mdata <- data%>%
-#   ungroup()%>%
-#   mutate(ageinyears = as.numeric(scale(ageinyears)),
-#          targetcentralityx = as.numeric(scale(targetcentralityx)),
-#          click = abs(clickdistfromtargetcenterx))
+mdata <- data%>%
+  ungroup()%>%
+  mutate(ageinyears = as.numeric(scale(ageinyears)),
+         targetcentralityx = as.numeric(scale(targetcentralityx)),
+         click = abs(clickdistfromtargetcenterx))
 
 #write_csv(mdata,"../data/mdata.csv")
 ```
@@ -1183,8 +1183,8 @@ Table \@ref(tab:bftable) shows the Bayes Factors in favor of the vector-based ga
 #                               chains = 4,
 #                               cores  = 4,
 #              control = list(adapt_delta = 0.95),
-#              backend = "cmdstanr",
-#              threads = threading(8)
+#              #backend = "cmdstanr",
+#              #threads = threading(8)
 #              )%>%
 #   add_criterion(., c("waic","loo"))
 # 
@@ -1196,8 +1196,9 @@ Table \@ref(tab:bftable) shows the Bayes Factors in favor of the vector-based ga
 #                               chains = 4,
 #                               cores  = 4,
 #              control = list(adapt_delta = 0.95),
-#              backend = "cmdstanr",
-#              threads = threading(8))%>%
+#              #backend = "cmdstanr",
+#              #threads = threading(8)
+#              )%>%
 #   add_criterion(., c("waic","loo"))
 # 
 # bm_pred_tc_hh <- brm(mean_click ~ ageinyears + touchscreen + household + (ageinyears |community),
@@ -1207,9 +1208,9 @@ Table \@ref(tab:bftable) shows the Bayes Factors in favor of the vector-based ga
 #                               iter   = 4000,
 #                               chains = 4,
 #                               cores  = 4,
-#              control = list(adapt_delta = 0.95),
-#              backend = "cmdstanr",
-#              threads = threading(8)
+#              control = list(adapt_delta = 0.95)#,
+#              #backend = "cmdstanr",
+#              #threads = threading(8)
 #              )%>%
 #   add_criterion(., c("waic","loo"))
 # 
@@ -1221,9 +1222,9 @@ Table \@ref(tab:bftable) shows the Bayes Factors in favor of the vector-based ga
 #                               iter   = 4000,
 #                               chains = 4,
 #                               cores  = 4,
-#              control = list(adapt_delta = 0.95),
-#              backend = "cmdstanr",
-#              threads = threading(8)
+#              control = list(adapt_delta = 0.95)#,
+#              #backend = "cmdstanr",
+#              #threads = threading(8)
 #              )%>%
 #   add_criterion(., c("waic","loo"))
 # 
@@ -1234,12 +1235,12 @@ Table \@ref(tab:bftable) shows the Bayes Factors in favor of the vector-based ga
 #                               iter   = 4000,
 #                               chains = 4,
 #                               cores  = 4,
-#              control = list(adapt_delta = 0.95),
-#              backend = "cmdstanr",
-#              threads = threading(8)
+#              control = list(adapt_delta = 0.95)#,
+#              #backend = "cmdstanr",
+#              #threads = threading(8)
 #              )%>%
 #   add_criterion(., c("waic","loo"))
-# 
+
 # bm_pred_tc_rand <- brm(mean_click ~ ageinyears + touchscreen + (touchscreen + ageinyears |community),
 #                               data   = scdata,
 #                               family = lognormal(),
@@ -1298,28 +1299,7 @@ We compared models in a Bayesian model comparison. Models were compared based on
 
 * `mean_imprecision ~ younger_children + touchscreen + age + (age | culture)`
 
-```{r predcomptable, echo=F}
-pred_mocel_comp <- readRDS("../saves/model_comp.rds")%>%
-  mutate_if(is.numeric, format, digits = 2, nsmall = 2)%>%
-  select(model, elpd_diff, se_diff, waic, se_waic, value)%>%
-  mutate(model = recode(model, 
-                        bm_pred_null = "null",
-                        bm_pred_tc = "touchscreen",
-                        bm_pred_tc_hh = "household",
-                        bm_pred_tc_c = "children",
-                        bm_pred_tc_yc = "younger children",
-                        bm_pred_tc_rand = "touchscreen (by culture)"))
-  
 
-
-kableExtra::kable(pred_mocel_comp,
-             col.names = c("Model","diff\\textsubscript{WAIC}", "diff\\textsubscript{SE}", "WAIC", "SE", "Weight"),
-             caption = "Log Bayes Factors in favor of the gaze model compared to two alternative models.",
-             format="latex", booktabs=TRUE, escape = F
-             )
-
-
-```
 
 
 Table \@ref(tab:predcomptable) shows that the model predicting average imprecision by the availability of touchscreens performed best and better than any of the models including a predictor referring to household composition. However, the difference between the models was very small (`ELPD` < 1, see Table \@ref(tab:predcomptable)), suggesting that they are largely equivalent, and, for the sake of consistency, we therefore inspected the posterior estimates for household composition predictors nevertheless. 
@@ -1338,6 +1318,31 @@ To test whether there was variation across cultural settings in the importance o
 # saveRDS(pred_est, "../saves/pred_est.rds")
 
 pred_est <- readRDS("../saves/pred_est.rds")
+```
+
+```{r}
+pred_est_sc <- 
+  bind_rows(
+  fixef(bm_pred_tc_hh)%>%
+  as_tibble(rownames = "term")%>%
+  filter(term == "household")%>%
+  mutate_if(is.numeric,round, 2),
+  
+    fixef(bm_pred_tc_c)%>%
+  as_tibble(rownames = "term")%>%
+  filter(term == "children")%>%
+  mutate_if(is.numeric,round, 2),
+  
+    fixef(bm_pred_tc_yc)%>%
+  as_tibble(rownames = "term")%>%
+  filter(term == "younger_children")%>%
+  mutate_if(is.numeric,round, 2)
+  
+  )
+
+saveRDS(pred_est_sc, "../saves/pred_est_sc.rds")
+
+pred_est_sc <- readRDS("../saves/pred_est_sc.rds")
 ```
 
 
