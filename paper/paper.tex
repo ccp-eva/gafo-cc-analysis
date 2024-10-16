@@ -197,7 +197,7 @@
 \date{}
 
 
-\shorttitle{gaze following across 17 communities}
+\shorttitle{Gaze following across 17 communities}
 
 \authornote{
 
@@ -219,6 +219,14 @@ Theoretical accounts assume that key features of human social cognition are univ
 
 \begin{document}
 \maketitle
+
+\begin{verbatim}
+## # A tibble: 2 x 3
+##   side  left_bias right_bias
+##   <chr>     <dbl>      <dbl>
+## 1 left      0.170      0.830
+## 2 right     0.754      0.246
+\end{verbatim}
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
@@ -398,7 +406,7 @@ As stated above, the key signature prediction of the model is that precision dec
 
 The same pattern, however, also arises when participants ignore the agent's gaze completely and instead follow simple heuristics. When participants always touch the center of the screen, regardless of where the agent is looking, trials in which the balloon lands further away from the center have a higher imprecision. When participants randomly touch a location on the screen -- again ignoring the agent's gaze -- the maximum imprecision for trials in which the balloon lands in the center is half the width of the screen. When the balloon lands on one of the far ends of the screen, the maximum imprecision is a full screen widths. Thus, across trials, the average imprecision is again higher when the balloon lands further away from the center, resulting in the same pattern as predicted by the model.
 
-Even though these alternatives are unlikely because they assume that participants ignore the agent's gaze, we nevertheless want to rule them out as processes generating the data. Thus, we implemented the gaze model along with the two alternative models in the probabilistic programming language \texttt{webppl} (Goodman \& Stuhlmüller, 2014). The way the gaze model predicts the participants behavior has been described above. The center bias model predicts a participant's touch by sampling from a Normal distribution around the center of the screen \(P(x_c) \sim \mathcal{N}(960, 160)\) (960 is the x-coordinate of the center and 160 is the width of the balloon). The ranom guessing model predicts participant's touch by sampling from a uniform distribution over all possible locations: \(P(x_c) \sim \mathcal{U}(0, 1920)\). Information on the prior distributions for all model parameters can be found in the associated online repository.
+Even though these alternatives are unlikely because they assume that participants ignore the agent's gaze, we nevertheless want to rule them out as processes generating the data. Thus, we implemented the gaze model along with the two alternative models in the probabilistic programming language \texttt{webppl} (Goodman \& Stuhlmüller, 2014). The way the gaze model predicts the participants behavior has been described above. The center bias model predicts a participant's touch by sampling from a Normal distribution around the center of the screen \(P(x_c) \sim \mathcal{N}(960, 160)\) (960 is the x-coordinate of the center and 160 is the width of the balloon). The random guessing model predicts participant's touch by sampling from a uniform distribution over all possible locations: \(P(x_c) \sim \mathcal{U}(0, 1920)\). Information on the prior distributions for all model parameters can be found in the associated online repository.
 
 For each community, we compared models based on the marginal likelihood of the data for each model, which represents the likelihood of the data while averaging over the prior distribution on parameters. The pair-wise ratio of marginal likelihoods for two models is known as the Bayes Factor. Bayes Factors are a quantitative measure of the predictive quality of a model, taking into account the possible values of the model parameters weighted by their prior probabilities. The incorporation of the prior distribution over parameters in the averaging process implicitly considers model complexity: models with more parameters typically exhibit broader prior distributions over parameter values and broader prior distribution can attenuate the potential gains in predictive accuracy that a model with more parameters might otherwise achieve (Lee \& Wagenmakers, 2014).
 
@@ -412,6 +420,8 @@ In the questionnaire, we asked about children's exposure to screens as well as t
 For household composition, we asked for the total number of people in the household, the number of children and the number of younger children. We standardized each predictor within each community before fitting the models. Thus, the interpretation of the coefficient is the gain in precision for living e.g., in a larger household relative to other children from the same community.
 
 We compared a null model (\texttt{mean\_imprecision\ \textasciitilde{}\ age\ +\ (age\ \textbar{}\ community)}) to a model including access to touchscreens only as a fixed effect (\texttt{mean\_imprecision\ \textasciitilde{}\ touchscreen\ +\ age\ +\ (age\ \textbar{}\ culture)}), a model in which the effect of access to touchscreens was also allowed to vary by community (\texttt{mean\_imprecision\ \textasciitilde{}\ touchscreen\ +\ age\ +\ (touchscreen\ +\ age\ \textbar{}\ culture)}) and a model for each of the household-based predictors (e.g., \texttt{mean\_imprecision\ \textasciitilde{}\ household\_size\ +\ touchscreen\ +\ age\ +\ (age\ \textbar{}\ culture)}). Models were fit in \texttt{brms} and compared based on the difference in expected log pointwise predictive density (\texttt{ELPD}) computed via the widely applicable information criterion (\texttt{WAIC}) and the standard error of that difference (SE). We inspected the estimates for fixed effects in the winning model along with their 95\% CrI.
+
+For a community-level perspective, we correlated the proportion of children with access to touchscreens with an age-corrected performance average for each community. To obtain the latter, extracted the random intercept estimates for community from the null model described above. Because the model also includes age as a fixed effect, these values reflect variation between communities once differences in age have been accounted for.
 
 \hypertarget{results}{%
 \section{Results}\label{results}}
@@ -439,7 +449,9 @@ Next, we investigated developmental gains, that is, the extent to which children
 \caption{Graphical illustration of the cognitive model. Individuals infer the target of an agent’s attention by estimating a vector based on the position of the pupils within the eyes. This process is noisy, illustrated by the different vectors (transparent lines). Individuals differ in their level of precision (indicated by sigma). For a given level of precision, the further the target lands from the center of the screen, the less precise the model predicts individuals to be. Solid and transparent dots show simulated means and individual data points to illustrate the predicted effect of target position.}\label{fig:fig12}
 \end{figure}
 
-The key processing signature predicted by the cognitive model was that precision should decrease when the balloon landed further away from the center. This signature was clearly visible across all 17 communities (fixed effect for target centrality: \(\beta\) = 0.47, 95\% CrI (0.40 --- 0.54); range of community-level (random) effects: \(\beta_{min}\) = 0.58, 95\% CrI (0.51 --- 0.66) to \(\beta_{max}\) = 0.16, 95\% CrI (-0.01 --- 0.33)). Visualization of the data showed the predicted u-shaped pattern in all communities (see Fig. \ref{fig:fig2}B).
+The key processing signature predicted by the cognitive model was that precision should decrease when the balloon landed further away from the center. This signature was clearly visible across all 17 communities (fixed effect for target centrality: \(\beta\) = 0.47, 95\% CrI (0.40 --- 0.54); range of community-level (random) effects: \(\beta_{min}\) = 0.58, 95\% CrI (0.51 --- 0.66) to \(\beta_{max}\) = 0.16, 95\% CrI (-0.01 --- 0.33)).
+
+Visualization of the data also showed the predicted u-shaped pattern in all communities (see Fig. \ref{fig:fig2}B). The visualization also showed that the u is not symmetric. Instead, imprecision seemed to be higher when the target lands on the left side of the screen.
 
 To rule out alternative explanations, we compared the focal vector-based gaze estimation model described above to the alternative center bias and random guessing models, we found overwhelming support for the gaze estimation model (min \(BF_{10}\) \textgreater{} 100 000 for comparisons with both alternative models, see Supplementary Materials) in every community.
 
@@ -467,30 +479,30 @@ null & -4.32 & 3.63 & 16944.38 & 70.97 & 0.20\\
 
 The model comparison favored the model including touchscreen as a fixed effect (no variation between communities) with no additional predictors capturing aspects of household composition (see Table \ref{tab:predcomptable}). Children with access to touchscreen devices had higher levels of precision (\(\beta\) = -0.14, 95\% CrI = -0.21 --- -0.07). This effect was consistent across communities in that allowing the effect of access to touchscreens to vary across communities did not improve model fit.
 
-On a community level, we also saw that average performance was lowest in communities in which touchscreen devices were the least frequent (community-level correlation between age-corrected imprecision and proportion of children with access to touchscreens: \emph{r} = -0.90, 95\% CI = -0.96 --- -0.74).
+On a community level, average performance was lowest in communities in which touchscreen devices were the least frequent (community-level correlation between age-corrected imprecision and proportion of children with access to touchscreens: \emph{r} = -0.90, 95\% CI = -0.96 --- -0.74).
 
-However, differences between models were small (\texttt{ELPD} \textless{} 1, see Table \ref{tab:predcomptable}), suggesting that they were largely equivalent, and, for the sake of consistency, we therefore inspected the posterior estimates for household composition predictors nevertheless, none of which had a 95\% CrI excluding zero (household size: \(\beta\) = -0.01, 95\% CrI = -0.03 --- 0.02; children size: \(\beta\) = 0, 95\% CrI = -0.02 --- 0.02; younger children: \(\beta\) = 0.01, 95\% CrI = -0.01 --- 0.03)
+Table \ref{tab:predcomptable} shows that differences between models were small (\texttt{ELPD} \textless{} 1), suggesting that they were largely equivalent. For the sake of consistency, we also inspected the posterior estimates for household composition predictors, none of which had a 95\% CrI excluding zero (household size: \(\beta\) = -0.01, 95\% CrI = -0.03 --- 0.02; children size: \(\beta\) = 0, 95\% CrI = -0.02 --- 0.02; younger children: \(\beta\) = 0.01, 95\% CrI = -0.01 --- 0.03).
 
 \hypertarget{discussion}{%
 \section{Discussion}\label{discussion}}
 
-Following and understanding gaze is a foundational building block of human social cognition (Langton et al., 2000; Richardson \& Dale, 2005; Rossano, 2012; Scaife \& Bruner, 1975; Sebanz et al., 2006; Tomasello et al., 2007). A substantial body of work has explored the developmental onset of gaze following in a few selected cultural communities (Byers-Heinlein et al., 2021; Gredebäck et al., 2010; Moore, 2008; Tang et al., 2023). The data reported here provides strong evidence that children from a large and diverse set of communities process others' gaze in similar ways. We found key performance signatures predicted by a model treating gaze following as a form of social vector estimation process across all 17 communities. With the focus on individual-level processing signatures, the study goes beyond previous studies on gaze following -- focused on the onset of gaze following in infancy (Callaghan et al., 2011; Hernik \& Broesch, 2019) -- as well as comprehensive cross-cultural studies that compared average developmental trajectories (Blake et al., 2015; House et al., 2020; Kanngiesser et al., 2022; Van Leeuwen et al., 2018).
+Following and understanding gaze is a foundational building block of human social cognition (Langton et al., 2000; Richardson \& Dale, 2005; Rossano, 2012; Scaife \& Bruner, 1975; Sebanz et al., 2006; Tomasello et al., 2007). A substantial body of work has explored the developmental onset of gaze following in early infancy and in a few selected cultural communities (Byers-Heinlein et al., 2021; Gredebäck et al., 2010; Moore, 2008; Tang et al., 2023). The study reported here presents comparable data (i.e.~collected via the same task with minimal superficial adjustments) on the development of gaze following in young children from 17 communities from five continents. We found substantial variation between cultural settings, both in average levels as well as the steepness of developmental trajectories. In that, however, individual-level variation greatly outweighed community-level variation. Despite this variation, we found evidence that the basic process of gaze following is the same across communities: We found key performance signatures predicted by a model conceptualizing gaze following as a form of social vector estimation process in all communities. Individual-differences in gaze following were related to children's exposure to touchscreens but not to aggregate measures of opportunities for social interactions (i.e.~household composition). This study provides evidence for a putative universal in basic social cognition and presents a new approach to studying cognitive processing in light of cross-cultural and individual variation.
 
-Cultural settings are not homogeneous clusters but greatly overlap.
+The task we used has good individual-level measurement properties across cultures (Prein, Bednarski, et al., 2024). This puts us in the position to contrast individual-level variability with community-level variability instead of dismissing the former as noise. The obvious pattern here was that cultural settings did not form homogeneous clusters but greatly overlapping distributions. That is, variation in the average developmental trajectories was small compared to variation between-individuals both within communities and across them. Some individuals from the community with the highest average level of imprecision outperformed individuals from the community with the lowest average. Thus, the explanatory power of of community-level variables might be limited.
 
-alternative models not really alternative processes - motor noise model predicts no u-shaped pattern.
+On the face of it, a community-level perspective on the results points to a urban vs.~rural split in the data. Importantly, our sample included urban settings from the global north and south so that geographic location and living conditions are only partly confounded (we did not collect data in rural settings in the global north). Case in point is Namibia, where we collected data in both types of settings with results mirroring the overall pattern. In previous work, such differences are often attributed to specific community-level differences in everyday experiences that come with urbanization (e.g., Amir et al., 2020; Mavridis et al., 2020). Correlations identified this way remain speculative because urbanization brings with it a whole suite of differences. Furthermore, this approach neglects within-community variation in everyday experience (Bohn et al., 2024). It is often chosen because the measures used are not suited to reliably quantify individual-level variation. Given the good measurement properties of our task and the individual-level assessment via the parental questionnaire, we were able to directly link aspects of experience and cognitive development, omitting the intermediate community-level.
 
-Thus, familiarity with the device used for data collection likely explains variation between communities. Children with more touchscreen experience were probably better at task handling and thus more likely to precisely touch the location they inferred the agent to look at.
+We investigated both methodological and household composition as potential predictors. Familiarity with the device used for data collection explained variation between communities. Children with more touchscreen experience were probably better at task handling and thus more likely to precisely touch the location they inferred the agent to look at. Importantly, the model comparison showed that this relation did not vary substantially across communities. This effect, however, did not explain all variation between individuals. For example, in Malatya (Türkiye) where 100\% of children had access to touchscreens there was still substantial variation between individuals. This strongly indicates that other factors likely contributed to individual differences.
 
-However, there was substantial variation between individuals that could not be explained by differential exposures to touchscreens alone. For example, in Malatya (Türkiye) where 100\% of children had access to touchscreens there was still substantial variation between individuals (see Fig.\ref{fig:fig1}B). This strongly indicates that other factors likely contributed to individual differences. Social interaction has been highlighted as an important driver of social-cognitive development (Barresi \& Moore, 1996; Carpendale \& Lewis, 2020; Perner et al., 1994; Rakoczy, 2022; e.g., Tomasello, 2019) and thus we hypothesized (and pre-registered) that more opportunities for social interaction -- approximated by living in larger households with more children -- would be associated with higher levels of precision. When predicting performance by relative opportunities for social interactions within a community -- while accounting for absolute differences and the prevalence of touchscreens -- we found no strong associations between any of the demographic indicators and performance (see Supplementary Material).
+Social-interactional variables have been linked to the development of gaze following in previous work (Astor et al., 2020; Movellan \& Watson, 2002; Senju et al., 2015). Thus, we predicted that opportunities for social interaction -- approximated by household size and composition -- while accounting for absolute differences and the prevalence of touchscreens, would be linked to performance in the task. This was not the case. This result does not provide strong evidence for the absence of a relation between social-interactional variables and the development of gaze following, however, it suggests that a more granular approach is necessary to identify the relevant aspects of social interaction. The coarse approach taken here did not suffice.
 
-The cognitive processes underlying gaze following might be rooted in humans' evolved cognitive architecture, which is -- presumably -- later refined during social interaction (Astor et al., 2020; Movellan \& Watson, 2002; Senju et al., 2015). The phylogenetic roots of these processes might possibly lie much deeper as primates from a wide range of species follow gaze (Itakura, 2004; Kano \& Call, 2014; Rosati \& Hare, 2009; Tomasello et al., 1998). Yet, similarities in overt behavior do not imply the same underlying cognitive processes. The present study defines clear performance signatures that can be explored in other species to test such evolutionary hypotheses.
+Despite substantial variation, we found the expected processing signatures in the data from all communities. Alternative accounts for how this pattern might have arisen did not explain the data well. These alternative approaches did not present viable alternative theoretical accounts for how participants followed gaze and why they differed from one another because they assumed that participants ignore gaze altogether. An alternative account involving the use of gaze cues would be that participants do not differ in the precision with which they estimate the gaze vector but that they differ only in the precision with which they touch the inferred location on the screen. This alternative -- motor noise -- account, however, would not predict the effect of target centrality and the u-shaped relation between target location and precision because motor noise should lead to normally distributed touches around the inferred location. Thus, we take the results as support for the idea of a universal process that is well-approximated by the model. This cognitive process might be rooted in humans' evolved cognitive architecture, which is later refined during ontogeny. The phylogenetic roots of these processes might possibly lie much deeper as primates from a wide range of species follow gaze (Itakura, 2004; Kano \& Call, 2014; Rosati \& Hare, 2009; Tomasello et al., 1998). Yet, similarities in overt behavior do not imply the same underlying cognitive processes. The present study defines clear performance signatures that can be explored in other species to test such evolutionary hypotheses.
 
-Our study combined precise individual-level cognitive measurement and individual-level assessment of experience (here: touchscreen exposure) in a large and diverse sample to directly investigate the impact of specific cultural experiences on developmental outcomes. Instead of establishing universality by maximizing the cultural distance between two or three tested communities (Norenzayan \& Heine, 2005), this large-scale cross-cultural approach treats children's cultural experience at scale, shedding light on the big ``middle ground'' of children's cultural experience (Barrett, 2020).
+An unexpected result was that imprecision seemed to be higher on the left compared to the right side of the screen. One candidate explanation for this pattern might be the dominance -- despite variation -- of right-handedness across cultures (Papadatou-Pastou et al., 2020). As of now, this is mere specualtion and future research should investigate the origins of this pattern in more detail.
 
-The study has important limitations. The fact that performance in the task was correlated with exposure to touchscreens might have overshadowed other sources of variation. However, we think it is in an important innovation that we were able to account for this effect. Most developmental cross-cultural studies do not even question the portability of their measurement instruments. Importantly, the key result that the processing signatures were seen in all communities, is immune to this finding. The potential that lies in the otherwise precise individual-level measurement that the task achieves is largely unexploited. The questionnaire items only offer a very coarse picture into children's actual lived experiences. Whilst household size was a useful proxy for regular social interaction opportunities, the measure does not directly measure the factors that previous work has suggested to be related to the development of gaze following in younger children, such as attachment quality or the use of gaze in early communicative interactions (Astor et al., 2020; Movellan \& Watson, 2002; Senju et al., 2015). Future work could increase the resolution with which everyday experiences in children from diverse communities are recorded to compare the drivers behind social-cognitive development as we observe it. Recent work in the field of language acquisition has shown how technological innovations allowed for direct recording of social interactions across communities which can be used to close this explanatory gap (Bergelson et al., 2023; Donnelly \& Kidd, 2021).
+The study has further limitations. The fact that performance in the task was correlated with exposure to touchscreens might have overshadowed other sources of variation. However, we think it is in an important innovation that we were able to account for this effect. Most developmental cross-cultural studies do not even question the portability of their measurement instruments. Importantly, the key result that the processing signatures were evident in all communities, is immune to this finding. The potential that lies in the precise individual-level measurement that our task achieves was largely unexploited. As mentioned above, the questionnaire items only offered a very coarse picture into children's actual lived experiences. Future work could increase the resolution with which everyday experiences in children from diverse communities are recorded to compare the drivers behind social-cognitive development as we observe it. Recent work in the field of language acquisition has shown how technological innovations allowed for direct recording of social interactions across communities which can be used to close this explanatory gap (Bergelson et al., 2023; Donnelly \& Kidd, 2021).
 
-In sum, our work pioneers an approach that introduces computational modeling and precise individual-level measurement to the cross-cultural study of cognitive development. This approach allowed us to test for universals in the human cognitive architecture rather than just overt behavior. As such, it can serve as a blueprint for future research on a broad spectrum of cognitive abilities and offers a much-needed empirical foundation for theories on the nature of the human mind. Children from diverse communities deploy similar cognitive processes in interpreting gaze, pointing to a universal foundation of basic social cognition, which is refined during development.
+In sum, our work pioneers an approach that introduces computational modeling and precise individual-level measurement to the cross-cultural study of cognitive development. This approach allowed us to identify potential universals in the human cognitive architecture rather than just overt behavior. As such, it can serve as a blueprint for future research on a broad spectrum of cognitive abilities. Finally, the study provides a much-needed empirical foundation for theories on the nature of the human mind. Children from diverse communities deploy similar cognitive processes in interpreting gaze, pointing to a universal foundation of basic social cognition.
 
 \newpage
 
@@ -499,6 +511,9 @@ In sum, our work pioneers an approach that introduces computational modeling and
 
 \hypertarget{refs}{}
 \begin{CSLReferences}{1}{0}
+\leavevmode\vadjust pre{\hypertarget{ref-amir2020developmental}{}}%
+Amir, D., Jordan, M. R., McAuliffe, K., Valeggia, C. R., Sugiyama, L. S., Bribiescas, R. G., Snodgrass, J. J., \& Dunham, Y. (2020). The developmental origins of risk and time preferences across diverse societies. \emph{Journal of Experimental Psychology: General}, \emph{149}(4), 650.
+
 \leavevmode\vadjust pre{\hypertarget{ref-amir2020cross}{}}%
 Amir, D., \& McAuliffe, K. (2020). Cross-cultural, developmental psychology: Integrating approaches and key insights. \emph{Evolution and Human Behavior}, \emph{41}(5), 430--444.
 
@@ -511,9 +526,6 @@ Astor, K., Lindskog, M., Juvrud, J., Namgyel, S. C., Wangmo, T., Tshering, K., G
 \leavevmode\vadjust pre{\hypertarget{ref-astor2021gaze}{}}%
 Astor, K., Thiele, M., \& Gredebäck, G. (2021). Gaze following emergence relies on both perceptual cues and social awareness. \emph{Cognitive Development}, \emph{60}, 101121.
 
-\leavevmode\vadjust pre{\hypertarget{ref-barresi1996intentional}{}}%
-Barresi, J., \& Moore, C. (1996). Intentional relations and social understanding. \emph{Behavioral and Brain Sciences}, \emph{19}(1), 107--122.
-
 \leavevmode\vadjust pre{\hypertarget{ref-barrett2020towards}{}}%
 Barrett, H. C. (2020). Towards a cognitive science of the human: Cross-cultural approaches and their urgency. \emph{Trends in Cognitive Sciences}, \emph{24}(8), 620--638.
 
@@ -522,6 +534,9 @@ Bergelson, E., Soderstrom, M., Schwarz, I.-C., Rowland, C. F., Ramirez-Esparza, 
 
 \leavevmode\vadjust pre{\hypertarget{ref-blake2015ontogeny}{}}%
 Blake, P. R., McAuliffe, K., Corbit, J., Callaghan, T. C., Barry, O., Bowie, A., Kleutsch, L., Kramer, K., Ross, E., Vongsachang, H., et al. (2015). The ontogeny of fairness in seven societies. \emph{Nature}, \emph{528}(7581), 258--261.
+
+\leavevmode\vadjust pre{\hypertarget{ref-bohn2024understanding}{}}%
+Bohn, M., Fong, F. T., Pope-Caldwell, S., Stengelin, R., \& Haun, D. B. (2024). Understanding cultural variation in cognition one child at a time. \emph{Nature Reviews Psychology}, 1--3.
 
 \leavevmode\vadjust pre{\hypertarget{ref-brooks2005development}{}}%
 Brooks, R., \& Meltzoff, A. N. (2005). The development of gaze following and its relation to language. \emph{Developmental Science}, \emph{8}(6), 535--543.
@@ -543,9 +558,6 @@ Byers-Heinlein, K., Tsui, R. K.-Y., Van Renswoude, D., Black, A. K., Barr, R., B
 
 \leavevmode\vadjust pre{\hypertarget{ref-callaghan2011early}{}}%
 Callaghan, T., Moll, H., Rakoczy, H., Warneken, F., Liszkowski, U., Behne, T., Tomasello, M., \& Collins, W. A. (2011). Early social cognition in three cultural contexts. \emph{Monographs of the Society for Research in Child Development}, i--142.
-
-\leavevmode\vadjust pre{\hypertarget{ref-carpendale2020makes}{}}%
-Carpendale, J., \& Lewis, C. (2020). \emph{What makes us human: How minds develop through social interactions}. Routledge.
 
 \leavevmode\vadjust pre{\hypertarget{ref-carpenter1998social}{}}%
 Carpenter, M., Nagell, K., Tomasello, M., Butterworth, G., \& Moore, C. (1998). Social cognition, joint attention, and communicative competence from 9 to 15 months of age. \emph{Monographs of the Society for Research in Child Development}, i--174.
@@ -643,6 +655,9 @@ Lempers, J. D. (1979). Young children's production and comprehension of nonverba
 \leavevmode\vadjust pre{\hypertarget{ref-macdonald2013eye}{}}%
 Macdonald, R. G., \& Tatler, B. W. (2013). Do as eye say: Gaze cueing and language in a real-world social interaction. \emph{Journal of Vision}, \emph{13}(4), 6--6.
 
+\leavevmode\vadjust pre{\hypertarget{ref-mavridis2020development}{}}%
+Mavridis, P., Kärtner, J., Cavalcante, L. I. C., Resende, B., Schuhmacher, N., \& Köster, M. (2020). The development of context-sensitive attention in urban and rural brazil. \emph{Frontiers in Psychology}, \emph{11}, 1623.
+
 \leavevmode\vadjust pre{\hypertarget{ref-mayer2013synchrony}{}}%
 Mayer, A., \& Träuble, B. E. (2013). Synchrony in the onset of mental state understanding across cultures? A study among children in samoa. \emph{International Journal of Behavioral Development}, \emph{37}(1), 21--28.
 
@@ -670,8 +685,8 @@ Nielsen, M., Haun, D., Kärtner, J., \& Legare, C. H. (2017). The persistent sam
 \leavevmode\vadjust pre{\hypertarget{ref-norenzayan2005psychological}{}}%
 Norenzayan, A., \& Heine, S. J. (2005). Psychological universals: What are they and how can we know? \emph{Psychological Bulletin}, \emph{131}(5), 763.
 
-\leavevmode\vadjust pre{\hypertarget{ref-perner1994theory}{}}%
-Perner, J., Ruffman, T., \& Leekam, S. R. (1994). Theory of mind is contagious: You catch it from your sibs. \emph{Child Development}, \emph{65}(4), 1228--1238.
+\leavevmode\vadjust pre{\hypertarget{ref-papadatou2020human}{}}%
+Papadatou-Pastou, M., Ntolka, E., Schmitz, J., Martin, M., Munafò, M. R., Ocklenburg, S., \& Paracchini, S. (2020). Human handedness: A meta-analysis. \emph{Psychological Bulletin}, \emph{146}(6), 481.
 
 \leavevmode\vadjust pre{\hypertarget{ref-prein2024measuring}{}}%
 Prein, J. C., Bednarski, F. M., Dzabatou, A., Frank, M. C., Henderson, A. M., Kalbitz, J., Kanngiesser, P., Keşşafoğlu, D., Koymen, B., Manrique-Hernandez, M., et al. (2024). \emph{Measuring variation in gaze following across communities, ages, and individuals---a showcase of the TANGO--CC}.
@@ -684,9 +699,6 @@ Prein, J. C., Maurits, L., Werwach, A., Haun, D. B. M., \& Bohn, M. (2024). Vari
 
 \leavevmode\vadjust pre{\hypertarget{ref-r}{}}%
 R Core Team. (2023). \emph{R: A language and environment for statistical computing}. R Foundation for Statistical Computing. \url{https://www.R-project.org/}
-
-\leavevmode\vadjust pre{\hypertarget{ref-rakoczy2022foundations}{}}%
-Rakoczy, H. (2022). Foundations of theory of mind and its development in early childhood. \emph{Nature Reviews Psychology}, \emph{1}(4), 223--235.
 
 \leavevmode\vadjust pre{\hypertarget{ref-richardson2005looking}{}}%
 Richardson, D. C., \& Dale, R. (2005). Looking to understand: The coupling between speakers' and listeners' eye movements and its relationship to discourse comprehension. \emph{Cognitive Science}, \emph{29}(6), 1045--1060.
@@ -729,9 +741,6 @@ Thorup, E., Nyström, P., Gredebäck, G., Bölte, S., Falck-Ytter, T., \& Team, 
 
 \leavevmode\vadjust pre{\hypertarget{ref-todorovic2006geometrical}{}}%
 Todorović, D. (2006). Geometrical basis of perception of gaze direction. \emph{Vision Research}, \emph{46}(21), 3549--3562.
-
-\leavevmode\vadjust pre{\hypertarget{ref-tomasello2019becoming}{}}%
-Tomasello, M. (2019). \emph{Becoming human: A theory of ontogeny}. Harvard University Press.
 
 \leavevmode\vadjust pre{\hypertarget{ref-tomasello2020adaptive}{}}%
 Tomasello, M. (2020). The adaptive origins of uniquely human sociality. \emph{Philosophical Transactions of the Royal Society B}, \emph{375}(1803), 20190493.
