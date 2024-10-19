@@ -453,7 +453,7 @@ For each community, we compared models based on the marginal likelihood of the d
 
 The final analysis focused on whether we could predict performance in the task by methodological aspects of the study and aggregate measures of everyday social experience. For the ease of model fitting, we aggregated the data for each participant so that models predicted the average imprecision across trials. This approach is justified because the mean is nearly perfectly correlated with a model-based estimate of a participant's ability [$\sigma_v$ in the model above, see @prein2024variation] and because the predictor variables did not vary within child.
 
-In the questionnaire, we asked about children’s exposure to screens as well as touchscreens. These two variables were largely redundant and so we included only one of them in the model. We chose the availability of a touchscreen as a predictor because the task itself was presented on a touchscreen.
+In the questionnaire, we asked about children’s exposure to screens as well as touchscreens. These two variables were largely redundant and so we included only one of them in the model. We chose the availability of a touchscreen as a predictor because the task itself was presented on a touchscreen and because there was more variation in this variable.
 
 For household composition, we asked for the total number of people in the household, the number of children and the number of younger children. We standardized each predictor within each community before fitting the models. Thus, the interpretation of the coefficient is the gain in precision for living e.g., in a larger household relative to other children from the same community.
 
