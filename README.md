@@ -23,7 +23,7 @@ Theoretical accounts assume that key features of human social cognition are univ
     ├── node-moduls             <-- helper scripts for model comparison
     └── output                  <-- saved model outputs by community
         └── bf_comparison.rds   <-- saved log Bayes Factors for model comparisons by community
-├── paper                       <-- reproducible manuscript file
+├── paper                       <-- reproducible manuscript file including all analysis code
 ├── saves                       <-- saved outputs
 ├── scripts                     <-- scripts to run cross-validation and process model outputs
 └── supplement                  <-- reproducible supplemental material file
