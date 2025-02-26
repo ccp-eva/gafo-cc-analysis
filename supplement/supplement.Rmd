@@ -43,7 +43,7 @@ output:
     #code_folding: hide
     number_sections: false
 bibliography: ../paper/library.bib
-csl: science.csl
+csl: apa6.csl
 header-includes:
   \usepackage{caption}
   \renewcommand{\figurename}{Supplementary Figure}
