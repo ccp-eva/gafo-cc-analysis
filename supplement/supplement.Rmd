@@ -30,12 +30,12 @@ author:
   - Roman Stengelin
   - Daniel B. M. Haun
 output: 
-  bookdown::pdf_document2:
-    toc: yes 
-    number_sections: false    
   bookdown::word_document2:
     toc: yes 
     number_sections: false
+  bookdown::pdf_document2:
+    toc: yes 
+    number_sections: false    
   bookdown::html_document2:
     toc: yes
     toc_float: true
@@ -50,7 +50,7 @@ header-includes:
   \renewcommand{\tablename}{Supplementary Table}
 ---
 
-```{r, echo=FALSE, message=F}
+```{r, echo=FALSE, message=F, warning = F}
 library(tidyverse)
 library(ggpubr)
 library(ggthemes)
@@ -752,11 +752,31 @@ All children were tested with a touch screen device with a size between 11 and 1
 
 The following components of the task were adapted to each cultural setting: voice-overs, agents, background. The voice overs were originally formulated in British English and German (see section [script](#script)). For each setting, they were first translated/adapted to the local language. In some cases (BaYaka and Bandongo), this was done by first translating them to French. The translations were done by native or near-native speakers. They were not exact translations of the original text but were adapted so that children from the respective community would understand them. For example, the word "hedge" in the British English version was changed to "bush" for the Nigerian English version to adjust for how children in the respective community would refer to the thing they saw. The content of each utterance was comparable across languages.
 
-The agents were drawn for each cultural setting in close collaboration with local researchers and/or research assistants. They were meant to show young adults and represent the diversity in appearance prevalent in the local population. Figure \@ref(fig:figagents) shows the agents that were used in the study. Some agents were used in multiple cultural settings. All agents had roughly the same underlying eye-geometry (size of the pupil and the iris) and only differed in superficial features. 
+The agents were drawn for each cultural setting in close collaboration with local researchers and/or research assistants. They were meant to show young adults and represent the diversity in appearance prevalent in the local population. Figure \@ref(fig:figagents) shows the agents that were used in the study and Table \@ref(tab:stimtab) lists which faces were used in each community (the names refer to the file names in the folder `./public/images/agents/` in the TANGO-CC github repository (https://github.com/ccp-eva/tango-cc/). Some agents were used in multiple cultural settings. All agents had roughly the same underlying eye-geometry (size of the pupil and the iris) and only differed in superficial features. 
 
 ```{r figagents, include = T, fig.align = "center", fig.cap = "Agents used in the task. Some agents were used for multiple cultural settings", out.width="100%"}
 knitr::include_graphics("../figures/agents.png")
 ``` 
+
+```{r stimtab, echo=F}
+stimtab <- data%>%
+  filter(!is.na(agent))%>%
+  group_by(community)%>%
+  mutate(agents = list(unique(agent)))%>%
+  distinct(community, .keep_all = T)%>%
+  select(community, agents)%>%
+  mutate(agents = toString(unlist(agents)),
+         agents = str_remove_all(agents,"ale"),
+         agents = str_remove_all(agents,"em"))
+
+
+kableExtra::kable(stimtab,
+             col.names = c("Community", "Agents"),
+              caption = "Agent stimuli by community.", 
+             format="latex", booktabs=TRUE, longtable = TRUE
+             )%>%
+  kable_styling(latex_options = c("hold_position", "repeat_header"))
+```
 
 ## Questionnaire
 
@@ -1104,7 +1124,59 @@ Visualization of the data also showed the predicted u-shaped pattern in all comm
 #   theme_few()+
 #   theme(legend.position = c(0.7, 0.9), legend.background = element_blank(),axis.title.x = element_blank(), axis.title.y = element_blank(), axis.ticks.y = element_blank(), axis.ticks.x = element_blank(), axis.text.x = element_blank(), axis.text.y = element_blank())+
 #   facet_wrap(~community, nrow = 3)
+
 ```
+
+```{r }
+# pdraws <- readRDS("../saves/pdraws.rds")
+# 
+# ppred_age <- pdraws%>%
+#   filter(type == "ageinyears")%>%
+#   mutate(community = substr(community, 0,3))%>%
+#   group_by(community)%>%
+#   summarise(mean = estimate_mode(post), 
+#             lci = hdi_lower(post), 
+#             uci = hdi_upper(post))%>%
+#   ggplot(aes(x= post, y = community, col = community))+
+#   geom_pointrange(aes(x = mean, xmin = lci, xmax = uci))+
+#   geom_vline(xintercept = 0, lty = 3)+
+#   scale_y_discrete(limits=rev)+
+#   scale_color_manual(name = "color", values = colors, guide = "none")+
+#   labs(x = "Estimate (age)", y = "")+
+#   theme_minimal()+
+#   theme(panel.border = element_rect(colour = "black", fill=NA, size = .5))
+# 
+# 
+# pdev <- plot_grid(
+#   pagg_dev, pind,ppred_age, rel_widths = c(0.9,2, 0.4), align = "h", axis = "bt",labels = c("A", "B", "C"), nrow = 1
+# )
+# 
+# ggsave(plot = pdev, "../figures/pdev.png", width = 12, height = 4, bg = "white", scale = 1.3)
+# 
+# ppred_tc <- pdraws%>%
+#   filter(type == "targetcentrality")%>%
+#   mutate(community = substr(community, 0,3))%>%
+#   group_by(community)%>%
+#   summarise(mean = estimate_mode(post), 
+#             lci = hdi_lower(post), 
+#             uci = hdi_upper(post))%>%
+#   ggplot(aes(x= post, y = community, col = community))+
+#   geom_pointrange(aes(x = mean, xmin = lci, xmax = uci))+
+#   geom_vline(xintercept = 0, lty = 3)+
+#   scale_y_discrete(limits=rev)+
+#   scale_color_manual(name = "color", values = colors, guide = "none")+
+#   labs(x = "Estimate (tar. centr.)", y = "")+
+#   theme_minimal()+
+#   theme(panel.border = element_rect(colour = "black", fill=NA, size = .5))
+# 
+# ptc <- plot_grid(
+#   ptagg, ptind,ppred_tc, rel_widths = c(0.9,2, 0.4), align = "h", axis = "bt",labels = c("A", "B", "C"), nrow = 1
+# )
+# 
+# ggsave(plot = ptc, "../figures/ptc.png", width = 12, height = 4, bg = "white", scale = 1.3)
+
+```
+
 
 ```{r figdev, include = T, fig.align = "center", fig.cap = "A) Developmental trajectory across and B) by community. The developmental trajectories are predicted based on a model of the data aggregated for each participant. C) Performance by screen section across and D) by community. Each bin covers 1/10th of the screen. Points show means, and error bars 95\\% confidence intervals for the data within that bin aggregated across participants. Transparent dots in A) and C) show aggregated data for each individual.", out.width="100%"}
 
