@@ -30,12 +30,12 @@ author:
   - Roman Stengelin
   - Daniel B. M. Haun
 output: 
-  bookdown::word_document2:
-    toc: yes 
-    number_sections: false
   bookdown::pdf_document2:
     toc: yes 
     number_sections: false    
+  bookdown::word_document2:
+    toc: yes 
+    number_sections: false
   bookdown::html_document2:
     toc: yes
     toc_float: true
@@ -162,7 +162,7 @@ The city is home to a wide range of educational institutions including public an
 
 Akure has embraced technology in recent years, with a notable increase in digital adoption, especially among its younger population. The widespread availability of reasonably priced smartphones and other touchscreen devices has contributed to the growing integration of technology into everyday life, affecting both urban and peri-urban areas. This technological revolution has changed social interactions and cultural dynamics within the community by democratizing access to information, communication, and entertainment.
 
-For this study, participants were recruited from churches during Sunday services and residences during community visits within the city of Akure, ensuring a wide representation of its vibrant population.
+For this study, participants were recruited from churches during Sunday services and residences during community visits within the city of Akure, ensuring a wide representation of its vibrant population. Data was collected between May and June 2022.
 
 **References and further readings:**
 
@@ -184,7 +184,7 @@ Education levels are generally high in Auckland. 18.6% of the population hold a 
 
 Aotearoa is an industrialized nation, nearly everybody has a smartphone and uses technology in their everyday life. Many administrative processes are digitized. There is no perceived mistrust towards technology and new developments are generally embraced with great interest. 
 
-For this study we reached out to early childcare centers and schools. Two early childcare centers and one primary school agreed to participate. Some additional children were tested during home visit sessions. All three educational institutions are visited by children from different cultural and socio-economic backgrounds. One early childcare center is affiliated with the University of Auckland and prioritizes children from University students and staff in their admission process. Testing sessions took place in separated spaces (office or break rooms) with one participant at a time. Participants received a certificate “for becoming a junior scientist” and a small gift (coloring book or sticker set) after their participation. (All numbers in the above description are from the 2018 census data report.)
+For this study we reached out to early childcare centers and schools. Two early childcare centers and one primary school agreed to participate. Some additional children were tested during home visit sessions. All three educational institutions are visited by children from different cultural and socio-economic backgrounds. One early childcare center is affiliated with the University of Auckland and prioritizes children from University students and staff in their admission process. Testing sessions took place in separated spaces (office or break rooms) with one participant at a time. Participants received a certificate “for becoming a junior scientist” and a small gift (coloring book or sticker set) after their participation. (All numbers in the above description are from the 2018 census data report.). Data was collected between August and November 2023.
 
 **References and further readings:**
 
@@ -208,7 +208,7 @@ BaYaka children have limited to no exposure to formal education, and the same is
 
 In the village where this research was conducted, BaYaka and Bandongo people have limited access to market goods or electronic technology. BaYaka, in particular, may only have access to the goods brought by the market boat every two weeks (e.g., radios, flip-flops, machetes, torches) or those available through commercial exchange with their Bandongo neighbors. However, the Bandongo often have more access to commercial items when visiting nearby towns. Although exposure to display screens is rare, the research team found a television used communally by the village people in 2023 (time of data collection). A smaller television was found in a BaYaka camp in 2022 (the television belonged to a Bandongo man). No touchscreen device has been observed to be used by either community outside of a research setting.
 
-Children from both communities were recruited after their parents or guardians provided explicit informed consent. The experiment was conducted in the research house, which has a central location in the village. Before experimentation, children’s consent was requested, at which point, children were free to opt out of participating. Children were paired with a same-cultural group experimenter. Children had the experiment presented in their primary spoken languages; for BaYaka, this was Yaka, and for Bandongo, this was Lingala. Children received pre-recorded instructions from the testing computer, as well as some additional instructions, reiterating the recordings when needed.
+Children from both communities were recruited after their parents or guardians provided explicit informed consent. The experiment was conducted in the research house, which has a central location in the village. Before experimentation, children’s consent was requested, at which point, children were free to opt out of participating. Children were paired with a same-cultural group experimenter. Children had the experiment presented in their primary spoken languages; for BaYaka, this was Yaka, and for Bandongo, this was Lingala. Children received pre-recorded instructions from the testing computer, as well as some additional instructions, reiterating the recordings when needed. Data was collected between August and September 2023.
 
 **References and further readings:**
 
@@ -248,7 +248,7 @@ It’s common that parents spend large parts of the day away from home and child
 
 Children growing up in Beijing have a high exposure to technology. Smartphones and other touchscreen devices are prevalent in most families in Beijing and are used widely for education, communication, and entertainment. In 2022, almost every Chinese citizen accessed the internet via mobile devices and Beijing has been fully covered by ultra fast 5G signals. 
 
-95% of the sampled children were recruited from local public kindergarten and primary school. We firstly introduced the experiment to the heads of the kindergarten/school. Once getting their permission, we asked the teachers to help send the printed letter (information about the study, informed consent, as well as the five questions) to the parents. A Mandarin speaking research assistant then tested kids whose parents signed the informed consent in a separate room in the kindergarten/school. A few of the youngest kids (5% of total) were recruited by directly introducing the experiment to the parents who we personally knew and tested the kids either in a separate room at our institute or at their home.
+95% of the sampled children were recruited from local public kindergarten and primary school. We firstly introduced the experiment to the heads of the kindergarten/school. Once getting their permission, we asked the teachers to help send the printed letter (information about the study, informed consent, as well as the five questions) to the parents. A Mandarin speaking research assistant then tested kids whose parents signed the informed consent in a separate room in the kindergarten/school. A few of the youngest kids (5% of total) were recruited by directly introducing the experiment to the parents who we personally knew and tested the kids either in a separate room at our institute or at their home. Data was collected between March and May 2023.
 
 **References and further readings:**
 
@@ -279,7 +279,7 @@ Commonly, children grow up in nuclear families, but ties with extended family te
 
 Caregivers in the current sample mostly came from a middle-class background and usually had completed tertiary education. In Argentina, children attend nursery/kindergarten from two to three years of age with the last year of kindergarten, from age 5, being compulsory. Children attend primary school from age 6 years and secondary school from age 12 (secondary school lasts 5 or 6 years). Children are schooled in Spanish and usually learn a second language (usually English) from the age of 9. Children in Indigenous communities in other Argentinian Provinces (e.g. Salta Province, Formosa Province) will often speak their respective Indigenous language (e.g. Wichí) as their primary language and schools often rely on bilingual teaching assistants to help during schools lessons (that are predominantly taught in Spanish).
 Smartphones, tablets, and computers are common, and children are exposed to these devices from early on.
-Children were recruited from one local kindergarten by sending out information letters and consent forms to parents. Children who had parental consent to take part in the study were tested in Spanish in a quiet room in their kindergarten by a local experimenter.
+Children were recruited from one local kindergarten by sending out information letters and consent forms to parents. Children who had parental consent to take part in the study were tested in Spanish in a quiet room in their kindergarten by a local experimenter. Data was collected between May and June 2023.
 
 **References and further readings:**
 
@@ -315,7 +315,7 @@ Since its Independence Day, Zambia has made significant investments in education
 
 The availability of touchscreen electronic devices like smartphones or laptops depends on each family’s financial capacity. While many still utilize cellphones, the lack of smartphone ownership can pose challenges in accessing such devices for some children or households.
 
-Prior to initiating a study at Chimfunshi, it must first be submitted to the Chimfunshi Scientific Advisory Board. The board members, along with the sanctuary directress, review and determine the feasibility of the proposed study. Once the necessary formalities are sorted, an on-site assistant assists in reaching out to the parents. The study program is explained to each family expressing interest in participating in the study. Written consent is obtained for participation, which can be withdrawn by the parents at any point. Depending on the nature of the study, the recruitment process is carried out in collaboration with the school teachers.
+Prior to initiating a study at Chimfunshi, it must first be submitted to the Chimfunshi Scientific Advisory Board. The board members, along with the sanctuary directress, review and determine the feasibility of the proposed study. Once the necessary formalities are sorted, an on-site assistant assists in reaching out to the parents. The study program is explained to each family expressing interest in participating in the study. Written consent is obtained for participation, which can be withdrawn by the parents at any point. Depending on the nature of the study, the recruitment process is carried out in collaboration with the school teachers. Data was collected in April 2023.
 
 **References and further readings:**
 
@@ -345,7 +345,7 @@ Exposure to technology, particularly smartphones and other touchscreen devices, 
 
 It is important to note that this depiction provides an overview on the communities participating in the current research and does not reflect the diversity of livelihoods among urban-dwelling Hai||om people more generally. Their experiences and adaptations vary depending on individual circumstances and ongoing socio-economic changes.
 
-Children were recruited from their homes as part of a long term research project taking place in these communities. They were later tested in quiet locations either at the school building or vacant spaces in their communities. Testing was done by male adult experimenters and a research team known to the communities for about 8 years. The research was approved by the Max Planck Research Ethics Council, the Namibian Commission on Research Science and Technology (Permit Number RPIV01112021), the Namibian San Council, and the Ministry of Education, Arts and Culture of the Republic of Namibia. The study also adhered to guidelines for best practice in cross-cultural research (Bruno et al., 2022). Children received small amounts of candy as a compensation for their participation.
+Children were recruited from their homes as part of a long term research project taking place in these communities. They were later tested in quiet locations either at the school building or vacant spaces in their communities. Testing was done by male adult experimenters and a research team known to the communities for about 8 years. The research was approved by the Max Planck Research Ethics Council, the Namibian Commission on Research Science and Technology (Permit Number RPIV01112021), the Namibian San Council, and the Ministry of Education, Arts and Culture of the Republic of Namibia. The study also adhered to guidelines for best practice in cross-cultural research (Bruno et al., 2022). Children received small amounts of candy as a compensation for their participation. Data was collected between March and July 2022.
 
 **References and further readings:**
 
@@ -381,7 +381,7 @@ Exposure to technology, particularly smartphones and other touchscreen devices, 
 
 It is important to note that this is only an approximate depiction of the situation faced by the communities participating in the current research. It does by no means give credit to the diversity of livelihoods among the Khwe people more generally. Their experiences and adaptations vary depending on individual circumstances and ongoing socio-economic changes.
 
-Children were recruited for a long-term research project after consulting with community elders and representatives. The project was conducted in local schools or kindergartens and received necessary approvals from relevant ethical bodies in Namibia and Germany: The Max Planck Research Ethics Council, the Namibian Commission on Research Science and Technology (Permit Number RPIV01112021), the Namibian San Council, and the Ministry of Education, Arts and Culture of the Republic of Namibia. Self-commitment regarding research ethics aligned with departmental guidelines for best practice in cross-cultural research (Bruno et al., 2022). Testing was carried out by a male adult from the community alongside a familiar research team. The study adhered to strict ethical guidelines for cross-cultural research, and children received small tokens of appreciation for their participation.
+Children were recruited for a long-term research project after consulting with community elders and representatives. The project was conducted in local schools or kindergartens and received necessary approvals from relevant ethical bodies in Namibia and Germany: The Max Planck Research Ethics Council, the Namibian Commission on Research Science and Technology (Permit Number RPIV01112021), the Namibian San Council, and the Ministry of Education, Arts and Culture of the Republic of Namibia. Self-commitment regarding research ethics aligned with departmental guidelines for best practice in cross-cultural research (Bruno et al., 2022). Testing was carried out by a male adult from the community alongside a familiar research team. The study adhered to strict ethical guidelines for cross-cultural research, and children received small tokens of appreciation for their participation. Data was collected between March and September 2022.
 
 **References and further readings:**
 
@@ -415,7 +415,7 @@ Parents spend large parts of the day away from home, and the majority of childre
 
 Children growing up in Leipzig have a high exposure to technology. Smartphones and other touchscreen devices are prevalent in most families and educational institutions, reflecting the widespread use of digital technology for communication, entertainment, and information retrieval.
 
-Children were recruited via a database of children whose parents expressed interest in participating in studies of child development. They were tested in a separate room in their kindergartens by a German-speaking research assistant. 
+Children were recruited via a database of children whose parents expressed interest in participating in studies of child development. They were tested in a separate room in their kindergartens by a German-speaking research assistant. Data was collected between April 2022 and January 2024.
 
 **References and further readings:**
 
@@ -440,7 +440,7 @@ Fathers spend large parts of the day away from home, and the majority of childre
  
 Children growing up in Malatya have some exposure to technology. Smartphones and other touchscreen devices are somewhat prevalent in most families, reflecting the widespread use of digital technology for communication.
  
-Children were recruited through nurseries and schools who expressed interest in participating research. They were tested in a separate room in their nurseries/school kindergartens by a Turkish-speaking research assistant. Some children were also tested in parks and outdoor areas.
+Children were recruited through nurseries and schools who expressed interest in participating research. They were tested in a separate room in their nurseries/school kindergartens by a Turkish-speaking research assistant. Some children were also tested in parks and outdoor areas. Data was collected between August and November 2023.
 
 ### Nyabyeya (Uganda) - Location
 
@@ -460,7 +460,7 @@ Parental socialization goals vary, but a previous sample of mothers from these c
 
 School is not mandatory and parental education levels in these communities is  generally low, with a minority of mothers in the Holden et al (2022) sample having any secondary level education. The education system faces challenges such as overcrowding and lack of resources, leading to high dropout rates. Children start primary school at ages 5-9, and secondary education runs for four years, with options to pursue advanced levels. Lack of sanitary products to allow attendance of school during menstruation, early marriages and teenage pregnancies often result in girls performing worse than boys and leaving school earlier.
 
-The community exhibits low exposure to technology, with smartphones and touchscreen devices considered luxuries. Limited internet access and power supply challenges contribute to this low adoption. However, technology is more prevalent in institutions like Nyabyeya Forestry College. Participating families were recruited by the local research assistants, for example, via personal contact, visiting them at home, or calling them. Families were invited to participate at the Nyabyeya Forestry College (transport offered via boda boda (motorcycle taxi)), and children participated in a quiet room in the College.
+The community exhibits low exposure to technology, with smartphones and touchscreen devices considered luxuries. Limited internet access and power supply challenges contribute to this low adoption. However, technology is more prevalent in institutions like Nyabyeya Forestry College. Participating families were recruited by the local research assistants, for example, via personal contact, visiting them at home, or calling them. Families were invited to participate at the Nyabyeya Forestry College (transport offered via boda boda (motorcycle taxi)), and children participated in a quiet room in the College. Data was collected between November 2023 and January 2024.
 
 
 **References and further readings:**
@@ -485,7 +485,7 @@ Children in Ocuilan typically begin their early schooling experience at around 3
 
 In terms of technology, approximately 77.9% of households possess at least one screen device, whereas access to the Internet is available to only 22.7% of households. Consequently, while a significant proportion of children have experienced digital technology a considerable segment of the population lacks exposure and accessibility to such resources (Ocuilan, n.d.).
 
-For this study, we first obtained permission from Mexican school authorities to visit local kindergartens. Next, we contacted parents and invited them to take part in the research. Data of interested children was then collected in a separate area within their own kindergartens, overseen by a Spanish-speaking research assistant. 
+For this study, we first obtained permission from Mexican school authorities to visit local kindergartens. Next, we contacted parents and invited them to take part in the research. Data of interested children was then collected in a separate area within their own kindergartens, overseen by a Spanish-speaking research assistant. Data was collected in March 2023.
 
 **References and further readings:**
 
@@ -509,7 +509,7 @@ Children mostly grow up in nuclear families. Children in the current study came 
 
 The UK has one of the highest childcare costs in Europe (52% of median female earnings). Nurseries will offer places for children from 3 months of age, but currently the government only subsidizes childcare from three years of age (caregivers receive 15 hours of free nursery care for three- and four-year-olds). Primary school starts at age 5 years, and secondary school at age 11 to 12 and lasts until 18 years. Education is compulsory in the UK, but children do not have to attend school and can be homeschooled instead.
 
-Children are exposed to technology from early on, including mobile phones and other touch screen devices. Children were mostly recruited through a local primary school and some additional children were recruited through personal contacts of one of the experimenters. Parents received information letters and consent forms. Experimenters also visited the school during drop off times in the morning to answer any questions parents may have had. Only children whose parents had consented to their participation took part in the study. In the school setting, two experimenters usually conducted the study in parallel in quiet rooms in the school. Some children who were recruited through personal contacts participated in the study online, facilitated by one experimenter.
+Children are exposed to technology from early on, including mobile phones and other touch screen devices. Children were mostly recruited through a local primary school and some additional children were recruited through personal contacts of one of the experimenters. Parents received information letters and consent forms. Experimenters also visited the school during drop off times in the morning to answer any questions parents may have had. Only children whose parents had consented to their participation took part in the study. In the school setting, two experimenters usually conducted the study in parallel in quiet rooms in the school. Some children who were recruited through personal contacts participated in the study online, facilitated by one experimenter. Data was collected between February and July 2023.
 
 **References and further readings:**
 
@@ -543,7 +543,7 @@ Children in Pune normally enter school between the ages of 2.5 and 3.5. The scho
 
 Most households will have at least one mobile phone as well as a laptop so children are exposed to technology fairly early. 
 
-For the current study, recruitment took place via personal contacts. Both schools have participated in previous research projects and the researcher is on the management committee of one of the schools. The researcher was given a separate quiet room to carry out testing. Normally, after one child finished the task, he or she would send their classmate who had volunteered for the project. In the case of very young children, the researcher would the children personally from their respective class and ensure that they were handed back to their teachers upon completion. 
+For the current study, recruitment took place via personal contacts. Both schools have participated in previous research projects and the researcher is on the management committee of one of the schools. The researcher was given a separate quiet room to carry out testing. Normally, after one child finished the task, he or she would send their classmate who had volunteered for the project. In the case of very young children, the researcher would the children personally from their respective class and ensure that they were handed back to their teachers upon completion. Data was collected between June and July 2023.
 
 **References and further readings:**
 
@@ -572,7 +572,7 @@ It is common for parents to spend large parts of the day away from home, and typ
 
 Children in San Jose have high exposure to technology. Nearly all households in San Jose have a computer (97%), with 93% of households having a broadband internet subscription. Smartphones and other touchscreen devices are used in most families and are used widely for education, communication, and entertainment.
 
-Children were recruited in person at a children’s museum in San Jose. Participants were randomly solicited from patrons visiting the children’s museum. Parents were given information about the study activity and consented before beginning the study. Children completed the study in a separate research room centrally located in the museum.
+Children were recruited in person at a children’s museum in San Jose. Participants were randomly solicited from patrons visiting the children’s museum. Parents were given information about the study activity and consented before beginning the study. Children completed the study in a separate research room centrally located in the museum. Data was collected between October 2022 and February 2023s.
 
 **References and further readings:**
 
@@ -595,7 +595,7 @@ The current study was conducted in Cimbebasia, a suburb situated in Southern Win
 
 English serves as the primary medium of instruction within the educational system, but children often grow up with significant exposure to other indigenous languages like Herero and Damara within their communities. Socialization and parenting goals reflect that of urban communities in the Global South emphasizing “communal psychological autonomy and relatedness” (Keller & Kaertner, 2013). Children in such communities spend a significant portion of their time on activities related to school, family, and leisure with peers and siblings. Children’s exposure to smartphones, tablets, and computers begins at a relatively early age, mirroring a global trend in urban middle-class communities.
 
-Participants came from predominantly middle-class communities and were tested at local Sunday schools (at churches) and at educational institutions. 
+Participants came from predominantly middle-class communities and were tested at local Sunday schools (at churches) and at educational institutions. Data was collected between September 2022 and March 2023.
 
 **References and further readings:**
 
@@ -920,6 +920,8 @@ cv_cult <- readRDS("../saves/cross_validation_result.rds")
 ```
 
 The results showed that the `culture_age` model made, by far, the best predictions and outperformed the `culture` model in `r round(mean(cv_cult$m3_beats_m2),2)*100`% and the `null` model in `r round(mean(cv_cult$m3_beats_m1),2)*100`% of cases. Furthermore, the `culture` model outperformed the `null` model in `r round(mean(cv_cult$m2_beats_m1),2)*100`% of cases. This suggests that there were substantial absolute and developmental differences between cultural settings (see Figure \@ref(fig:figdev)A). 
+
+We also analysed whether there are potential differences between agents by comparing the winning model from the cross-validation to a model including agent as an additional random effect (`click ~ ageinyears + targetcentralityx + (targetcentralityx|subjid)+ (ageinyears + targetcentralityx |community) + (1|agent)`). Adding agent to the model in this way did not improve its fit. Furthermore, the variation across agents in the model was minimal (sd = 0.02 for the agent intercept compared to sd = 0.37 for the community or sd = 0.24 for the subject intercept). As a side note: the original TANGO used animals instead of humans as agents. When comparing the data collected with animals and humans in one setting (Germany), we also found no difference. Thus, it seems that the superficial features of the agent do not influence gaze estimation.
 
 ## Processing signatures
 
